@@ -444,16 +444,19 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .access-board .board-sub{display:none;}
 .access-board #board-running{flex:1;min-height:0;display:flex;flex-direction:column;}
 .access-board .plant-live-grid{flex:1;min-height:0;gap:10px;margin-bottom:8px;}
-.access-board .plant-live-col{min-height:0;padding:9px;border-radius:8px;display:grid;grid-template-rows:auto repeat(4,minmax(0,1fr));gap:8px;overflow:hidden;}
+.access-board .plant-live-col{min-height:0;padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
 .access-board .plant-live-title{font-size:16px;margin-bottom:0;}
 .access-board .plant-live-count{font-size:9px;}
-.access-board .charge-live-card{min-height:0;margin-bottom:0;padding:8px;border-radius:7px;overflow:hidden;display:flex;flex-direction:column;border-left-width:7px;}
+.access-board .charge-live-card{min-height:auto;margin-bottom:0;padding:9px;border-radius:7px;overflow:visible;display:flex;flex-direction:column;border-left-width:7px;flex-shrink:0;}
 .access-board .charge-live-head{margin-bottom:5px;flex-shrink:0;}
 .access-board .charge-live-name{font-size:14px;}
 .access-board .charge-live-meta{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36vw;}
 .access-board .charge-live-state{font-size:9px;padding:2px 6px;}
-.access-board .charge-live-card .product-list{display:grid;grid-template-columns:1fr 1fr;gap:4px;overflow:hidden;min-height:0;align-content:start;}
-.access-board .charge-live-card .product-pill{font-size:9px;line-height:1.15;padding:4px 5px;min-height:0;overflow:hidden;}
+.access-board .charge-live-card .product-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px;overflow:visible;min-height:0;align-content:start;}
+.access-board .charge-live-card .product-pill{font-size:12px;line-height:1.25;padding:6px 7px;min-height:0;overflow:visible;}
+.access-board .product-top{font-size:9px;white-space:normal;overflow:visible;text-overflow:clip;}
+.access-board .product-main{font-size:12px;white-space:normal;overflow:visible;text-overflow:clip;}
+.access-board .product-sub{font-size:10px;white-space:normal;overflow:visible;text-overflow:clip;}
 .access-board.board-view-products .gantt-board{display:none!important;}
 .access-board.board-view-timeline .board-status-grid,
 .access-board.board-view-timeline #board-running{display:none!important;}
@@ -1151,8 +1154,9 @@ function productHtml(chargeNum,limit=4){
   if(!key)return '';
   const rows=masterProductsByCharge[key]||[];
   if(!rows.length)return `<div class="product-list"><div class="product-pill">No production master products found for ${escHtml(key)}</div></div>`;
-  const shown=rows.slice(0,limit).map(r=>productBoardSummary(r)).join('');
-  const more=rows.length>limit?`<div class="product-pill">+${rows.length-limit} more product${rows.length-limit>1?'s':''}</div>`:'';
+  const cap=Number.isFinite(limit)?limit:rows.length;
+  const shown=rows.slice(0,cap).map(r=>productBoardSummary(r)).join('');
+  const more=Number.isFinite(limit)&&rows.length>limit?`<div class="product-pill">+${rows.length-limit} more product${rows.length-limit>1?'s':''}</div>`:'';
   return `<div class="product-list">${shown}${more}</div>`;
 }
 function vesselForCharge(chargeNum){
@@ -1169,8 +1173,9 @@ function plannedForCharge(chargeNum){
 }
 function productRowsHtml(rows,limit=5){
   if(!rows||!rows.length)return '';
-  const shown=rows.slice(0,limit).map(r=>productBoardSummary(r)).join('');
-  const more=rows.length>limit?`<div class="product-pill">+${rows.length-limit} more product${rows.length-limit>1?'s':''}</div>`:'';
+  const cap=Number.isFinite(limit)?limit:rows.length;
+  const shown=rows.slice(0,cap).map(r=>productBoardSummary(r)).join('');
+  const more=Number.isFinite(limit)&&rows.length>limit?`<div class="product-pill">+${rows.length-limit} more product${rows.length-limit>1?'s':''}</div>`:'';
   return `<div class="product-list">${shown}${more}</div>`;
 }
 function boardDateForDayIdx(dayIdx){
@@ -1325,7 +1330,7 @@ function buildPlantLiveColumns(day,dayItems){
     if(actual){
       meta.push(actual.done?`Finished ${tfAbs(actual.outAbs)}`:`Started ${tfAbs(actual.startAbs)}`);
     }
-    const products=rows.length?productRowsHtml(rows,5):(actual&&actual.act.chargeNum?productHtml(actual.act.chargeNum,5):'<div class="product-list"><div class="product-pill">No Treatment Master products in this slot yet</div></div>');
+    const products=rows.length?productRowsHtml(rows,Infinity):(actual&&actual.act.chargeNum?productHtml(actual.act.chargeNum,Infinity):'<div class="product-list"><div class="product-pill">No Treatment Master products in this slot yet</div></div>');
     return `<div class="charge-live-card ${state}">
       <div class="charge-live-head">
         <div><div class="charge-live-name">Charge ${n}</div><div class="charge-live-meta">${meta.join(' · ')||'Awaiting Treatment Master plan'}</div></div>
