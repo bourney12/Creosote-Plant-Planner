@@ -2302,7 +2302,10 @@ function buildLiveBoard(){
     <div class="board-card"><div class="board-label">Total planned plant 1</div><div class="board-value">${p1Planned.length}</div><div class="board-sub">${p1Logged} logged today</div></div>
     <div class="board-card"><div class="board-label">Total planned plant 2</div><div class="board-value">${p2Planned.length}</div><div class="board-sub">${p2Logged} logged today</div></div>
   `;
-  document.getElementById('board-running').innerHTML=buildPlantLiveColumns(day,dayItems);
+  const boardRunning=document.getElementById('board-running');
+  const liveScroll=[...boardRunning.querySelectorAll('.plant-live-col')].map(col=>col.scrollTop);
+  boardRunning.innerHTML=buildPlantLiveColumns(day,dayItems);
+  boardRunning.querySelectorAll('.plant-live-col').forEach((col,i)=>{col.scrollTop=liveScroll[i]||0;});
   renderLinearGantt(days,noise,{board:true,dayIdx:day.dayIdx,viewMode:'live',labelsId:'board-gantt-labels',scrollId:'board-gantt-scroll'});
   buildBoardReport(day,dayItems);
 }
