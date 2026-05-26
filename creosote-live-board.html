@@ -418,6 +418,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .reason-row:last-child{border-bottom:none;}
 .gantt-board .gantt-labels{width:92px;}
 .gantt-board .legend,.gantt-board .week-ctrl-bar,.gantt-board .noise-bar,.gantt-board #week-stats,.gantt-board #comp-note{display:none;}
+#panel-live-board #board-report{display:none!important;}
 body.board-view-products:not(.access-board) #panel-live-board .gantt-board,
 body.board-view-products:not(.access-board) #panel-live-board .board-report{display:none;}
 body.board-view-timeline:not(.access-board) #panel-live-board .board-status-grid,
@@ -2307,7 +2308,8 @@ function buildLiveBoard(){
   boardRunning.innerHTML=buildPlantLiveColumns(day,dayItems);
   boardRunning.querySelectorAll('.plant-live-col').forEach((col,i)=>{col.scrollTop=liveScroll[i]||0;});
   renderLinearGantt(days,noise,{board:true,dayIdx:day.dayIdx,viewMode:'live',labelsId:'board-gantt-labels',scrollId:'board-gantt-scroll'});
-  buildBoardReport(day,dayItems);
+  const boardReport=document.getElementById('board-report');
+  if(boardReport)boardReport.innerHTML='';
 }
 
 function go(){
