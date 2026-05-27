@@ -950,6 +950,8 @@ let masterUnassignedProducts=[];
 let masterAllProducts=[];
 let masterPlannedSchedule=[];
 let masterPoleForecast={ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
+let poleForecastDayIdx=(new Date().getDay()+6)%7;
+let poleForecastAvgM3=Number(localStorage.getItem('creosote_pole_forecast_avg_m3')||38);
 let masterInventoryMovements=[];
 let masterSlotsCache={};
 let masterSync={state:'warn',msg:'Master sheet not loaded',last:null};
@@ -1645,6 +1647,17 @@ function refreshMasterViews(){
   if(activePanel==='pole-forecast')buildPoleForecast();
 }
 function fmtM3(v){return `${(Number(v)||0).toFixed(1)} m3`;}
+function isoDateKeyForDayIdx(dayIdx){
+  const d=boardDateForDayIdx(dayIdx);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function setPoleForecastDay(idx){poleForecastDayIdx=idx;buildPoleForecast();}
+function setPoleForecastAvg(value){
+  const n=Math.max(1,Number(value)||38);
+  poleForecastAvgM3=n;
+  localStorage.setItem('creosote_pole_forecast_avg_m3',String(n));
+  buildPoleForecast();
+}
 function buildPoleForecast(){
   const host=document.getElementById('pole-forecast-content');
   if(!host)return;
@@ -1654,32 +1667,52 @@ function buildPoleForecast(){
     return;
   }
   const days=Array.isArray(pf.days)?pf.days:[];
-  const totalM3=days.reduce((s,d)=>s+(Number(d.totalM3)||0),0);
-  const totalQty=days.reduce((s,d)=>s+(Number(d.totalQty)||0),0);
-  const totalCharges=days.reduce((s,d)=>s+(Number(d.roundedCharges)||0),0);
-  const avgCharge=Number(pf.averageChargeM3)||38;
-  const topDay=days.slice().sort((a,b)=>(Number(b.totalM3)||0)-(Number(a.totalM3)||0))[0];
-  const maxDayM3=Math.max(1,...days.map(d=>Number(d.totalM3)||0));
-  const dayRows=days.slice(-14).map(d=>{
-    const sheds=Object.keys(d.sheds||{}).sort().map(shed=>{
-      const data=d.sheds[shed];
-      const pct=Math.min(100,((Number(data.totalM3)||0)/Math.max(1,Number(d.totalM3)||0))*100);
-      return `<div><div class="report-email-note">${escHtml(shed)} · ${fmtM3(data.totalM3)} · ${Number(data.quantity||0).toFixed(0)} poles</div><div class="shed-bar"><span style="width:${pct}%"></span></div></div>`;
-    }).join('');
-    return `<tr><td>${escHtml(d.date||d.dayKey)}</td><td>${fmtM3(d.totalM3)}</td><td>${Number(d.totalQty||0).toFixed(0)}</td><td>${Number(d.chargeEquivalent||0).toFixed(2)}</td><td><b>${Number(d.roundedCharges||0)}</b></td></tr><tr><td colspan="5">${sheds||'<span class="report-email-note">No shed split</span>'}</td></tr>`;
+  const avgCharge=Number(poleForecastAvgM3)||Number(pf.averageChargeM3)||38;
+  const selectedKey=isoDateKeyForDayIdx(poleForecastDayIdx);
+  const selectedDate=boardDateForDayIdx(poleForecastDayIdx);
+  const selectedDay=days.find(d=>d.dayKey===selectedKey)||{dayKey:selectedKey,date:selectedDate.toLocaleDateString('en-GB'),sheds:{},totalM3:0,totalQty:0};
+  const selectedRows=(pf.rows||[]).filter(r=>r.dayKey===selectedKey);
+  const totalM3=Number(selectedDay.totalM3)||0;
+  const totalQty=Number(selectedDay.totalQty)||0;
+  const totalChargeEq=totalM3/avgCharge;
+  const totalCharges=Math.ceil(totalChargeEq);
+  const dayTabs=computeWeek().map((d,idx)=>{
+    const key=isoDateKeyForDayIdx(idx);
+    const has=days.some(day=>day.dayKey===key);
+    return `<button class="day-tab ${idx===poleForecastDayIdx?'active':''} ${has?'has-actual':''}" onclick="setPoleForecastDay(${idx})">${escHtml(d.name)}${has?' •':''}</button>`;
   }).join('');
-  const products=(pf.products||[]).slice(0,10).map(p=>`<tr><td>${escHtml(p.productCode||'')}</td><td>${escHtml(p.productDescription||'')}</td><td>${Number(p.quantity||0).toFixed(0)}</td><td>${fmtM3(p.totalM3)}</td></tr>`).join('');
+  const shedEntries=Object.entries(selectedDay.sheds||{}).sort((a,b)=>(Number(b[1].totalM3)||0)-(Number(a[1].totalM3)||0));
+  const shedCards=shedEntries.map(([shed,data])=>{
+    const m3=Number(data.totalM3)||0;
+    const eq=m3/avgCharge;
+    const rounded=Math.ceil(eq);
+    const rows=selectedRows.filter(r=>r.shed===shed).slice(0,6);
+    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td><td>${fmtM3(r.totalM3)}</td></tr>`).join('');
+    return `<div class="report-card">
+      <div class="report-title"><i class="ti ti-building-factory-2"></i>${escHtml(shed)}</div>
+      <div class="pole-forecast-grid">
+        <div class="pole-forecast-card"><div class="pole-forecast-label">Volume</div><div class="pole-forecast-value">${fmtM3(m3)}</div><div class="pole-forecast-sub">${Number(data.quantity||0).toFixed(0)} poles</div></div>
+        <div class="pole-forecast-card"><div class="pole-forecast-label">Charge equivalent</div><div class="pole-forecast-value">${eq.toFixed(2)}</div><div class="pole-forecast-sub">Based on ${avgCharge} m3 per charge</div></div>
+        <div class="pole-forecast-card"><div class="pole-forecast-label">Charges produced</div><div class="pole-forecast-value">${rounded}</div><div class="pole-forecast-sub">Rounded up for planning demand</div></div>
+      </div>
+      <table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Poles</th><th>M3</th></tr></thead><tbody>${products||'<tr><td colspan="4">Shed total only; detailed rows not in the current bridge window.</td></tr>'}</tbody></table>
+    </div>`;
+  }).join('');
   const unmatched=pf.diagnostics&&pf.diagnostics.unmatchedProducts&&pf.diagnostics.unmatchedProducts.length?`<div class="pole-warning"><b>${pf.diagnostics.unmatchedProducts.length} product code${pf.diagnostics.unmatchedProducts.length===1?'':'s'} missing cube data.</b> ${pf.diagnostics.unmatchedProducts.slice(0,8).map(escHtml).join(', ')}</div>`:'';
-  host.innerHTML=`<div class="pole-forecast-grid">
+  host.innerHTML=`<div class="report-dashboard-toolbar">
+    <div class="report-mode-toggle">${dayTabs}</div>
+    <div class="report-control"><label>Average charge m3</label><input type="number" min="1" step="0.5" value="${escHtml(avgCharge)}" onchange="setPoleForecastAvg(this.value)"></div>
+  </div>
+  <div class="pole-forecast-grid">
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Selected day</div><div class="pole-forecast-value">${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}))}</div><div class="pole-forecast-sub">${escHtml(selectedDay.date||selectedDay.dayKey)}</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Forecast volume</div><div class="pole-forecast-value">${fmtM3(totalM3)}</div><div class="pole-forecast-sub">${Number(totalQty).toFixed(0)} poles from Routings Master</div></div>
-    <div class="pole-forecast-card"><div class="pole-forecast-label">Charge demand</div><div class="pole-forecast-value">${totalCharges}</div><div class="pole-forecast-sub">Rounded from ${Number(totalM3/avgCharge||0).toFixed(2)} charge equivalents at ${avgCharge} m3/charge</div></div>
-    <div class="pole-forecast-card"><div class="pole-forecast-label">Peak day</div><div class="pole-forecast-value">${topDay?escHtml(topDay.date||topDay.dayKey):'-'}</div><div class="pole-forecast-sub">${topDay?`${fmtM3(topDay.totalM3)} · ${topDay.roundedCharges} charges`:''}</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Charge equivalent</div><div class="pole-forecast-value">${totalChargeEq.toFixed(2)}</div><div class="pole-forecast-sub">At ${avgCharge} m3 per charge</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Charges produced</div><div class="pole-forecast-value">${totalCharges}</div><div class="pole-forecast-sub">Rounded charge demand for selected day</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">PMF match</div><div class="pole-forecast-value">${pf.diagnostics?.pmfProducts||0}</div><div class="pole-forecast-sub">Cube lookup product codes loaded</div></div>
   </div>
-  <div class="report-split">
-    <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily pole charge forecast</div><table class="report-table-mini"><thead><tr><th>Date</th><th>M3</th><th>Poles</th><th>Eq.</th><th>Charges</th></tr></thead><tbody>${dayRows||'<tr><td colspan="5">No routing rows matched PMF cube data yet.</td></tr>'}</tbody></table>${unmatched}</div>
-    <div class="report-card"><div class="report-title"><i class="ti ti-stack-2"></i>Largest pole demand by product</div><table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Poles</th><th>M3</th></tr></thead><tbody>${products||'<tr><td colspan="4">No product demand found.</td></tr>'}</tbody></table><div class="report-email-note">This is a forecast model only. It does not write charge allocations back to the master sheet.</div></div>
-  </div>`;
+  ${shedCards||`<div class="report-card"><div class="report-title"><i class="ti ti-calendar-x"></i>No pole production found for this day</div><div class="report-email-note">No Routings Master rows matched PMF cube data for ${escHtml(selectedDay.date||selectedKey)}.</div></div>`}
+  ${unmatched}
+  <div class="report-email-note">This is a forecast model only. It does not write charge allocations back to the master sheet.</div>`;
 }
 function loadJsonp(url,params={}){
   return new Promise((resolve,reject)=>{
