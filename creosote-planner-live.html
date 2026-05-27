@@ -465,6 +465,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .access-board.board-view-timeline .gantt-outer,
 .access-board.board-view-timeline .gantt-scroll-wrap{height:100%;min-height:0;flex:1;}
 .access-board.board-view-timeline .gantt-scroll-wrap{display:grid;grid-template-columns:72px minmax(0,1fr);}
+.access-board.board-view-timeline .gantt-labels{width:72px!important;}
 .access-board.board-view-timeline .gantt-labels,
 .access-board.board-view-timeline .gantt-scroll{height:100%!important;min-height:0;}
 .access-board.board-view-timeline .gantt-content{min-height:100%;}
@@ -1949,7 +1950,7 @@ function renderLinearGantt(days,noise,opts={}){
   const lastDay=dayWindow?opts.dayIdx:weekMode-1;
   const earlyScrollEl=document.getElementById(opts.scrollId||'gantt-scroll');
   const boardAvailable=Math.max(480,(earlyScrollEl&&earlyScrollEl.clientWidth)||window.innerWidth-(isBoard?72:130)-32);
-  const hourPx=(isBoard&&dayWindow)?Math.max(28,Math.floor(boardAvailable/24)):hrPx;
+  const hourPx=(isBoard&&dayWindow)?Math.max(28,boardAvailable/24):hrPx;
   const totalW=(dayWindow?24:weekMode*24)*hourPx;
   const ROW=isBoard?42:30,CROW=17,SROW=19,HDR=34;
   const rowDefs=[];
