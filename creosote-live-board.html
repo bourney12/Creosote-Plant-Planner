@@ -379,6 +379,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .plant-live-count{font-family:var(--mono);font-size:10px;color:var(--text3);font-weight:500;}
 .charge-live-card{border:1px solid rgba(53,80,49,.13);border-left:5px solid var(--text3);border-radius:var(--radius);padding:10px;margin-bottom:9px;background:rgba(255,255,255,.58);}
 .charge-live-card.loaded{border-left-color:var(--accent);background:rgba(232,197,71,.08);}
+.charge-live-card.planned{border-left-color:#4a9eff;background:rgba(74,158,255,.08);}
 .charge-live-card.running{border-left-color:var(--green);background:rgba(76,175,114,.09);}
 .charge-live-card.done{border-left-color:var(--text3);background:rgba(53,80,49,.05);opacity:.78;}
 .charge-live-card.empty{border-style:dashed;opacity:.68;}
@@ -387,6 +388,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .charge-live-meta{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;}
 .charge-live-state{font-family:var(--mono);font-size:10px;border:1px solid var(--border2);border-radius:999px;padding:3px 7px;text-transform:uppercase;white-space:nowrap;}
 .charge-live-state.loaded{color:#9a7214;border-color:rgba(232,197,71,.4);background:rgba(232,197,71,.12);}
+.charge-live-state.planned{color:#1f70b8;border-color:rgba(74,158,255,.4);background:rgba(74,158,255,.12);}
 .charge-live-state.running{color:var(--green);border-color:rgba(76,175,114,.4);background:rgba(76,175,114,.12);}
 .charge-live-state.done{color:var(--text3);background:rgba(53,80,49,.06);}
 .charge-live-card .product-list{margin-top:0;}
@@ -917,7 +919,7 @@ const SHIFT_DEFS={
 const MASTER_SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/export?format=csv&gid=115405406';
 const MASTER_BRIDGE_STORAGE_KEY='creosote_master_bridge_url';
 const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec';
-const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v6';
+const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v7';
 const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
 const MASTER_CACHE_FRESH_MS=60000;
@@ -926,6 +928,7 @@ const chargeHistory2026=window.CREOSOTE_CHARGE_HISTORY_2026||{};
 let masterProductsByCharge={};
 let masterUnassignedProducts=[];
 let masterAllProducts=[];
+let masterPlannedSchedule=[];
 let masterInventoryMovements=[];
 let masterSlotsCache={};
 let masterSync={state:'warn',msg:'Master sheet not loaded',last:null};
@@ -1149,7 +1152,12 @@ function productBoardSummary(row){
   const order=rowValue(row,['order','reference','ref','po','job']);
   const qty=row._quantity||rowValue(row,['quantity','qty','pieces','pcs','no. of','number of','pack quantity','pack qty'])||rowValue(row,['column 35']);
   const top=[customer,order].filter(Boolean).join(' · ');
-  const bottom=[qty?`Qty ${qty}`:'',row._volumeM3?`${row._volumeM3} m3`:'' ].filter(Boolean).join(' · ');
+  const plannedBits=row&&row._plannedOnly?[
+    row._scheduleOriginalQuantity?`Orig ${row._scheduleOriginalQuantity}`:(qty?`Orig ${qty}`:''),
+    row._schedulePacks?`${row._schedulePacks} packs`:'',
+    row._schedulePackSize?`Pack ${row._schedulePackSize}`:''
+  ].filter(Boolean):null;
+  const bottom=plannedBits&&plannedBits.length?plannedBits.join(' · '):[qty?`Qty ${qty}`:'',row._volumeM3?`${row._volumeM3} m3`:'' ].filter(Boolean).join(' · ');
   return `<div class="product-pill product-board-row">${top?`<span class="product-top">${escHtml(top)}</span>`:''}<span class="product-main">${escHtml(description)}</span><span class="product-sub">${bottom?escHtml(bottom):'Qty not listed'}</span></div>`;
 }
 function productHtml(chargeNum,limit=4){
@@ -1248,6 +1256,15 @@ function getMasterSlots(day){
     slots[plant][n].rows.push(row);
     if(key)slots[plant][n].chargeNums.add(key);
   });
+  masterPlannedSchedule.forEach(row=>{
+    const n=plannedChargeSlot(row._plannedCharge,day.dayIdx);
+    if(!n||n<1||n>4)return;
+    const plant=plantFromVessel(row._vesselNumber);
+    const slot=slots[plant][n];
+    if(slot.rows.some(r=>!r._plannedOnly))return;
+    if(slot.rows.some(r=>r._plannedOnly&&r._rowNumber===row._rowNumber&&r._scheduleTreatmentDate===row._scheduleTreatmentDate))return;
+    slot.rows.push(row);
+  });
   ['p1','p2'].forEach(pid=>{
     historyChargesForDay(day.dayIdx,pid).slice(0,4).forEach((h,idx)=>{
       const key=normalizeChargeNumber(h.chargeNum);
@@ -1321,16 +1338,21 @@ function buildPlantLiveColumns(day,dayItems){
     const vessel=[...new Set(rows.map(r=>r._vesselNumber).filter(Boolean))].join(', ')||'?';
     let state='empty',stateLabel='empty';
     if(rows.length||actual){
+      const scheduleOnly=rows.length&&rows.every(r=>r._plannedOnly)&&!actual;
       const hasCharge=chargeNums.length||normalizeChargeNumber(actual&&actual.act&&actual.act.chargeNum);
-      if(actual&&hasCharge&&actual.done)state='done',stateLabel='complete';
+      if(scheduleOnly)state='planned',stateLabel='planned';
+      else if(actual&&hasCharge&&actual.done)state='done',stateLabel='complete';
       else if(actual&&hasCharge&&actual.startAbs!==null&&actual.startAbs!==undefined)state='running',stateLabel='in treatment';
       else state='loaded',stateLabel='loaded';
     }
     const meta=[];
+    const scheduleOnlyRows=rows.length&&rows.every(r=>r._plannedOnly);
     if(rows.length)meta.push(`${rows.length} product${rows.length===1?'':'s'}`);
+    if(scheduleOnlyRows)meta.push('Treatment Schedule plan');
     if(vessel!=='?')meta.push(`Vessel ${escHtml(vessel)}`);
     if(chargeNums.length)meta.push(`#${chargeNums.map(escHtml).join(', #')}`);
-    else if(rows.length)meta.push('Awaiting AV charge no.');
+    else if(rows.length&&!scheduleOnlyRows)meta.push('Awaiting AV charge no.');
+    else if(scheduleOnlyRows)meta.push('Charge number not allocated yet');
     if(actual){
       meta.push(actual.done?`Finished ${tfAbs(actual.outAbs)}`:`Started ${tfAbs(actual.startAbs)}`);
     }
@@ -1480,6 +1502,7 @@ function applyMasterPayload(data,sourceLabel){
   const groupedRows=Object.values(masterProductsByCharge).flat();
   const hasLoadedSlotFeed=Array.isArray(data.allProducts)||Array.isArray(data.unassignedProducts);
   masterAllProducts=Array.isArray(data.allProducts)&&data.allProducts.length?data.allProducts:[...groupedRows,...masterUnassignedProducts];
+  masterPlannedSchedule=Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts:[];
   if(Array.isArray(data.inventoryMovements)){
     masterInventoryMovements=data.inventoryMovements;
     inventoryMovementsLoaded=!!data.inventoryMovements.length||!(data.inventoryColumnMap&&data.inventoryColumnMap.skipped);
@@ -1492,7 +1515,7 @@ function applyMasterPayload(data,sourceLabel){
     const raw=String(row?._productRange||row?.ProductRange||row?.['Product range']||row?.['Column M']||'').toLowerCase();
     return raw.includes('pole')||raw.includes('fenc');
   }).length;
-  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
+  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
   return {count:Object.keys(masterProductsByCharge).length,hasLoadedSlotFeed,volumeRowCount,rangeRowCount};
 }
 function saveMasterCache(){
@@ -1501,6 +1524,7 @@ function saveMasterCache(){
       productsByCharge:masterProductsByCharge,
       unassignedProducts:masterUnassignedProducts,
       allProducts:masterAllProducts,
+      plannedScheduleProducts:masterPlannedSchedule,
       inventoryMovements:masterInventoryMovements,
       columnMap:masterColumnMap,
       inventoryColumnMap,
@@ -1510,7 +1534,7 @@ function saveMasterCache(){
 }
 function masterPayloadRowCount(data){
   if(!data)return 0;
-  return Object.values(data.productsByCharge||{}).reduce((sum,rows)=>sum+(Array.isArray(rows)?rows.length:0),0)+(Array.isArray(data.unassignedProducts)?data.unassignedProducts.length:0)+(Array.isArray(data.allProducts)?data.allProducts.length:0);
+  return Object.values(data.productsByCharge||{}).reduce((sum,rows)=>sum+(Array.isArray(rows)?rows.length:0),0)+(Array.isArray(data.unassignedProducts)?data.unassignedProducts.length:0)+(Array.isArray(data.allProducts)?data.allProducts.length:0)+(Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts.length:0);
 }
 function readMasterCacheRecord(){
   const keys=[MASTER_CACHE_STORAGE_KEY,...MASTER_LEGACY_CACHE_KEYS];
@@ -1555,12 +1579,12 @@ function masterCacheFresh(){
 function payloadHasProductDescriptions(data){
   if(!data)return false;
   const grouped=Object.values(data.productsByCharge||{}).flat();
-  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[])];
+  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[])];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function masterHasProductDescriptions(){
   const grouped=Object.values(masterProductsByCharge||{}).flat();
-  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts];
+  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function refreshMasterViews(){
