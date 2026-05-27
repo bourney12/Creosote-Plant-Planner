@@ -269,6 +269,14 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .report-table-mini th{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);font-family:var(--mono);text-align:left;border-bottom:1px solid var(--border);padding:5px 4px;}
 .report-table-mini td{padding:6px 4px;border-bottom:1px solid var(--border);vertical-align:top;}
 .report-email-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.45;margin-top:8px;}
+.pole-forecast-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0 14px;}
+.pole-forecast-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;box-shadow:0 2px 8px rgba(46,62,46,.05);}
+.pole-forecast-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.pole-forecast-value{font-size:24px;font-weight:800;color:var(--text);line-height:1;}
+.pole-forecast-sub{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.35;}
+.shed-bar{height:7px;border-radius:999px;background:rgba(53,80,49,.09);overflow:hidden;margin-top:5px;}
+.shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
+.pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
 @media(max-width:900px){.report-split{grid-template-columns:1fr;}.report-dashboard-toolbar{align-items:stretch}.report-control{min-width:100%;}}
 .report-section{margin-bottom:24px;}
 .report-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
@@ -547,6 +555,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="nav-item" onclick="showPanel('live-log')"><i class="ti ti-edit"></i>Log charges</div>
     <div class="nav-item" onclick="showPanel('live-board')"><i class="ti ti-screen-share"></i>Live board</div>
     <div class="nav-item" onclick="showPanel('report')"><i class="ti ti-report-analytics"></i>Reports dashboard</div>
+    <div class="nav-item" onclick="showPanel('pole-forecast')"><i class="ti ti-chart-bar"></i>Pole forecast</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Plan</div>
@@ -669,6 +678,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="sec-title">Reports dashboard</div>
   <div class="sec-sub">Cycle time, treated volume, utilisation and report email pack</div>
   <div id="report-content"></div>
+</div>
+
+<!-- POLE FORECAST -->
+<div class="panel" id="panel-pole-forecast">
+  <img class="panel-brand-watermark" src="assets/rundvirke-poles-logo.svg" alt="">
+  <div class="sec-title">Automated pole charge forecast</div>
+  <div class="sec-sub">Routings Master production demand matched to PMF cube data</div>
+  <div id="pole-forecast-content"></div>
 </div>
 
 <!-- BOTTLENECKS -->
@@ -922,7 +939,7 @@ const SHIFT_DEFS={
 const MASTER_SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/export?format=csv&gid=115405406';
 const MASTER_BRIDGE_STORAGE_KEY='creosote_master_bridge_url';
 const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec';
-const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v7';
+const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v8';
 const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
 const MASTER_CACHE_FRESH_MS=60000;
@@ -932,6 +949,7 @@ let masterProductsByCharge={};
 let masterUnassignedProducts=[];
 let masterAllProducts=[];
 let masterPlannedSchedule=[];
+let masterPoleForecast={ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
 let masterInventoryMovements=[];
 let masterSlotsCache={};
 let masterSync={state:'warn',msg:'Master sheet not loaded',last:null};
@@ -1064,15 +1082,16 @@ function showPanel(t){
   if(accessMode==='operator'&&t!=='live-log')t='live-log';
   if(accessMode==='board'&&t!=='live-board')t='live-board';
   activePanel=t;
-  const all=['week','live-log','live-board','report','bottlenecks','table','days','charge-types','equipment','operators','cranes','tippers','noise'];
+  const all=['week','live-log','live-board','report','pole-forecast','bottlenecks','table','days','charge-types','equipment','operators','cranes','tippers','noise'];
   all.forEach(p=>{const el=document.getElementById('panel-'+p);if(el)el.classList.toggle('active',p===t);});
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const map={week:3,bottlenecks:4,table:5,'live-log':0,'live-board':1,report:2,days:6,'charge-types':7,equipment:8,operators:9,cranes:10,tippers:11,noise:12};
+  const map={week:4,bottlenecks:5,table:6,'live-log':0,'live-board':1,report:2,'pole-forecast':3,days:7,'charge-types':8,equipment:9,operators:10,cranes:11,tippers:12,noise:13};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[t]])items[map[t]].classList.add('active');
   if(t==='live-log')buildLogPanel();
   if(t==='live-board')buildLiveBoard();
   if(t==='report')buildReport();
+  if(t==='pole-forecast')buildPoleForecast();
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function ph2(v){if(!v)return null;const[h,m]=v.split(':').map(Number);return h+m/60;}
@@ -1533,6 +1552,7 @@ function applyMasterPayload(data,sourceLabel){
   const hasLoadedSlotFeed=Array.isArray(data.allProducts)||Array.isArray(data.unassignedProducts);
   masterAllProducts=Array.isArray(data.allProducts)&&data.allProducts.length?data.allProducts:[...groupedRows,...masterUnassignedProducts];
   masterPlannedSchedule=Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts:[];
+  masterPoleForecast=data.poleForecast||{ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
   if(Array.isArray(data.inventoryMovements)){
     masterInventoryMovements=data.inventoryMovements;
     inventoryMovementsLoaded=!!data.inventoryMovements.length||!(data.inventoryColumnMap&&data.inventoryColumnMap.skipped);
@@ -1545,7 +1565,7 @@ function applyMasterPayload(data,sourceLabel){
     const raw=String(row?._productRange||row?.ProductRange||row?.['Product range']||row?.['Column M']||'').toLowerCase();
     return raw.includes('pole')||raw.includes('fenc');
   }).length;
-  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
+  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
   return {count:Object.keys(masterProductsByCharge).length,hasLoadedSlotFeed,volumeRowCount,rangeRowCount};
 }
 function saveMasterCache(){
@@ -1555,6 +1575,7 @@ function saveMasterCache(){
       unassignedProducts:masterUnassignedProducts,
       allProducts:masterAllProducts,
       plannedScheduleProducts:masterPlannedSchedule,
+      poleForecast:masterPoleForecast,
       inventoryMovements:masterInventoryMovements,
       columnMap:masterColumnMap,
       inventoryColumnMap,
@@ -1621,6 +1642,44 @@ function refreshMasterViews(){
   updateMasterStatus();
   if(activePanel==='live-log'||accessMode==='operator')buildLogPanel();
   if(activePanel==='live-board'||accessMode==='board')buildLiveBoard();
+  if(activePanel==='pole-forecast')buildPoleForecast();
+}
+function fmtM3(v){return `${(Number(v)||0).toFixed(1)} m3`;}
+function buildPoleForecast(){
+  const host=document.getElementById('pole-forecast-content');
+  if(!host)return;
+  const pf=masterPoleForecast||{};
+  if(!pf.ok){
+    host.innerHTML=`<div class="report-card"><div class="report-title"><i class="ti ti-chart-bar"></i>Pole forecast unavailable</div><div class="report-email-note">${escHtml(pf.error||'Waiting for the bridge to return Routings Master and PMF cube data.')}</div></div>`;
+    return;
+  }
+  const days=Array.isArray(pf.days)?pf.days:[];
+  const totalM3=days.reduce((s,d)=>s+(Number(d.totalM3)||0),0);
+  const totalQty=days.reduce((s,d)=>s+(Number(d.totalQty)||0),0);
+  const totalCharges=days.reduce((s,d)=>s+(Number(d.roundedCharges)||0),0);
+  const avgCharge=Number(pf.averageChargeM3)||38;
+  const topDay=days.slice().sort((a,b)=>(Number(b.totalM3)||0)-(Number(a.totalM3)||0))[0];
+  const maxDayM3=Math.max(1,...days.map(d=>Number(d.totalM3)||0));
+  const dayRows=days.slice(-14).map(d=>{
+    const sheds=Object.keys(d.sheds||{}).sort().map(shed=>{
+      const data=d.sheds[shed];
+      const pct=Math.min(100,((Number(data.totalM3)||0)/Math.max(1,Number(d.totalM3)||0))*100);
+      return `<div><div class="report-email-note">${escHtml(shed)} · ${fmtM3(data.totalM3)} · ${Number(data.quantity||0).toFixed(0)} poles</div><div class="shed-bar"><span style="width:${pct}%"></span></div></div>`;
+    }).join('');
+    return `<tr><td>${escHtml(d.date||d.dayKey)}</td><td>${fmtM3(d.totalM3)}</td><td>${Number(d.totalQty||0).toFixed(0)}</td><td>${Number(d.chargeEquivalent||0).toFixed(2)}</td><td><b>${Number(d.roundedCharges||0)}</b></td></tr><tr><td colspan="5">${sheds||'<span class="report-email-note">No shed split</span>'}</td></tr>`;
+  }).join('');
+  const products=(pf.products||[]).slice(0,10).map(p=>`<tr><td>${escHtml(p.productCode||'')}</td><td>${escHtml(p.productDescription||'')}</td><td>${Number(p.quantity||0).toFixed(0)}</td><td>${fmtM3(p.totalM3)}</td></tr>`).join('');
+  const unmatched=pf.diagnostics&&pf.diagnostics.unmatchedProducts&&pf.diagnostics.unmatchedProducts.length?`<div class="pole-warning"><b>${pf.diagnostics.unmatchedProducts.length} product code${pf.diagnostics.unmatchedProducts.length===1?'':'s'} missing cube data.</b> ${pf.diagnostics.unmatchedProducts.slice(0,8).map(escHtml).join(', ')}</div>`:'';
+  host.innerHTML=`<div class="pole-forecast-grid">
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Forecast volume</div><div class="pole-forecast-value">${fmtM3(totalM3)}</div><div class="pole-forecast-sub">${Number(totalQty).toFixed(0)} poles from Routings Master</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Charge demand</div><div class="pole-forecast-value">${totalCharges}</div><div class="pole-forecast-sub">Rounded from ${Number(totalM3/avgCharge||0).toFixed(2)} charge equivalents at ${avgCharge} m3/charge</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Peak day</div><div class="pole-forecast-value">${topDay?escHtml(topDay.date||topDay.dayKey):'-'}</div><div class="pole-forecast-sub">${topDay?`${fmtM3(topDay.totalM3)} · ${topDay.roundedCharges} charges`:''}</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">PMF match</div><div class="pole-forecast-value">${pf.diagnostics?.pmfProducts||0}</div><div class="pole-forecast-sub">Cube lookup product codes loaded</div></div>
+  </div>
+  <div class="report-split">
+    <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily pole charge forecast</div><table class="report-table-mini"><thead><tr><th>Date</th><th>M3</th><th>Poles</th><th>Eq.</th><th>Charges</th></tr></thead><tbody>${dayRows||'<tr><td colspan="5">No routing rows matched PMF cube data yet.</td></tr>'}</tbody></table>${unmatched}</div>
+    <div class="report-card"><div class="report-title"><i class="ti ti-stack-2"></i>Largest pole demand by product</div><table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Poles</th><th>M3</th></tr></thead><tbody>${products||'<tr><td colspan="4">No product demand found.</td></tr>'}</tbody></table><div class="report-email-note">This is a forecast model only. It does not write charge allocations back to the master sheet.</div></div>
+  </div>`;
 }
 function loadJsonp(url,params={}){
   return new Promise((resolve,reject)=>{
@@ -1746,9 +1805,11 @@ async function refreshProductMaster(){
       const count=applied.count;
       const hasLoadedSlotFeed=applied.hasLoadedSlotFeed;
       const plannedCount=masterPlannedSchedule.length;
+      const forecastDays=masterPoleForecast&&Array.isArray(masterPoleForecast.days)?masterPoleForecast.days.length:0;
       const volumeMsg=`${applied.volumeRowCount||0} m3 row${applied.volumeRowCount===1?'':'s'}`;
       const scheduleMsg=plannedCount?` · ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
-      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} · ${volumeMsg}${scheduleMsg} · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
+      const forecastMsg=forecastDays?` · ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
+      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} · ${volumeMsg}${scheduleMsg}${forecastMsg} · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
       refreshMasterViews();
       return;
     }
