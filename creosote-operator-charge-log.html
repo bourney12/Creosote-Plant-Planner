@@ -464,7 +464,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .access-board.board-view-timeline .gantt-board{display:flex!important;flex:1;min-height:0;height:auto;overflow:hidden;}
 .access-board.board-view-timeline .gantt-outer,
 .access-board.board-view-timeline .gantt-scroll-wrap{height:100%;min-height:0;flex:1;}
-.access-board.board-view-timeline .gantt-scroll-wrap{display:grid;grid-template-columns:92px 1fr;}
+.access-board.board-view-timeline .gantt-scroll-wrap{display:grid;grid-template-columns:72px minmax(0,1fr);}
 .access-board.board-view-timeline .gantt-labels,
 .access-board.board-view-timeline .gantt-scroll{height:100%!important;min-height:0;}
 .access-board.board-view-timeline .gantt-content{min-height:100%;}
@@ -1947,7 +1947,10 @@ function renderLinearGantt(days,noise,opts={}){
   const dayWindow=Number.isInteger(opts.dayIdx);
   const firstDay=dayWindow?opts.dayIdx:0;
   const lastDay=dayWindow?opts.dayIdx:weekMode-1;
-  const totalW=(dayWindow?24:weekMode*24)*hrPx;
+  const earlyScrollEl=document.getElementById(opts.scrollId||'gantt-scroll');
+  const boardAvailable=Math.max(480,(earlyScrollEl&&earlyScrollEl.clientWidth)||window.innerWidth-(isBoard?72:130)-32);
+  const hourPx=(isBoard&&dayWindow)?Math.max(28,Math.floor(boardAvailable/24)):hrPx;
+  const totalW=(dayWindow?24:weekMode*24)*hourPx;
   const ROW=isBoard?42:30,CROW=17,SROW=19,HDR=34;
   const rowDefs=[];
   if(!isBoard){
@@ -1981,36 +1984,36 @@ function renderLinearGantt(days,noise,opts={}){
   const labEl=document.getElementById(opts.labelsId||'gantt-labels');
   labEl.innerHTML=lHtml;labEl.style.height=totalH+'px';
 
-  const scEl=document.getElementById(opts.scrollId||'gantt-scroll');
+  const scEl=earlyScrollEl||document.getElementById(opts.scrollId||'gantt-scroll');
   scEl.innerHTML='';scEl.style.height=totalH+'px';
   const cv=document.createElement('div');cv.style.cssText=`position:relative;width:${totalW}px;height:${totalH}px;`;
   scEl.appendChild(cv);
 
-  function px(h){return (h-firstDay*24)*hrPx;}
-  function wd(h){return Math.max(0,h*hrPx);}
+  function px(h){return (h-firstDay*24)*hourPx;}
+  function wd(h){return Math.max(0,h*hourPx);}
 
   // Header
   const hDiv=document.createElement('div');hDiv.style.cssText=`position:sticky;top:0;z-index:20;height:${HDR}px;width:${totalW}px;background:var(--bg3);border-bottom:1px solid var(--border);`;
   for(let d=firstDay;d<=lastDay;d++){
-    const x=(d-firstDay)*24*hrPx,dn=(weekMode===5?DAYS_5:DAYS_7)[d];
-    const dd=document.createElement('div');dd.style.cssText=`position:absolute;left:${x}px;width:${24*hrPx}px;top:0;height:${HDR}px;border-right:1px solid var(--border2);display:flex;align-items:center;padding:0 8px;`;
+    const x=(d-firstDay)*24*hourPx,dn=(weekMode===5?DAYS_5:DAYS_7)[d];
+    const dd=document.createElement('div');dd.style.cssText=`position:absolute;left:${x}px;width:${24*hourPx}px;top:0;height:${HDR}px;border-right:1px solid var(--border2);display:flex;align-items:center;padding:0 8px;`;
     dd.innerHTML=`<span style="font-size:10px;font-weight:600;color:var(--accent);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;">${dn.slice(0,3)}</span>`;
     hDiv.appendChild(dd);
-    for(let h=0;h<24;h+=2){const tx=x+h*hrPx;const t=document.createElement('div');t.style.cssText=`position:absolute;left:${tx}px;top:20px;font-size:8px;color:var(--text3);font-family:var(--mono);transform:translateX(-50%);pointer-events:none;`;t.textContent=String(h).padStart(2,'0')+':00';hDiv.appendChild(t);if(h>0){const l=document.createElement('div');l.style.cssText=`position:absolute;left:${tx}px;top:0;bottom:0;width:1px;background:var(--border);pointer-events:none;`;hDiv.appendChild(l);}}
-    if(d===lastDay){const endTag=document.createElement('div');endTag.style.cssText=`position:absolute;left:${x+24*hrPx}px;top:20px;font-size:8px;color:var(--text3);font-family:var(--mono);transform:translateX(-100%);pointer-events:none;`;endTag.textContent='24:00';hDiv.appendChild(endTag);}
+    for(let h=0;h<24;h+=2){const tx=x+h*hourPx;const t=document.createElement('div');t.style.cssText=`position:absolute;left:${tx}px;top:20px;font-size:8px;color:var(--text3);font-family:var(--mono);transform:translateX(-50%);pointer-events:none;`;t.textContent=String(h).padStart(2,'0')+':00';hDiv.appendChild(t);if(h>0){const l=document.createElement('div');l.style.cssText=`position:absolute;left:${tx}px;top:0;bottom:0;width:1px;background:var(--border);pointer-events:none;`;hDiv.appendChild(l);}}
+    if(d===lastDay){const endTag=document.createElement('div');endTag.style.cssText=`position:absolute;left:${x+24*hourPx}px;top:20px;font-size:8px;color:var(--text3);font-family:var(--mono);transform:translateX(-100%);pointer-events:none;`;endTag.textContent='24:00';hDiv.appendChild(endTag);}
   }
   cv.appendChild(hDiv);
 
   // Grid
   rowDefs.forEach((r,ri)=>{const el=document.createElement('div');el.style.cssText=`position:absolute;top:${tops[ri]}px;left:0;width:${totalW}px;height:${rH(r)}px;border-bottom:1px solid var(--border);${r.type==='sect'?'background:var(--bg3);':''}`;cv.appendChild(el);});
   for(let d=firstDay;d<=lastDay;d++){
-    const dayX=(d-firstDay)*24*hrPx;
-    for(let h=1;h<24;h++){const l=document.createElement('div');l.style.cssText=`position:absolute;left:${dayX+h*hrPx}px;top:${HDR}px;height:${totalH-HDR}px;width:1px;background:var(--border);z-index:1;pointer-events:none;`;cv.appendChild(l);}
+    const dayX=(d-firstDay)*24*hourPx;
+    for(let h=1;h<24;h++){const l=document.createElement('div');l.style.cssText=`position:absolute;left:${dayX+h*hourPx}px;top:${HDR}px;height:${totalH-HDR}px;width:1px;background:var(--border);z-index:1;pointer-events:none;`;cv.appendChild(l);}
     if(!dayWindow&&d>0){const dl=document.createElement('div');dl.style.cssText=`position:absolute;left:${dayX}px;top:${HDR}px;height:${totalH-HDR}px;width:2px;background:var(--border2);z-index:5;pointer-events:none;`;cv.appendChild(dl);}
   }
 
   // Noise
-  if(noise.on){const{ns,ne}=noise;for(let d=firstDay;d<=lastDay;d++){const base=(d-firstDay)*24*hrPx;const addN=(x,w)=>{if(w<=0)return;const el=document.createElement('div');el.style.cssText=`position:absolute;left:${x}px;top:${HDR}px;width:${w}px;height:${totalH-HDR}px;background:var(--noise-bg);border-left:1px solid var(--noise-bd);z-index:2;pointer-events:none;`;cv.appendChild(el);};if(ne>0)addN(base,ne*hrPx);addN(base+ns*hrPx,(24-ns)*hrPx);}}
+  if(noise.on){const{ns,ne}=noise;for(let d=firstDay;d<=lastDay;d++){const base=(d-firstDay)*24*hourPx;const addN=(x,w)=>{if(w<=0)return;const el=document.createElement('div');el.style.cssText=`position:absolute;left:${x}px;top:${HDR}px;width:${w}px;height:${totalH-HDR}px;background:var(--noise-bg);border-left:1px solid var(--noise-bd);z-index:2;pointer-events:none;`;cv.appendChild(el);};if(ne>0)addN(base,ne*hourPx);addN(base+ns*hourPx,(24-ns)*hourPx);}}
 
   function addBar(x,y,w,h,style,label,ttData,dragCfg){
     if(w<=0)return;
@@ -2028,7 +2031,7 @@ function renderLinearGantt(days,noise,opts={}){
     let cursor=startAbs;
     stages.forEach(stage=>{
       const durH=(stage.mins*scale)/60;
-      const label=durH*hrPx>34?stage.short:'';
+      const label=durH*hourPx>34?stage.short:'';
       addBar(px(cursor),y,wd(durH),h,`background:${stage.bg};color:${stage.col};border:${opts2.actual?'2px':'1px'} solid ${opts2.actual?stage.col:stage.bd};z-index:${opts2.z||8};border-radius:${opts2.actual?'4px':'3px'};box-shadow:${opts2.actual?'0 0 0 1px rgba(255,255,255,.5)':'none'};opacity:${opts2.alpha||1};`,label,ttData,dragCfg);
       cursor+=durH;
     });
@@ -2037,7 +2040,7 @@ function renderLinearGantt(days,noise,opts={}){
 
   // Op shift summary
   const opSRI=rowDefs.findIndex(r=>r.type==='opshift');
-  if(opSRI>=0)operators.forEach(op=>{if(op.shift==='off')return;const{s,e}=personTimes(op);if(s===null)return;const shiftCol=SHIFT_DEFS[op.shift]?.col||'rgba(74,158,255,.3)';const segs=e<s?[[s,24],[0,e]]:[[s,e]];for(let d=0;d<weekMode;d++){const base=d*24*hrPx;segs.forEach(([ss,se])=>{const el=document.createElement('div');el.style.cssText=`position:absolute;left:${base+ss*hrPx}px;top:${tops[opSRI]+2}px;width:${(se-ss)*hrPx}px;height:${CROW-4}px;background:${shiftCol};border-radius:2px;pointer-events:none;z-index:3;`;cv.appendChild(el);});}});
+  if(opSRI>=0)operators.forEach(op=>{if(op.shift==='off')return;const{s,e}=personTimes(op);if(s===null)return;const shiftCol=SHIFT_DEFS[op.shift]?.col||'rgba(74,158,255,.3)';const segs=e<s?[[s,24],[0,e]]:[[s,e]];for(let d=0;d<weekMode;d++){const base=d*24*hourPx;segs.forEach(([ss,se])=>{const el=document.createElement('div');el.style.cssText=`position:absolute;left:${base+ss*hourPx}px;top:${tops[opSRI]+2}px;width:${(se-ss)*hourPx}px;height:${CROW-4}px;background:${shiftCol};border-radius:2px;pointer-events:none;z-index:3;`;cv.appendChild(el);});}});
 
   // Person shift bars
   function addPersonRows(people,rowType,role){
@@ -2047,7 +2050,7 @@ function renderLinearGantt(days,noise,opts={}){
       const rowY=tops[ri],shiftCol=SHIFT_DEFS[person.shift]?.col||'rgba(200,200,200,.2)';
       const segs=e<s?[[s,24],[0,e]]:[[s,e]];
       const ttData={title:`${person.name} — ${role}`,rows:[['Shift',SHIFT_DEFS[person.shift]?.name||person.shift],['Hours',`${hToStr(s)} – ${hToStr(e)}`]],issues:[]};
-      for(let d=0;d<weekMode;d++){const base=d*24*hrPx;segs.forEach(([ss,se])=>addBar(base+ss*hrPx,rowY+2,(se-ss)*hrPx,CROW-4,`background:${shiftCol};color:rgba(255,255,255,.7);`,person.shift,ttData,{type:'person',person}));}
+      for(let d=0;d<weekMode;d++){const base=d*24*hourPx;segs.forEach(([ss,se])=>addBar(base+ss*hourPx,rowY+2,(se-ss)*hourPx,CROW-4,`background:${shiftCol};color:rgba(255,255,255,.7);`,person.shift,ttData,{type:'person',person}));}
     });
   }
   if(!isBoard){
