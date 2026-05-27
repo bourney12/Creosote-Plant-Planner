@@ -1706,6 +1706,8 @@ async function refreshProductMaster(){
         refreshMasterViews();
         return;
       }
+      masterSync={state:'warn',msg:'Master bridge loading latest Treatment Master and planned schedule...',last:Date.now()};
+      updateMasterStatus();
       const data=await loadJsonp(bridgeUrl);
       if(!data||data.ok===false)throw new Error(data&&data.error?data.error:'Bridge returned no data');
       if(masterPayloadRowCount(data)===0)throw new Error('Bridge returned zero Treatment Master rows, so existing charge data was kept');
@@ -1713,8 +1715,10 @@ async function refreshProductMaster(){
       saveMasterCache();
       const count=applied.count;
       const hasLoadedSlotFeed=applied.hasLoadedSlotFeed;
+      const plannedCount=masterPlannedSchedule.length;
       const volumeMsg=`${applied.volumeRowCount||0} m3 row${applied.volumeRowCount===1?'':'s'}`;
-      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} · ${volumeMsg} · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
+      const scheduleMsg=plannedCount?` · ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
+      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} · ${volumeMsg}${scheduleMsg} · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
       refreshMasterViews();
       return;
     }
