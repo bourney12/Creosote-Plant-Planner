@@ -393,6 +393,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .charge-live-state.done{color:var(--text3);background:rgba(53,80,49,.06);}
 .charge-live-card .product-list{margin-top:0;}
 .charge-live-card .product-pill{background:rgba(255,255,255,.7);}
+.plan-variance-note{border:1px solid rgba(190,116,28,.26);background:rgba(232,197,71,.12);border-radius:7px;padding:7px 9px;margin:0 0 8px;font-size:11px;color:#6d4f10;}
+.plan-variance-note b{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#9a7214;}
+.plan-variance-list{margin-top:4px;color:var(--text2);}
 .vessel-card{margin:7px 0 8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.42));border:1px solid rgba(53,80,49,.12);overflow:hidden;}
 .vessel-card svg{display:block;width:100%;height:auto;}
 .vessel-label{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:5px 7px 0;font-size:9px;font-family:var(--mono);color:var(--text3);}
@@ -1244,10 +1247,33 @@ function plantForMasterRows(rows,fallback='p1'){
   const row=(rows||[]).find(r=>r._vesselNumber);
   return row?plantFromVessel(row._vesselNumber):fallback;
 }
+function productCompareKey(row){
+  const desc=productDescription(row).toLowerCase().replace(/\s+/g,' ').trim();
+  const rawQty=String(row?._quantity||row?._scheduleOriginalQuantity||'').replace(/,/g,'').trim();
+  const numQty=Number(rawQty);
+  const qty=Number.isFinite(numQty)?String(numQty):rawQty;
+  return `${desc}|${qty}`;
+}
+function productSet(rows){
+  return new Set((rows||[]).map(productCompareKey).filter(k=>k&&k!=='|'));
+}
+function plannedActualVarianceHtml(plannedRows,actualRows){
+  if(!plannedRows.length||!actualRows.length)return '';
+  const planned=productSet(plannedRows);
+  const actual=productSet(actualRows);
+  const same=planned.size===actual.size&&[...planned].every(k=>actual.has(k));
+  if(same)return '';
+  const plannedOnly=plannedRows.filter(r=>!actual.has(productCompareKey(r))).slice(0,3).map(productDescription);
+  const actualOnly=actualRows.filter(r=>!planned.has(productCompareKey(r))).slice(0,3).map(productDescription);
+  const bits=[];
+  if(plannedOnly.length)bits.push(`Planned not matched: ${plannedOnly.map(escHtml).join(', ')}`);
+  if(actualOnly.length)bits.push(`Actual not on plan: ${actualOnly.map(escHtml).join(', ')}`);
+  return `<div class="plan-variance-note"><b>Plan changed</b><div class="plan-variance-list">${bits.join(' · ')||'Actual product list differs from the planned schedule.'}</div></div>`;
+}
 function getMasterSlots(day){
   if(masterSlotsCache[day.dayIdx])return masterSlotsCache[day.dayIdx];
   const slots={p1:{},p2:{}};
-  ['p1','p2'].forEach(pid=>{for(let n=1;n<=4;n++)slots[pid][n]={rows:[],actual:null,chargeNums:new Set()};});
+  ['p1','p2'].forEach(pid=>{for(let n=1;n<=4;n++)slots[pid][n]={rows:[],plannedRows:[],actual:null,chargeNums:new Set()};});
   masterAllProducts.forEach(row=>{
     const n=plannedChargeSlot(row._plannedCharge,day.dayIdx);
     if(!n||n<1||n>4)return;
@@ -1261,8 +1287,9 @@ function getMasterSlots(day){
     if(!n||n<1||n>4)return;
     const plant=plantFromVessel(row._vesselNumber);
     const slot=slots[plant][n];
+    if(slot.plannedRows.some(r=>r._rowNumber===row._rowNumber&&r._scheduleTreatmentDate===row._scheduleTreatmentDate))return;
+    slot.plannedRows.push(row);
     if(slot.rows.some(r=>!r._plannedOnly))return;
-    if(slot.rows.some(r=>r._plannedOnly&&r._rowNumber===row._rowNumber&&r._scheduleTreatmentDate===row._scheduleTreatmentDate))return;
     slot.rows.push(row);
   });
   ['p1','p2'].forEach(pid=>{
@@ -1334,6 +1361,7 @@ function buildPlantLiveColumns(day,dayItems){
     const chargeNums=[...slot.chargeNums];
     const actualCharge=normalizeChargeNumber(actual&&actual.act&&actual.act.chargeNum);
     const rows=slot.rows.length?slot.rows:(actualCharge?(masterProductsByCharge[actualCharge]||[]):[]);
+    const plannedRows=slot.plannedRows||[];
     if(actualCharge&&!chargeNums.includes(actualCharge))chargeNums.push(actualCharge);
     const vessel=[...new Set(rows.map(r=>r._vesselNumber).filter(Boolean))].join(', ')||'?';
     let state='empty',stateLabel='empty';
@@ -1356,12 +1384,14 @@ function buildPlantLiveColumns(day,dayItems){
     if(actual){
       meta.push(actual.done?`Finished ${tfAbs(actual.outAbs)}`:`Started ${tfAbs(actual.startAbs)}`);
     }
+    const variance=plannedActualVarianceHtml(plannedRows,rows.filter(r=>!r._plannedOnly));
     const products=rows.length?productRowsHtml(rows,Infinity):(actual&&actual.act.chargeNum?productHtml(actual.act.chargeNum,Infinity):'<div class="product-list"><div class="product-pill">No Treatment Master products in this slot yet</div></div>');
     return `<div class="charge-live-card ${state}">
       <div class="charge-live-head">
         <div><div class="charge-live-name">Charge ${n}</div><div class="charge-live-meta">${meta.join(' · ')||'Awaiting Treatment Master plan'}</div></div>
         <div class="charge-live-state ${state}">${stateLabel}</div>
       </div>
+      ${variance}
       ${products}
     </div>`;
   }
