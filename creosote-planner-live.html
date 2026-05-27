@@ -1687,7 +1687,7 @@ function buildPoleForecast(){
     const eq=m3/avgCharge;
     const rounded=Math.ceil(eq);
     const rows=selectedRows.filter(r=>r.shed===shed).slice(0,6);
-    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td><td>${fmtM3(r.totalM3)}</td></tr>`).join('');
+    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td><td>${r.cubeMissing?'Cube missing':fmtM3(r.totalM3)}</td></tr>`).join('');
     return `<div class="report-card">
       <div class="report-title"><i class="ti ti-building-factory-2"></i>${escHtml(shed)}</div>
       <div class="pole-forecast-grid">
@@ -1710,7 +1710,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Charges produced</div><div class="pole-forecast-value">${totalCharges}</div><div class="pole-forecast-sub">Rounded charge demand for selected day</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">PMF match</div><div class="pole-forecast-value">${pf.diagnostics?.pmfProducts||0}</div><div class="pole-forecast-sub">Cube lookup product codes loaded</div></div>
   </div>
-  ${shedCards||`<div class="report-card"><div class="report-title"><i class="ti ti-calendar-x"></i>No pole production found for this day</div><div class="report-email-note">No Routings Master rows matched PMF cube data for ${escHtml(selectedDay.date||selectedKey)}.</div></div>`}
+  ${shedCards||`<div class="report-card"><div class="report-title"><i class="ti ti-calendar-x"></i>No pole production found for this day</div><div class="report-email-note">No Routings Master rows were returned for ${escHtml(selectedDay.date||selectedKey)}. If products are planned on that date, the bridge is not seeing them in the Shadow Date column.</div></div>`}
   ${unmatched}
   <div class="report-email-note">This is a forecast model only. It does not write charge allocations back to the master sheet.</div>`;
 }
