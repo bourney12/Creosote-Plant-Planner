@@ -254,7 +254,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .report-mode-toggle button.active{background:rgba(47,125,72,.12);color:var(--green);font-weight:700;}
 .report-control{display:flex;flex-direction:column;gap:3px;min-width:132px;}
 .report-control label{font-size:8px;color:var(--text3);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;}
-.report-control input{height:28px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:11px;padding:4px 8px;}
+.report-control input,.report-control select{height:28px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:11px;padding:4px 8px;}
 .report-control.email{flex:1;min-width:220px;}
 .report-action{height:28px;border:1px solid rgba(47,125,72,.35);border-radius:var(--radius);background:rgba(47,125,72,.1);color:var(--green);font-size:10px;font-weight:700;padding:4px 10px;cursor:pointer;}
 .report-dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:14px;}
@@ -1658,6 +1658,10 @@ function setPoleForecastAvg(value){
   localStorage.setItem('creosote_pole_forecast_avg_m3',String(n));
   buildPoleForecast();
 }
+function shedSortValue(name){
+  const m=String(name||'').match(/([1-5])/);
+  return m?Number(m[1]):99;
+}
 function buildPoleForecast(){
   const host=document.getElementById('pole-forecast-content');
   if(!host)return;
@@ -1672,12 +1676,15 @@ function buildPoleForecast(){
   const selectedDay=days.find(d=>d.dayKey===selectedKey)||{dayKey:selectedKey,date:selectedDate.toLocaleDateString('en-GB'),sheds:{},totalM3:0,totalQty:0};
   const selectedRows=(pf.rows||[]).filter(r=>r.dayKey===selectedKey);
   const totalQty=Number(selectedDay.totalQty)||0;
-  const dayTabs=computeWeek().map((d,idx)=>{
-    const key=isoDateKeyForDayIdx(idx);
-    const has=days.some(day=>day.dayKey===key);
-    return `<button class="day-tab ${idx===poleForecastDayIdx?'active':''} ${has?'has-actual':''}" onclick="setPoleForecastDay(${idx})">${escHtml(d.name)}${has?' •':''}</button>`;
+  const dayOptions=computeWeek().map((d,idx)=>{
+    const date=boardDateForDayIdx(idx);
+    return `<option value="${idx}" ${idx===poleForecastDayIdx?'selected':''}>${escHtml(d.name)} - ${escHtml(date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</option>`;
   }).join('');
-  const shedEntries=Object.entries(selectedDay.sheds||{}).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),undefined,{numeric:true}));
+  const shedEntries=Object.entries(selectedDay.sheds||{}).sort((a,b)=>{
+    const av=shedSortValue(a[0]);
+    const bv=shedSortValue(b[0]);
+    return av===bv?String(a[0]).localeCompare(String(b[0]),undefined,{numeric:true}):av-bv;
+  });
   const shedCards=shedEntries.map(([shed,data])=>{
     const rows=selectedRows.filter(r=>r.shed===shed).slice(0,50);
     const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td></tr>`).join('');
@@ -1690,7 +1697,7 @@ function buildPoleForecast(){
     </div>`;
   }).join('');
   host.innerHTML=`<div class="report-dashboard-toolbar">
-    <div class="report-mode-toggle">${dayTabs}</div>
+    <div class="report-control"><label>Planned day</label><select onchange="setPoleForecastDay(Number(this.value))">${dayOptions}</select></div>
   </div>
   <div class="pole-forecast-grid">
     <div class="pole-forecast-card"><div class="pole-forecast-label">Selected day</div><div class="pole-forecast-value">${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}))}</div><div class="pole-forecast-sub">${escHtml(selectedDay.date||selectedDay.dayKey)}</div></div>
