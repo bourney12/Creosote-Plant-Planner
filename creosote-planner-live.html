@@ -2847,6 +2847,12 @@ function reportDayIndexForIso(iso){
   const diff=Math.round((target-reportWeekMonday())/86400000);
   return Math.max(0,Math.min(weekMode-1,diff));
 }
+function reportRawDayIndexForIso(iso){
+  if(!iso)return null;
+  const target=new Date(`${iso}T00:00:00`);
+  if(Number.isNaN(target.getTime()))return null;
+  return Math.round((target-reportWeekMonday())/86400000);
+}
 function ensureReportDefaults(){
   const today=reportIsoDate(new Date());
   if(!reportDayIso)reportDayIso=today;
@@ -2882,13 +2888,16 @@ function setReportToday(){
 }
 function reportSelectedDayIndexes(){
   ensureReportDefaults();
-  if(reportMode==='daily')return [reportDayIndexForIso(reportDayIso)];
+  if(reportMode==='daily'){
+    const idx=reportRawDayIndexForIso(reportDayIso);
+    return idx!==null&&idx>=0&&idx<weekMode?[idx]:[];
+  }
   const fromIso=reportFromIso||reportIsoDate(reportWeekMonday());
   const toIso=reportToIso||reportIsoDate(reportDateForDayIdx(weekMode-1));
   const from=new Date(`${fromIso}T00:00:00`),to=new Date(`${toIso}T00:00:00`);
   const out=[];
   for(let d=0;d<weekMode;d++){const cur=reportDateForDayIdx(d);if(cur>=from&&cur<=to)out.push(d);}
-  return out.length?out:[reportDayIndexForIso(fromIso)];
+  return out;
 }
 function parseReportNumber(value){
   const match=String(value||'').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);
@@ -3134,9 +3143,28 @@ function reportEmailPeriodLabel(dayIdxs){
   return `${reportMode==='daily'?'Daily':'Date range'} - ${reportRangeLabel(dayIdxs)}`;
 }
 function reportRangeLabel(dayIdxs){
-  if(reportMode==='daily')return reportDateForDayIdx(dayIdxs[0]).toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
-  const a=reportDateForDayIdx(dayIdxs[0]),b=reportDateForDayIdx(dayIdxs[dayIdxs.length-1]);
+  if(reportMode==='daily'){
+    const iso=reportDayIso||reportIsoDate(new Date());
+    const d=new Date(`${iso}T00:00:00`);
+    return Number.isNaN(d.getTime())?iso:d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  }
+  const fromIso=reportFromIso||reportIsoDate(reportWeekMonday());
+  const toIso=reportToIso||reportIsoDate(reportDateForDayIdx(weekMode-1));
+  const a=new Date(`${fromIso}T00:00:00`),b=new Date(`${toIso}T00:00:00`);
   return `${a.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} to ${b.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+}
+function treatmentReportRangeNote(dayIdxs){
+  const weekStart=reportWeekMonday();
+  const weekEnd=reportDateForDayIdx(weekMode-1);
+  const selected=reportSelectedDateRange();
+  if(reportTab!=='treatment')return '';
+  if(!dayIdxs.length){
+    return `<div class="report-card" style="border-color:rgba(232,147,71,.45);"><div class="report-title"><i class="ti ti-alert-triangle"></i>Treatment range outside active planner week</div><div class="report-email-note">Treatment reports use the currently loaded planner week only: ${weekStart.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} to ${weekEnd.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}. The selected period is ${reportRangeLabel(dayIdxs)}, so no treatment records are available from this screen.</div></div>`;
+  }
+  if(selected.from<weekStart||selected.to>weekEnd){
+    return `<div class="report-card" style="border-color:rgba(232,147,71,.35);"><div class="report-title"><i class="ti ti-info-circle"></i>Partial treatment range</div><div class="report-email-note">Treatment data is available only for the active planner week: ${weekStart.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} to ${weekEnd.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}. This report includes the overlapping loaded days only.</div></div>`;
+  }
+  return '';
 }
 function reportRowsFromAgg(agg,empty){
   const rows=Object.entries(agg).sort((a,b)=>b[1].count-a[1].count);
@@ -3210,6 +3238,7 @@ function buildReport(){
     <div class="metric-card" style="--accent-bar:var(--blue)"><div class="metric-label">Operator shift utilisation</div><div class="metric-value">${fmtPct(m.shiftHours?m.processHours/m.shiftHours*100:0)}</div><div class="metric-sub">${fmins(Math.round(m.processHours*60))} process vs ${fmins(Math.round(m.shiftHours*60))} shift cover</div></div>
     <div class="metric-card" style="--accent-bar:var(--red)"><div class="metric-label">Predicted operator overtime</div><div class="metric-value">${fmins(Math.round(m.overtimeHours*60))}</div><div class="metric-sub">process running beyond operator cover</div></div>
   </div>
+  ${treatmentReportRangeNote(dayIdxs)}
   ${masterM3HealthHtml()}
   <div class="report-split">
     <div class="report-card"><div class="report-title"><i class="ti ti-gauge"></i>Cycle time by charge type</div><table class="report-table-mini"><thead><tr><th>Charge type</th><th>Done</th><th>Avg cycle</th><th>m3</th></tr></thead><tbody>${reportRowsFromAgg(m.byType,'No completed charges in this period')}</tbody></table></div>
