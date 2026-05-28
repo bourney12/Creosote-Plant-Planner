@@ -952,6 +952,7 @@ let masterPlannedSchedule=[];
 let masterPoleForecast={ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
 let poleForecastDayIdx=(new Date().getDay()+6)%7;
 let poleForecastAvgM3=Number(localStorage.getItem('creosote_pole_forecast_avg_m3')||38);
+let poleForecastTab='dashboard';
 let masterInventoryMovements=[];
 let masterSlotsCache={};
 let masterSync={state:'warn',msg:'Master sheet not loaded',last:null};
@@ -1652,6 +1653,7 @@ function isoDateKeyForDayIdx(dayIdx){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function setPoleForecastDay(idx){poleForecastDayIdx=idx;buildPoleForecast();}
+function setPoleForecastTab(tab){poleForecastTab=tab;buildPoleForecast();}
 function setPoleForecastAvg(value){
   const n=Math.max(1,Number(value)||38);
   poleForecastAvgM3=n;
@@ -1685,6 +1687,30 @@ function buildPoleForecast(){
   const weekQty=weekDays.reduce((sum,d)=>sum+(Number(d.totalQty)||0),0);
   const weekM3=weekDays.reduce((sum,d)=>sum+(Number(d.totalM3)||0),0);
   const weekCharges=Math.ceil(weekM3/avgCharge);
+  const dayDashboardRows=computeWeek().map((d,idx)=>{
+    const key=isoDateKeyForDayIdx(idx);
+    const date=boardDateForDayIdx(idx);
+    const day=days.find(item=>item.dayKey===key)||{dayKey:key,sheds:{},totalQty:0,totalM3:0,totalHours:0};
+    const dayRows=(pf.rows||[]).filter(r=>r.dayKey===key);
+    const m3=Number(day.totalM3)||0;
+    const charges=m3/avgCharge;
+    return {idx,key,name:d.name,date,day,rows:dayRows,qty:Number(day.totalQty)||0,m3,charges,rounded:Math.ceil(charges),hours:Number(day.totalHours)||0,sheds:Object.entries(day.sheds||{}).length};
+  });
+  const dailyDashboardTable=dayDashboardRows.map(item=>`<tr><td>${escHtml(item.name)}</td><td>${escHtml(item.date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</td><td>${Number(item.qty).toFixed(0)}</td><td>${fmtM3(item.m3)}</td><td>${item.charges.toFixed(2)}</td><td>${item.rounded}</td><td>${item.sheds}</td><td>${item.rows.length}</td></tr>`).join('');
+  const shedNames=[...new Set(dayDashboardRows.flatMap(item=>Object.keys(item.day.sheds||{})))].sort((a,b)=>{
+    const av=shedSortValue(a);
+    const bv=shedSortValue(b);
+    return av===bv?String(a).localeCompare(String(b),undefined,{numeric:true}):av-bv;
+  });
+  const shedDashboardTable=shedNames.map(shed=>{
+    const cells=dayDashboardRows.map(item=>{
+      const data=item.day.sheds&&item.day.sheds[shed];
+      return `<td>${data?`${fmtM3(data.totalM3)}<div class="pole-forecast-sub">${Number(data.quantity||0).toFixed(0)} poles</div>`:'-'}</td>`;
+    }).join('');
+    const totalM3=dayDashboardRows.reduce((sum,item)=>sum+(Number(item.day.sheds&&item.day.sheds[shed]&&item.day.sheds[shed].totalM3)||0),0);
+    const totalQty=dayDashboardRows.reduce((sum,item)=>sum+(Number(item.day.sheds&&item.day.sheds[shed]&&item.day.sheds[shed].quantity)||0),0);
+    return `<tr><td>${escHtml(shed)}</td>${cells}<td>${fmtM3(totalM3)}<div class="pole-forecast-sub">${Number(totalQty).toFixed(0)} poles</div></td></tr>`;
+  }).join('');
   const dayOptions=computeWeek().map((d,idx)=>{
     const date=boardDateForDayIdx(idx);
     return `<option value="${idx}" ${idx===poleForecastDayIdx?'selected':''}>${escHtml(d.name)} - ${escHtml(date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</option>`;
@@ -1718,14 +1744,19 @@ function buildPoleForecast(){
       ${unmatchedRows.map(r=>`<tr><td>${escHtml(r.shed||'')}</td><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(1)}</td><td>${escHtml(r.rowNumber||'')}</td></tr>`).join('')}
     </tbody></table>
   </div>`:'';
-  host.innerHTML=`<div class="report-dashboard-toolbar">
-    <div class="report-control"><label>Planned day</label><select onchange="setPoleForecastDay(Number(this.value))">${dayOptions}</select></div>
-    <div class="report-control"><label>Average charge m3</label><input type="number" min="1" step="0.5" value="${escHtml(avgCharge)}" onchange="setPoleForecastAvg(this.value)"></div>
-  </div>
-  <div class="pole-forecast-grid">
-    <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned poles</div><div class="pole-forecast-value">${Number(weekQty).toFixed(0)}</div><div class="pole-forecast-sub">After timing roll-over</div></div>
-    <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned m3</div><div class="pole-forecast-value">${fmtM3(weekM3)}</div><div class="pole-forecast-sub">Monday to Sunday</div></div>
+  const dashboardHtml=`<div class="pole-forecast-grid">
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned poles</div><div class="pole-forecast-value">${Number(weekQty).toFixed(0)}</div><div class="pole-forecast-sub">Monday to Sunday</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned m3</div><div class="pole-forecast-value">${fmtM3(weekM3)}</div><div class="pole-forecast-sub">Scheduled production volume</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Week charges</div><div class="pole-forecast-value">${weekCharges}</div><div class="pole-forecast-sub">At ${avgCharge} m3 per charge</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Peak cube day</div><div class="pole-forecast-value">${escHtml((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).name||'-')}</div><div class="pole-forecast-sub">${fmtM3((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).m3||0)}</div></div>
+  </div>
+  <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily cube and charge forecast</div>
+    <table class="report-table-mini"><thead><tr><th>Day</th><th>Date</th><th>Poles</th><th>M3</th><th>Charge equiv.</th><th>Charges</th><th>Sheds</th><th>Lines</th></tr></thead><tbody>${dailyDashboardTable}</tbody></table>
+  </div>
+  <div class="report-card"><div class="report-title"><i class="ti ti-building-factory-2"></i>M3 by shed and day</div>
+    <table class="report-table-mini"><thead><tr><th>Shed</th>${dayDashboardRows.map(item=>`<th>${escHtml(item.name.slice(0,3))}</th>`).join('')}<th>Week</th></tr></thead><tbody>${shedDashboardTable||'<tr><td colspan="9">No scheduled pole production returned for this week.</td></tr>'}</tbody></table>
+  </div>`;
+  const detailHtml=`<div class="pole-forecast-grid">
     <div class="pole-forecast-card"><div class="pole-forecast-label">Selected day</div><div class="pole-forecast-value">${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}))}</div><div class="pole-forecast-sub">${escHtml(selectedDay.date||selectedDay.dayKey)}</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Planned poles</div><div class="pole-forecast-value">${Number(totalQty).toFixed(0)}</div><div class="pole-forecast-sub">Scheduled from Routings Master W/X</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Planned m3</div><div class="pole-forecast-value">${fmtM3(totalM3)}</div><div class="pole-forecast-sub">PMF column C to E match</div></div>
@@ -1734,7 +1765,13 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Product lines</div><div class="pole-forecast-value">${selectedRows.length}</div><div class="pole-forecast-sub">Product from J, code from L</div></div>
   </div>
   ${shedCards||`<div class="report-card"><div class="report-title"><i class="ti ti-calendar-x"></i>No pole production found for this day</div><div class="report-email-note">No Routings Master rows were returned for ${escHtml(selectedDay.date||selectedKey)}. If products are planned on that date, the bridge is not seeing them in the Shadow Date column.</div></div>`}
-  ${unmatchedTable}
+  ${unmatchedTable}`;
+  host.innerHTML=`<div class="report-dashboard-toolbar">
+    <div class="report-mode-toggle"><button type="button" class="${poleForecastTab==='dashboard'?'active':''}" onclick="setPoleForecastTab('dashboard')">Dashboard</button><button type="button" class="${poleForecastTab==='detail'?'active':''}" onclick="setPoleForecastTab('detail')">Shed detail</button></div>
+    <div class="report-control"><label>Planned day</label><select onchange="setPoleForecastDay(Number(this.value))">${dayOptions}</select></div>
+    <div class="report-control"><label>Average charge m3</label><input type="number" min="1" step="0.5" value="${escHtml(avgCharge)}" onchange="setPoleForecastAvg(this.value)"></div>
+  </div>
+  ${poleForecastTab==='dashboard'?dashboardHtml:detailHtml}
   <div class="report-email-note">Cubic metres are matched from PMF Associated Data column C product code and column E cubic metres.</div>`;
 }
 function loadJsonp(url,params={}){
