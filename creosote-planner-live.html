@@ -2931,6 +2931,39 @@ function reportSelectedDateRange(){
   const toIso=reportToIso||reportIsoDate(reportDateForDayIdx(weekMode-1));
   return {from:new Date(`${fromIso}T00:00:00`),to:new Date(`${toIso}T00:00:00`)};
 }
+function reportSelectedAbsRange(){
+  const selected=reportSelectedDateRange();
+  let from=selected.from,to=selected.to;
+  if(Number.isNaN(from.getTime()))from=reportWeekMonday();
+  if(Number.isNaN(to.getTime()))to=from;
+  if(to<from){const tmp=from;from=to;to=tmp;}
+  const weekStart=reportWeekMonday();
+  const startIdx=Math.round((from-weekStart)/86400000);
+  const endExclusiveIdx=Math.round((to-weekStart)/86400000)+1;
+  return {start:startIdx*24,end:endExclusiveIdx*24};
+}
+function reportActualStartAbs(dayIdx,act){
+  return absForActual(dayIdx,act&&act.cin);
+}
+function reportActualEndAbs(dayIdx,act,fallbackOut){
+  const start=reportActualStartAbs(dayIdx,act);
+  const raw=act&&act.out!==null&&act.out!==undefined?act.out:fallbackOut;
+  let out=absForActual(dayIdx,raw);
+  while(start!==null&&out!==null&&out<start-0.001)out+=24;
+  return out;
+}
+function reportAbsOverlapsRange(start,end,range){
+  if(start===null||end===null)return false;
+  return Math.max(start,range.start)<Math.min(end,range.end);
+}
+function reportOverlapHours(start,end,range){
+  if(start===null||end===null)return 0;
+  return Math.max(0,Math.min(end,range.end)-Math.max(start,range.start));
+}
+function reportAbsDateLabel(absHour){
+  const d=reportDateForDayIdx(Math.floor(absHour/24));
+  return d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'});
+}
 function parseInventoryDate(value){
   const s=String(value||'').trim();
   if(!s)return null;
@@ -3085,8 +3118,9 @@ function operatorCoverageEnd(absStart){
   return covered.length?Math.max(...covered):absStart;
 }
 function collectReportMetrics(dayIdxs){
-  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[];
-  dayIdxs.forEach(d=>{
+  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedRange=reportSelectedAbsRange();
+  const scanDayIdxs=[...Array(weekMode)].map((_,i)=>i);
+  scanDayIdxs.forEach(d=>{
     const day=days[d];if(!day)return;
     ['p1','p2'].forEach(pid=>{
       (pid==='p1'?day.p1:day.p2).forEach(c=>{
@@ -3095,14 +3129,19 @@ function collectReportMetrics(dayIdxs){
         const est=getActualEstimate(c,act),ct=actualChargeType(c,act);
         const rows=reportRowsForChargeOrSlot(act.chargeNum,day,pid,c.n);
         const volume=rows.reduce((sum,row)=>sum+rowVolumeM3(row),0);
-        const out=act.out!==null&&act.out!==undefined?act.out:est.out;
         const done=act.out!==null&&act.out!==undefined;
-        const cycleMins=done?Math.max(0,Math.round((act.out-act.cin)*60)):null;
-        records.push({d,dayName:dNames[d],pid,n:c.n,c,act,ct,rows,volume,out,done,cycleMins,est});
+        const startAbs=reportActualStartAbs(d,act);
+        const outAbs=reportActualEndAbs(d,act,est.out);
+        const finishInRange=done&&outAbs!==null&&outAbs>=selectedRange.start&&outAbs<selectedRange.end;
+        const activeInRange=reportAbsOverlapsRange(startAbs,outAbs,selectedRange);
+        if(!finishInRange&&!activeInRange)return;
+        const cycleMins=done?Math.max(0,Math.round((outAbs-startAbs)*60)):null;
+        const dayName=done&&outAbs!==null?reportAbsDateLabel(outAbs):dNames[d];
+        records.push({d,dayName,pid,n:c.n,c,act,ct,rows,volume,out:outAbs,done,finishInRange,cycleMins,est,startAbs,outAbs});
       });
     });
   });
-  const completed=records.filter(r=>r.done);
+  const completed=records.filter(r=>r.done&&r.finishInRange);
   const byType={},byFamily={pole:{count:0,minutes:0,volume:0},fencing:{count:0,minutes:0,volume:0}};
   completed.forEach(r=>{
     addReportAgg(byType,r.ct.name,r.cycleMins,r.volume);
@@ -3116,9 +3155,10 @@ function collectReportMetrics(dayIdxs){
       addReportAgg(byFamily,r.ct.family,r.cycleMins,r.volume);
     }
   });
-  const activeHoursByPlant={p1:0,p2:0},idleHoursByPlant={p1:dayIdxs.length*24,p2:dayIdxs.length*24};
-  records.forEach(r=>{activeHoursByPlant[r.pid]+=Math.max(0,r.out-r.act.cin);});
-  ['p1','p2'].forEach(pid=>idleHoursByPlant[pid]=Math.max(0,dayIdxs.length*24-activeHoursByPlant[pid]));
+  const selectedWindowHours=Math.max(0,Math.min(selectedRange.end,weekMode*24)-Math.max(selectedRange.start,0));
+  const activeHoursByPlant={p1:0,p2:0},idleHoursByPlant={p1:selectedWindowHours,p2:selectedWindowHours};
+  records.forEach(r=>{activeHoursByPlant[r.pid]+=reportOverlapHours(r.startAbs,r.outAbs,selectedRange);});
+  ['p1','p2'].forEach(pid=>idleHoursByPlant[pid]=Math.max(0,selectedWindowHours-activeHoursByPlant[pid]));
   let shiftHours=0,processHours=0,overtimeHours=0;
   operators.forEach(op=>{if(op.shift==='off')return;const{s,e}=personTimes(op);if(s===null||e===null)return;shiftHours+=(e<s?(24-s)+e:e-s)*dayIdxs.length;});
   records.forEach(r=>{const procEnd=r.est.procEnd;processHours+=Math.max(0,procEnd-r.act.cin);const coverEnd=operatorCoverageEnd(r.act.cin);if(procEnd>coverEnd)overtimeHours+=procEnd-coverEnd;});
