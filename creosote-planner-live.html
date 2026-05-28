@@ -3191,7 +3191,7 @@ function operatorCoverageEnd(absStart){
   return covered.length?Math.max(...covered):absStart;
 }
 function collectReportMetrics(dayIdxs){
-  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedWindow=reportSelectedDateWindow();
+  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedWindow=reportSelectedDateWindow(),appCyclesByCharge={};
   const masterReportCharges=reportMasterChargeRecords(selectedWindow);
   const masterReportChargeSet=new Set(masterReportCharges.map(item=>item.charge));
   const scanDayIdxs=[...Array(weekMode)].map((_,i)=>i);
@@ -3212,8 +3212,11 @@ function collectReportMetrics(dayIdxs){
         const outDate=reportDateFromAbsHour(outAbs);
         const finishInRange=done&&reportDateInWindow(outDate,selectedWindow)&&!masterReportChargeSet.has(liveCharge);
         const activeInRange=reportDateOverlapsWindow(startDate,outDate,selectedWindow);
-        if(!finishInRange&&!activeInRange)return;
         const cycleMins=done?Math.max(0,Math.round((outAbs-startAbs)*60)):null;
+        if(done&&liveCharge&&cycleMins!==null){
+          appCyclesByCharge[liveCharge]={cycleMins,ct,startDate,outDate,pid,source:'app'};
+        }
+        if(!finishInRange&&!activeInRange)return;
         const dayName=done&&outDate?outDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}):dNames[d];
         records.push({d,dayName,pid,n:c.n,c,act,ct,rows,volume,out:outAbs,done,finishInRange,cycleMins,est,startAbs,outAbs,startDate,outDate,chargeNum:liveCharge,source:'live'});
       });
@@ -3223,7 +3226,8 @@ function collectReportMetrics(dayIdxs){
     const rows=item.rows||[];
     const volume=rows.reduce((sum,row)=>sum+rowVolumeM3(row),0);
     const family=reportMasterFamily(rows);
-    const ct={name:`${reportFamilyLabel(family)} Treatment Master`,family};
+    const appCycle=appCyclesByCharge[item.charge]||null;
+    const ct=appCycle&&appCycle.ct?appCycle.ct:{name:`${reportFamilyLabel(family)} Treatment Master`,family};
     records.push({
       d:null,
       dayName:item.date.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}),
@@ -3237,7 +3241,7 @@ function collectReportMetrics(dayIdxs){
       out:null,
       done:true,
       finishInRange:true,
-      cycleMins:null,
+      cycleMins:appCycle?appCycle.cycleMins:null,
       est:{procEnd:null},
       startAbs:null,
       outAbs:null,
