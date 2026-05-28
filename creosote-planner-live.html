@@ -2993,7 +2993,7 @@ function reportDateOverlapHours(start,end,window){
 function reportDateOverlapsWindow(start,end,window){
   return reportDateOverlapHours(start,end,window)>0;
 }
-function reportHistoryFamily(rows){
+function reportMasterFamily(rows){
   let pole=0,fencing=0;
   (rows||[]).forEach(row=>{
     const fam=rowProductFamily(row,'');
@@ -3004,6 +3004,35 @@ function reportHistoryFamily(rows){
 }
 function reportFamilyLabel(family){
   return family==='pole'?'Pole':'Fencing';
+}
+function reportMasterDate(row){
+  const raw=String(row?._plannedCharge||row?.['Column AU']||row?.['Planned charge']||row?.['Planned charge date']||'').trim();
+  if(!raw)return null;
+  let m=raw.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+  if(m){
+    const y=Number(m[3].length===2?'20'+m[3]:m[3]);
+    const d=new Date(y,Number(m[2])-1,Number(m[1]));
+    return Number.isNaN(d.getTime())?null:d;
+  }
+  m=raw.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+  if(m){
+    const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+    return Number.isNaN(d.getTime())?null:d;
+  }
+  return null;
+}
+function reportMasterChargeRecords(window){
+  const grouped={};
+  (masterAllProducts||[]).forEach(row=>{
+    const charge=normalizeChargeNumber(row&&row._chargeNumber);
+    if(!charge)return;
+    const plannedDate=reportMasterDate(row);
+    if(!reportDateInWindow(plannedDate,window))return;
+    if(!grouped[charge])grouped[charge]={charge,rows:[],date:plannedDate};
+    grouped[charge].rows.push(row);
+    if(plannedDate<grouped[charge].date)grouped[charge].date=plannedDate;
+  });
+  return Object.values(grouped).sort((a,b)=>a.date-b.date||a.charge.localeCompare(b.charge));
 }
 function parseInventoryDate(value){
   const s=String(value||'').trim();
@@ -3141,9 +3170,12 @@ function reportRowsForChargeOrSlot(chargeNum,day,pid,n){
 }
 function addReportAgg(target,key,minutes,volume){
   if(!key)return;
-  if(!target[key])target[key]={count:0,minutes:0,volume:0};
+  if(!target[key])target[key]={count:0,minutes:0,cycleCount:0,volume:0};
   target[key].count++;
-  target[key].minutes+=minutes||0;
+  if(minutes!==null&&minutes!==undefined){
+    target[key].cycleCount++;
+    target[key].minutes+=minutes||0;
+  }
   target[key].volume+=volume||0;
 }
 function operatorCoverageEnd(absStart){
@@ -3159,7 +3191,9 @@ function operatorCoverageEnd(absStart){
   return covered.length?Math.max(...covered):absStart;
 }
 function collectReportMetrics(dayIdxs){
-  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedRange=reportSelectedAbsRange(),selectedWindow=reportSelectedDateWindow();
+  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedWindow=reportSelectedDateWindow();
+  const masterReportCharges=reportMasterChargeRecords(selectedWindow);
+  const masterReportChargeSet=new Set(masterReportCharges.map(item=>item.charge));
   const scanDayIdxs=[...Array(weekMode)].map((_,i)=>i);
   scanDayIdxs.forEach(d=>{
     const day=days[d];if(!day)return;
@@ -3171,55 +3205,47 @@ function collectReportMetrics(dayIdxs){
         const rows=reportRowsForChargeOrSlot(act.chargeNum,day,pid,c.n);
         const volume=rows.reduce((sum,row)=>sum+rowVolumeM3(row),0);
         const done=act.out!==null&&act.out!==undefined;
+        const liveCharge=normalizeChargeNumber(act.chargeNum);
         const startAbs=reportActualStartAbs(d,act);
         const outAbs=reportActualEndAbs(d,act,est.out);
         const startDate=reportDateFromAbsHour(startAbs);
         const outDate=reportDateFromAbsHour(outAbs);
-        const finishInRange=done&&reportDateInWindow(outDate,selectedWindow);
+        const finishInRange=done&&reportDateInWindow(outDate,selectedWindow)&&!masterReportChargeSet.has(liveCharge);
         const activeInRange=reportDateOverlapsWindow(startDate,outDate,selectedWindow);
         if(!finishInRange&&!activeInRange)return;
         const cycleMins=done?Math.max(0,Math.round((outAbs-startAbs)*60)):null;
         const dayName=done&&outDate?outDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}):dNames[d];
-        records.push({d,dayName,pid,n:c.n,c,act,ct,rows,volume,out:outAbs,done,finishInRange,cycleMins,est,startAbs,outAbs,startDate,outDate,chargeNum:normalizeChargeNumber(act.chargeNum)});
+        records.push({d,dayName,pid,n:c.n,c,act,ct,rows,volume,out:outAbs,done,finishInRange,cycleMins,est,startAbs,outAbs,startDate,outDate,chargeNum:liveCharge,source:'live'});
       });
     });
   });
-  const seenCharges=new Set(records.map(r=>r.chargeNum).filter(Boolean));
-  Object.values(chargeHistory2026||{}).forEach(h=>{
-    const key=normalizeChargeNumber(h&&h.chargeNum);
-    if(!key||seenCharges.has(key))return;
-    const startDate=new Date(h.start),outDate=new Date(h.end);
-    if(Number.isNaN(startDate.getTime())||Number.isNaN(outDate.getTime()))return;
-    if(outDate<=new Date(startDate.getTime()+60000))return;
-    if(!reportDateInWindow(outDate,selectedWindow))return;
-    const rows=masterProductsByCharge[key]||[];
+  masterReportCharges.forEach(item=>{
+    const rows=item.rows||[];
     const volume=rows.reduce((sum,row)=>sum+rowVolumeM3(row),0);
-    const family=reportHistoryFamily(rows);
-    const cycleMins=Math.max(0,Math.round((outDate-startDate)/60000));
-    const ct={name:`${reportFamilyLabel(family)} historical`,family};
+    const family=reportMasterFamily(rows);
+    const ct={name:`${reportFamilyLabel(family)} Treatment Master`,family};
     records.push({
       d:null,
-      dayName:outDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}),
-      pid:h.plant||'p1',
+      dayName:item.date.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}),
+      pid:plantForMasterRows(rows,'p1'),
       n:null,
       c:{n:null},
-      act:{chargeNum:key,cin:null,out:null,source:'history'},
+      act:{chargeNum:item.charge,cin:null,out:null,source:'treatment-master'},
       ct,
       rows,
       volume,
       out:null,
       done:true,
       finishInRange:true,
-      cycleMins,
+      cycleMins:null,
       est:{procEnd:null},
       startAbs:null,
       outAbs:null,
-      startDate,
-      outDate,
-      chargeNum:key,
-      source:'history'
+      startDate:item.date,
+      outDate:item.date,
+      chargeNum:item.charge,
+      source:'treatment-master'
     });
-    seenCharges.add(key);
   });
   const completed=records.filter(r=>r.done&&r.finishInRange);
   const byType={},byFamily={pole:{count:0,minutes:0,volume:0},fencing:{count:0,minutes:0,volume:0}};
@@ -3242,7 +3268,7 @@ function collectReportMetrics(dayIdxs){
   let shiftHours=0,processHours=0,overtimeHours=0;
   const selectedDayCount=Math.ceil(selectedWindowHours/24);
   operators.forEach(op=>{if(op.shift==='off')return;const{s,e}=personTimes(op);if(s===null||e===null)return;shiftHours+=(e<s?(24-s)+e:e-s)*selectedDayCount;});
-  records.forEach(r=>{const procEnd=r.est.procEnd;processHours+=Math.max(0,procEnd-r.act.cin);const coverEnd=operatorCoverageEnd(r.act.cin);if(procEnd>coverEnd)overtimeHours+=procEnd-coverEnd;});
+  records.filter(r=>r.source!=='treatment-master').forEach(r=>{const procEnd=r.est.procEnd;processHours+=Math.max(0,procEnd-r.act.cin);const coverEnd=operatorCoverageEnd(r.act.cin);if(procEnd>coverEnd)overtimeHours+=procEnd-coverEnd;});
   const totalVolume=completed.reduce((sum,r)=>sum+r.volume,0),dailyVolume={};
   completed.forEach(r=>{
     const key=r.dayName;
@@ -3254,7 +3280,8 @@ function collectReportMetrics(dayIdxs){
       dailyVolume[key][r.ct.family]=(dailyVolume[key][r.ct.family]||0)+r.volume;
     }
   });
-  const avgCycle=completed.length?Math.round(completed.reduce((s,r)=>s+r.cycleMins,0)/completed.length):null;
+  const cycleRecords=completed.filter(r=>r.cycleMins!==null&&r.cycleMins!==undefined);
+  const avgCycle=cycleRecords.length?Math.round(cycleRecords.reduce((s,r)=>s+r.cycleMins,0)/cycleRecords.length):null;
   return {days,dayIdxs,records,completed,byType,byFamily,activeHoursByPlant,idleHoursByPlant,shiftHours,processHours,overtimeHours,totalVolume,dailyVolume,avgCycle};
 }
 function fmtM3(v){return `${(Math.round((v||0)*10)/10).toLocaleString('en-GB')} m3`;}
@@ -3280,17 +3307,17 @@ function treatmentReportRangeNote(dayIdxs){
   const selected=reportSelectedDateRange();
   if(reportTab!=='treatment')return '';
   if(!dayIdxs.length){
-    return `<div class="report-card" style="border-color:rgba(64,130,109,.35);"><div class="report-title"><i class="ti ti-history"></i>Historical treatment range</div><div class="report-email-note">This range is outside the current planner week, so completed charges are taken from the 2026 charge history and matched back to Treatment Master charge numbers for AK m3 totals.</div></div>`;
+    return `<div class="report-card" style="border-color:rgba(64,130,109,.35);"><div class="report-title"><i class="ti ti-database"></i>Treatment Master range</div><div class="report-email-note">This range is outside the current planner week, so treated volume is calculated directly from Treatment Master: AU date, AV charge number, AK m3 and M product range.</div></div>`;
   }
   if(selected.from<weekStart||selected.to>weekEnd){
-    return `<div class="report-card" style="border-color:rgba(64,130,109,.35);"><div class="report-title"><i class="ti ti-info-circle"></i>Combined live and historical range</div><div class="report-email-note">Current-week live logs are combined with the 2026 charge history. Volume still comes from Treatment Master column AK by charge number.</div></div>`;
+    return `<div class="report-card" style="border-color:rgba(64,130,109,.35);"><div class="report-title"><i class="ti ti-info-circle"></i>Treatment Master range</div><div class="report-email-note">The volume report is using Treatment Master rows directly across the selected range. Current live logs are only used where a charge is not yet represented by Treatment Master.</div></div>`;
   }
   return '';
 }
 function reportRowsFromAgg(agg,empty){
   const rows=Object.entries(agg).sort((a,b)=>b[1].count-a[1].count);
   if(!rows.length)return `<tr><td colspan="4">${empty}</td></tr>`;
-  return rows.map(([name,v])=>`<tr><td>${escHtml(name)}</td><td>${v.count}</td><td>${v.count?fmins(Math.round(v.minutes/v.count)):'-'}</td><td>${fmtM3(v.volume)}</td></tr>`).join('');
+  return rows.map(([name,v])=>`<tr><td>${escHtml(name)}</td><td>${v.count}</td><td>${v.cycleCount?fmins(Math.round(v.minutes/v.cycleCount)):'-'}</td><td>${fmtM3(v.volume)}</td></tr>`).join('');
 }
 function masterM3HealthHtml(){
   const rows=masterAllProducts||[];
@@ -3312,7 +3339,7 @@ function masterM3HealthHtml(){
       <tr><td>Volume source</td><td>${volLabel}</td></tr>
       <tr><td>Range source</td><td>${rangeLabel}</td></tr>
     </tbody></table>
-    <div class="report-email-note">Report m3 totals use AK per product row. Pole/Fencing split uses M per product row. Treated m3 appears once the charge has a finish time.</div>
+    <div class="report-email-note">Report m3 totals use AK per product row, filtered by AU date and valid AV charge number. Pole/Fencing split uses M per product row.</div>
   </div>`;
 }
 function buildReport(){
@@ -3364,10 +3391,10 @@ function buildReport(){
   ${masterM3HealthHtml()}
   <div class="report-split">
     <div class="report-card"><div class="report-title"><i class="ti ti-gauge"></i>Cycle time by charge type</div><table class="report-table-mini"><thead><tr><th>Charge type</th><th>Done</th><th>Avg cycle</th><th>m3</th></tr></thead><tbody>${reportRowsFromAgg(m.byType,'No completed charges in this period')}</tbody></table></div>
-    <div class="report-card"><div class="report-title"><i class="ti ti-stack-2"></i>Pole vs fencing</div><table class="report-table-mini"><thead><tr><th>Range</th><th>Done</th><th>Avg cycle</th><th>m3</th></tr></thead><tbody><tr><td>Pole charge types</td><td>${pole.count}</td><td>${pole.count?fmins(Math.round(pole.minutes/pole.count)):'-'}</td><td>${fmtM3(pole.volume)}</td></tr><tr><td>Fencing charge types</td><td>${fencing.count}</td><td>${fencing.count?fmins(Math.round(fencing.minutes/fencing.count)):'-'}</td><td>${fmtM3(fencing.volume)}</td></tr></tbody></table></div>
+    <div class="report-card"><div class="report-title"><i class="ti ti-stack-2"></i>Pole vs fencing</div><table class="report-table-mini"><thead><tr><th>Range</th><th>Done</th><th>Avg cycle</th><th>m3</th></tr></thead><tbody><tr><td>Pole charge types</td><td>${pole.count}</td><td>${pole.cycleCount?fmins(Math.round(pole.minutes/pole.cycleCount)):'-'}</td><td>${fmtM3(pole.volume)}</td></tr><tr><td>Fencing charge types</td><td>${fencing.count}</td><td>${fencing.cycleCount?fmins(Math.round(fencing.minutes/fencing.cycleCount)):'-'}</td><td>${fmtM3(fencing.volume)}</td></tr></tbody></table></div>
   </div>
   <div class="report-split">
-    <div class="report-card"><div class="report-title"><i class="ti ti-building-factory"></i>Plant utilisation</div><table class="report-table-mini"><thead><tr><th>Plant</th><th>Active</th><th>Idle</th><th>Utilisation</th></tr></thead><tbody><tr><td>Plant 1</td><td>${fmins(Math.round(m.activeHoursByPlant.p1*60))}</td><td>${fmins(Math.round(m.idleHoursByPlant.p1*60))}</td><td>${fmtPct(m.activeHoursByPlant.p1/(dayIdxs.length*24)*100)}</td></tr><tr><td>Plant 2</td><td>${fmins(Math.round(m.activeHoursByPlant.p2*60))}</td><td>${fmins(Math.round(m.idleHoursByPlant.p2*60))}</td><td>${fmtPct(m.activeHoursByPlant.p2/(dayIdxs.length*24)*100)}</td></tr></tbody></table></div>
+    <div class="report-card"><div class="report-title"><i class="ti ti-building-factory"></i>Plant utilisation</div><table class="report-table-mini"><thead><tr><th>Plant</th><th>Active</th><th>Idle</th><th>Utilisation</th></tr></thead><tbody><tr><td>Plant 1</td><td>${fmins(Math.round(m.activeHoursByPlant.p1*60))}</td><td>${fmins(Math.round(m.idleHoursByPlant.p1*60))}</td><td>${fmtPct(reportHours?m.activeHoursByPlant.p1/reportHours*100:0)}</td></tr><tr><td>Plant 2</td><td>${fmins(Math.round(m.activeHoursByPlant.p2*60))}</td><td>${fmins(Math.round(m.idleHoursByPlant.p2*60))}</td><td>${fmtPct(reportHours?m.activeHoursByPlant.p2/reportHours*100:0)}</td></tr></tbody></table></div>
     <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily m3 breakdown</div><table class="report-table-mini"><thead><tr><th>Day</th><th>Total</th><th>Pole</th><th>Fencing</th></tr></thead><tbody>${Object.entries(m.dailyVolume).map(([day,v])=>`<tr><td>${escHtml(day)}</td><td>${fmtM3(v.total)}</td><td>${fmtM3(v.pole||0)}</td><td>${fmtM3(v.fencing||0)}</td></tr>`).join('')||'<tr><td colspan="4">No treated volume yet</td></tr>'}</tbody></table></div>
   </div>
   <div class="report-card"><div class="report-title"><i class="ti ti-mail-forward"></i>Email reporting</div><div class="report-email-note">This view prepares the email body now. Fully automatic daily, weekly and monthly sending needs the same report payload connected to Apps Script or a small hosted backend with scheduled triggers.</div></div>`;
@@ -3427,9 +3454,10 @@ function prepareReportEmail(){
   const dayIdxs=reportSelectedDayIndexes(),m=collectReportMetrics(dayIdxs);
   const periodLabel=reportEmailPeriodLabel(dayIdxs);
   const pole=m.byFamily.pole||{count:0,minutes:0,volume:0},fencing=m.byFamily.fencing||{count:0,minutes:0,volume:0};
-  const idleTotal=m.idleHoursByPlant.p1+m.idleHoursByPlant.p2,activeTotal=m.activeHoursByPlant.p1+m.activeHoursByPlant.p2,totalCap=dayIdxs.length*24*2;
+  const reportHours=Math.max(0,(reportSelectedDateWindow().end-reportSelectedDateWindow().start)/3600000);
+  const idleTotal=m.idleHoursByPlant.p1+m.idleHoursByPlant.p2,activeTotal=m.activeHoursByPlant.p1+m.activeHoursByPlant.p2,totalCap=reportHours*2;
   const subject=`Creosote treatment report - ${periodLabel}`;
-  const lines=[`Creosote treatment report: ${periodLabel}`,'',`Completed charges: ${m.completed.length}`,`Average cycle time: ${m.avgCycle?fmins(m.avgCycle):'-'}`,`Total treated volume: ${fmtM3(m.totalVolume)}`,`Pole m3: ${fmtM3(pole.volume)} (${pole.count} charges, avg ${pole.count?fmins(Math.round(pole.minutes/pole.count)):'-'})`,`Fencing m3: ${fmtM3(fencing.volume)} (${fencing.count} charges, avg ${fencing.count?fmins(Math.round(fencing.minutes/fencing.count)):'-'})`,`Plant utilisation: ${fmtPct(totalCap?activeTotal/totalCap*100:0)}`,`Plant idle time: ${fmins(Math.round(idleTotal*60))}`,`Operator shift utilisation: ${fmtPct(m.shiftHours?m.processHours/m.shiftHours*100:0)}`,`Predicted operator overtime: ${fmins(Math.round(m.overtimeHours*60))}`];
+  const lines=[`Creosote treatment report: ${periodLabel}`,'',`Completed charges: ${m.completed.length}`,`Average cycle time: ${m.avgCycle?fmins(m.avgCycle):'-'}`,`Total treated volume: ${fmtM3(m.totalVolume)}`,`Pole m3: ${fmtM3(pole.volume)} (${pole.count} charges, avg ${pole.cycleCount?fmins(Math.round(pole.minutes/pole.cycleCount)):'-'})`,`Fencing m3: ${fmtM3(fencing.volume)} (${fencing.count} charges, avg ${fencing.cycleCount?fmins(Math.round(fencing.minutes/fencing.cycleCount)):'-'})`,`Plant utilisation: ${fmtPct(totalCap?activeTotal/totalCap*100:0)}`,`Plant idle time: ${fmins(Math.round(idleTotal*60))}`,`Operator shift utilisation: ${fmtPct(m.shiftHours?m.processHours/m.shiftHours*100:0)}`,`Predicted operator overtime: ${fmins(Math.round(m.overtimeHours*60))}`];
   window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
 }
 
