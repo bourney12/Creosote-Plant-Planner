@@ -2964,6 +2964,47 @@ function reportAbsDateLabel(absHour){
   const d=reportDateForDayIdx(Math.floor(absHour/24));
   return d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'});
 }
+function reportSelectedDateWindow(){
+  const selected=reportSelectedDateRange();
+  let from=selected.from,to=selected.to;
+  if(Number.isNaN(from.getTime()))from=reportWeekMonday();
+  if(Number.isNaN(to.getTime()))to=from;
+  if(to<from){const tmp=from;from=to;to=tmp;}
+  const start=new Date(from);start.setHours(0,0,0,0);
+  const end=new Date(to);end.setHours(0,0,0,0);end.setDate(end.getDate()+1);
+  return {start,end};
+}
+function reportDateFromAbsHour(absHour){
+  if(absHour===null||absHour===undefined)return null;
+  const dayIdx=Math.floor(absHour/24);
+  const hour=absHour-dayIdx*24;
+  const d=reportDateForDayIdx(dayIdx);
+  const h=Math.floor(hour),mins=Math.round((hour-h)*60);
+  d.setHours(h,mins,0,0);
+  return d;
+}
+function reportDateInWindow(date,window){
+  return date&&date>=window.start&&date<window.end;
+}
+function reportDateOverlapHours(start,end,window){
+  if(!start||!end)return 0;
+  return Math.max(0,(Math.min(end.getTime(),window.end.getTime())-Math.max(start.getTime(),window.start.getTime()))/3600000);
+}
+function reportDateOverlapsWindow(start,end,window){
+  return reportDateOverlapHours(start,end,window)>0;
+}
+function reportHistoryFamily(rows){
+  let pole=0,fencing=0;
+  (rows||[]).forEach(row=>{
+    const fam=rowProductFamily(row,'');
+    if(fam==='pole')pole+=rowVolumeM3(row)||1;
+    if(fam==='fencing')fencing+=rowVolumeM3(row)||1;
+  });
+  return pole>fencing?'pole':'fencing';
+}
+function reportFamilyLabel(family){
+  return family==='pole'?'Pole':'Fencing';
+}
 function parseInventoryDate(value){
   const s=String(value||'').trim();
   if(!s)return null;
@@ -3118,7 +3159,7 @@ function operatorCoverageEnd(absStart){
   return covered.length?Math.max(...covered):absStart;
 }
 function collectReportMetrics(dayIdxs){
-  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedRange=reportSelectedAbsRange();
+  const days=computeWeek(),dNames=weekMode===5?DAYS_5:DAYS_7,records=[],selectedRange=reportSelectedAbsRange(),selectedWindow=reportSelectedDateWindow();
   const scanDayIdxs=[...Array(weekMode)].map((_,i)=>i);
   scanDayIdxs.forEach(d=>{
     const day=days[d];if(!day)return;
@@ -3132,14 +3173,53 @@ function collectReportMetrics(dayIdxs){
         const done=act.out!==null&&act.out!==undefined;
         const startAbs=reportActualStartAbs(d,act);
         const outAbs=reportActualEndAbs(d,act,est.out);
-        const finishInRange=done&&outAbs!==null&&outAbs>=selectedRange.start&&outAbs<selectedRange.end;
-        const activeInRange=reportAbsOverlapsRange(startAbs,outAbs,selectedRange);
+        const startDate=reportDateFromAbsHour(startAbs);
+        const outDate=reportDateFromAbsHour(outAbs);
+        const finishInRange=done&&reportDateInWindow(outDate,selectedWindow);
+        const activeInRange=reportDateOverlapsWindow(startDate,outDate,selectedWindow);
         if(!finishInRange&&!activeInRange)return;
         const cycleMins=done?Math.max(0,Math.round((outAbs-startAbs)*60)):null;
-        const dayName=done&&outAbs!==null?reportAbsDateLabel(outAbs):dNames[d];
-        records.push({d,dayName,pid,n:c.n,c,act,ct,rows,volume,out:outAbs,done,finishInRange,cycleMins,est,startAbs,outAbs});
+        const dayName=done&&outDate?outDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}):dNames[d];
+        records.push({d,dayName,pid,n:c.n,c,act,ct,rows,volume,out:outAbs,done,finishInRange,cycleMins,est,startAbs,outAbs,startDate,outDate,chargeNum:normalizeChargeNumber(act.chargeNum)});
       });
     });
+  });
+  const seenCharges=new Set(records.map(r=>r.chargeNum).filter(Boolean));
+  Object.values(chargeHistory2026||{}).forEach(h=>{
+    const key=normalizeChargeNumber(h&&h.chargeNum);
+    if(!key||seenCharges.has(key))return;
+    const startDate=new Date(h.start),outDate=new Date(h.end);
+    if(Number.isNaN(startDate.getTime())||Number.isNaN(outDate.getTime()))return;
+    if(outDate<=new Date(startDate.getTime()+60000))return;
+    if(!reportDateInWindow(outDate,selectedWindow))return;
+    const rows=masterProductsByCharge[key]||[];
+    const volume=rows.reduce((sum,row)=>sum+rowVolumeM3(row),0);
+    const family=reportHistoryFamily(rows);
+    const cycleMins=Math.max(0,Math.round((outDate-startDate)/60000));
+    const ct={name:`${reportFamilyLabel(family)} historical`,family};
+    records.push({
+      d:null,
+      dayName:outDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}),
+      pid:h.plant||'p1',
+      n:null,
+      c:{n:null},
+      act:{chargeNum:key,cin:null,out:null,source:'history'},
+      ct,
+      rows,
+      volume,
+      out:null,
+      done:true,
+      finishInRange:true,
+      cycleMins,
+      est:{procEnd:null},
+      startAbs:null,
+      outAbs:null,
+      startDate,
+      outDate,
+      chargeNum:key,
+      source:'history'
+    });
+    seenCharges.add(key);
   });
   const completed=records.filter(r=>r.done&&r.finishInRange);
   const byType={},byFamily={pole:{count:0,minutes:0,volume:0},fencing:{count:0,minutes:0,volume:0}};
@@ -3155,12 +3235,13 @@ function collectReportMetrics(dayIdxs){
       addReportAgg(byFamily,r.ct.family,r.cycleMins,r.volume);
     }
   });
-  const selectedWindowHours=Math.max(0,Math.min(selectedRange.end,weekMode*24)-Math.max(selectedRange.start,0));
+  const selectedWindowHours=Math.max(0,(selectedWindow.end-selectedWindow.start)/3600000);
   const activeHoursByPlant={p1:0,p2:0},idleHoursByPlant={p1:selectedWindowHours,p2:selectedWindowHours};
-  records.forEach(r=>{activeHoursByPlant[r.pid]+=reportOverlapHours(r.startAbs,r.outAbs,selectedRange);});
+  records.forEach(r=>{activeHoursByPlant[r.pid]+=reportDateOverlapHours(r.startDate,r.outDate,selectedWindow);});
   ['p1','p2'].forEach(pid=>idleHoursByPlant[pid]=Math.max(0,selectedWindowHours-activeHoursByPlant[pid]));
   let shiftHours=0,processHours=0,overtimeHours=0;
-  operators.forEach(op=>{if(op.shift==='off')return;const{s,e}=personTimes(op);if(s===null||e===null)return;shiftHours+=(e<s?(24-s)+e:e-s)*dayIdxs.length;});
+  const selectedDayCount=Math.ceil(selectedWindowHours/24);
+  operators.forEach(op=>{if(op.shift==='off')return;const{s,e}=personTimes(op);if(s===null||e===null)return;shiftHours+=(e<s?(24-s)+e:e-s)*selectedDayCount;});
   records.forEach(r=>{const procEnd=r.est.procEnd;processHours+=Math.max(0,procEnd-r.act.cin);const coverEnd=operatorCoverageEnd(r.act.cin);if(procEnd>coverEnd)overtimeHours+=procEnd-coverEnd;});
   const totalVolume=completed.reduce((sum,r)=>sum+r.volume,0),dailyVolume={};
   completed.forEach(r=>{
@@ -3199,10 +3280,10 @@ function treatmentReportRangeNote(dayIdxs){
   const selected=reportSelectedDateRange();
   if(reportTab!=='treatment')return '';
   if(!dayIdxs.length){
-    return `<div class="report-card" style="border-color:rgba(232,147,71,.45);"><div class="report-title"><i class="ti ti-alert-triangle"></i>Treatment range outside active planner week</div><div class="report-email-note">Treatment reports use the currently loaded planner week only: ${weekStart.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} to ${weekEnd.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}. The selected period is ${reportRangeLabel(dayIdxs)}, so no treatment records are available from this screen.</div></div>`;
+    return `<div class="report-card" style="border-color:rgba(64,130,109,.35);"><div class="report-title"><i class="ti ti-history"></i>Historical treatment range</div><div class="report-email-note">This range is outside the current planner week, so completed charges are taken from the 2026 charge history and matched back to Treatment Master charge numbers for AK m3 totals.</div></div>`;
   }
   if(selected.from<weekStart||selected.to>weekEnd){
-    return `<div class="report-card" style="border-color:rgba(232,147,71,.35);"><div class="report-title"><i class="ti ti-info-circle"></i>Partial treatment range</div><div class="report-email-note">Treatment data is available only for the active planner week: ${weekStart.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} to ${weekEnd.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}. This report includes the overlapping loaded days only.</div></div>`;
+    return `<div class="report-card" style="border-color:rgba(64,130,109,.35);"><div class="report-title"><i class="ti ti-info-circle"></i>Combined live and historical range</div><div class="report-email-note">Current-week live logs are combined with the 2026 charge history. Volume still comes from Treatment Master column AK by charge number.</div></div>`;
   }
   return '';
 }
@@ -3266,7 +3347,8 @@ function buildReport(){
     document.getElementById('report-dashboard-body').innerHTML=buildRejectDashboard();
     return;
   }
-  const totalCap=dayIdxs.length*24*2,activeTotal=m.activeHoursByPlant.p1+m.activeHoursByPlant.p2,idleTotal=m.idleHoursByPlant.p1+m.idleHoursByPlant.p2;
+  const reportHours=Math.max(0,(reportSelectedDateWindow().end-reportSelectedDateWindow().start)/3600000);
+  const totalCap=reportHours*2,activeTotal=m.activeHoursByPlant.p1+m.activeHoursByPlant.p2,idleTotal=m.idleHoursByPlant.p1+m.idleHoursByPlant.p2;
   const pole=m.byFamily.pole||{count:0,minutes:0,volume:0},fencing=m.byFamily.fencing||{count:0,minutes:0,volume:0};
   document.getElementById('report-dashboard-body').innerHTML=`<div class="report-dashboard-grid">
     <div class="metric-card" style="--accent-bar:var(--green)"><div class="metric-label">Report period</div><div class="metric-value" style="font-size:18px;">${reportRangeLabel(dayIdxs)}</div><div class="metric-sub">${m.records.length} logged, ${m.completed.length} completed</div></div>
