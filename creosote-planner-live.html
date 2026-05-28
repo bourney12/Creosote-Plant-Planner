@@ -1705,7 +1705,14 @@ function buildPoleForecast(){
       <table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Planned qty</th><th>M3</th></tr></thead><tbody>${products||'<tr><td colspan="4">No product rows returned for this shed.</td></tr>'}</tbody></table>
     </div>`;
   }).join('');
-  const unmatched=pf.diagnostics&&pf.diagnostics.unmatchedProducts&&pf.diagnostics.unmatchedProducts.length?`<div class="pole-warning"><b>${pf.diagnostics.unmatchedProducts.length} product code${pf.diagnostics.unmatchedProducts.length===1?'':'s'} missing PMF cubic metres.</b> ${pf.diagnostics.unmatchedProducts.slice(0,8).map(escHtml).join(', ')}</div>`:'';
+  const unmatchedRows=selectedRows.filter(r=>r.cubeMissing);
+  const unmatchedTable=unmatchedRows.length?`<div class="report-card">
+    <div class="report-title"><i class="ti ti-alert-triangle"></i>Missing PMF cubic metres for selected day</div>
+    <div class="report-email-note">${unmatchedRows.length} routing line${unmatchedRows.length===1?'':'s'} on ${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long'}))} did not match PMF Associated Data column C.</div>
+    <table class="report-table-mini"><thead><tr><th>Shed</th><th>Code</th><th>Product</th><th>Planned qty</th><th>Routing row</th></tr></thead><tbody>
+      ${unmatchedRows.map(r=>`<tr><td>${escHtml(r.shed||'')}</td><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td><td>${escHtml(r.rowNumber||'')}</td></tr>`).join('')}
+    </tbody></table>
+  </div>`:'';
   host.innerHTML=`<div class="report-dashboard-toolbar">
     <div class="report-control"><label>Planned day</label><select onchange="setPoleForecastDay(Number(this.value))">${dayOptions}</select></div>
     <div class="report-control"><label>Average charge m3</label><input type="number" min="1" step="0.5" value="${escHtml(avgCharge)}" onchange="setPoleForecastAvg(this.value)"></div>
@@ -1719,7 +1726,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Product lines</div><div class="pole-forecast-value">${selectedRows.length}</div><div class="pole-forecast-sub">Product from J, code from L</div></div>
   </div>
   ${shedCards||`<div class="report-card"><div class="report-title"><i class="ti ti-calendar-x"></i>No pole production found for this day</div><div class="report-email-note">No Routings Master rows were returned for ${escHtml(selectedDay.date||selectedKey)}. If products are planned on that date, the bridge is not seeing them in the Shadow Date column.</div></div>`}
-  ${unmatched}
+  ${unmatchedTable}
   <div class="report-email-note">Cubic metres are matched from PMF Associated Data column C product code and column E cubic metres.</div>`;
 }
 function loadJsonp(url,params={}){
