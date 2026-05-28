@@ -301,6 +301,22 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
 .pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
 @media(max-width:900px){.pole-chart-pair{grid-template-columns:1fr;}.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-charge-grid{grid-template-columns:repeat(2,minmax(140px,1fr));}}
+.green-day-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0;}
+.green-day-tab{border:1px solid var(--border);background:var(--bg2);border-radius:var(--radius);padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3);cursor:pointer;}
+.green-day-tab.active{border-color:rgba(47,125,72,.45);background:rgba(47,125,72,.1);color:var(--green);font-weight:700;}
+.green-board-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+.green-plant-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;min-width:0;}
+.green-plant-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.green-plant-title{font-size:16px;font-weight:800;color:var(--text);}
+.green-plant-total{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.green-charge-card{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--radius-lg);padding:10px;margin-bottom:10px;}
+.green-charge-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.green-charge-count{font-family:var(--mono);font-size:10px;color:var(--text3);font-weight:600;}
+.green-product-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:7px 0;border-top:1px solid var(--border);}
+.green-product-name{font-size:12px;font-weight:650;color:var(--text);line-height:1.3;}
+.green-product-meta{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;text-align:right;}
+.green-empty{padding:18px;border:1px dashed var(--border2);border-radius:var(--radius-lg);color:var(--text3);font-size:12px;text-align:center;background:var(--bg);}
+@media(max-width:900px){.green-board-grid{grid-template-columns:1fr;}}
 @media(max-width:900px){.report-split{grid-template-columns:1fr;}.report-dashboard-toolbar{align-items:stretch}.report-control{min-width:100%;}}
 .report-section{margin-bottom:24px;}
 .report-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
@@ -580,6 +596,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="nav-item" onclick="showPanel('live-board')"><i class="ti ti-screen-share"></i>Live board</div>
     <div class="nav-item" onclick="showPanel('report')"><i class="ti ti-report-analytics"></i>Reports dashboard</div>
     <div class="nav-item" onclick="showPanel('pole-forecast')"><i class="ti ti-chart-bar"></i>Pole forecast</div>
+    <div class="nav-item" onclick="showPanel('green-treatment')"><i class="ti ti-leaf"></i>Green treatment</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Plan</div>
@@ -710,6 +727,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="sec-title">Automated pole charge forecast</div>
   <div class="sec-sub">Routings Master production demand matched to PMF cube data</div>
   <div id="pole-forecast-content"></div>
+</div>
+
+<!-- GREEN TREATMENT -->
+<div class="panel" id="panel-green-treatment">
+  <img class="panel-brand-watermark" src="assets/rundvirke-poles-logo.svg" alt="">
+  <div class="sec-title">Green treatment</div>
+  <div class="sec-sub">Planned WTT and Hickson charges from Treatment Schedule Master</div>
+  <div id="green-treatment-content"></div>
 </div>
 
 <!-- BOTTLENECKS -->
@@ -963,7 +988,7 @@ const SHIFT_DEFS={
 const MASTER_SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/export?format=csv&gid=115405406';
 const MASTER_BRIDGE_STORAGE_KEY='creosote_master_bridge_url';
 const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec';
-const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v8';
+const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v9';
 const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
 const MASTER_CACHE_FRESH_MS=60000;
@@ -973,10 +998,12 @@ let masterProductsByCharge={};
 let masterUnassignedProducts=[];
 let masterAllProducts=[];
 let masterPlannedSchedule=[];
+let masterGreenTreatment=[];
 let masterPoleForecast={ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
 let poleForecastDayIdx=(new Date().getDay()+6)%7;
 let poleForecastAvgM3=Number(localStorage.getItem('creosote_pole_forecast_avg_m3')||38);
 let poleForecastTab='dashboard';
+let greenTreatmentDayIdx=(new Date().getDay()+6)%7;
 let masterInventoryMovements=[];
 let masterSlotsCache={};
 let masterSync={state:'warn',msg:'Master sheet not loaded',last:null};
@@ -1109,16 +1136,17 @@ function showPanel(t){
   if(accessMode==='operator'&&t!=='live-log')t='live-log';
   if(accessMode==='board'&&t!=='live-board')t='live-board';
   activePanel=t;
-  const all=['week','live-log','live-board','report','pole-forecast','bottlenecks','table','days','charge-types','equipment','operators','cranes','tippers','noise'];
+  const all=['week','live-log','live-board','report','pole-forecast','green-treatment','bottlenecks','table','days','charge-types','equipment','operators','cranes','tippers','noise'];
   all.forEach(p=>{const el=document.getElementById('panel-'+p);if(el)el.classList.toggle('active',p===t);});
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const map={week:4,bottlenecks:5,table:6,'live-log':0,'live-board':1,report:2,'pole-forecast':3,days:7,'charge-types':8,equipment:9,operators:10,cranes:11,tippers:12,noise:13};
+  const map={week:5,bottlenecks:6,table:7,'live-log':0,'live-board':1,report:2,'pole-forecast':3,'green-treatment':4,days:8,'charge-types':9,equipment:10,operators:11,cranes:12,tippers:13,noise:14};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[t]])items[map[t]].classList.add('active');
   if(t==='live-log')buildLogPanel();
   if(t==='live-board')buildLiveBoard();
   if(t==='report')buildReport();
   if(t==='pole-forecast')buildPoleForecast();
+  if(t==='green-treatment')buildGreenTreatment();
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function ph2(v){if(!v)return null;const[h,m]=v.split(':').map(Number);return h+m/60;}
@@ -1579,6 +1607,7 @@ function applyMasterPayload(data,sourceLabel){
   const hasLoadedSlotFeed=Array.isArray(data.allProducts)||Array.isArray(data.unassignedProducts);
   masterAllProducts=Array.isArray(data.allProducts)&&data.allProducts.length?data.allProducts:[...groupedRows,...masterUnassignedProducts];
   masterPlannedSchedule=Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts:[];
+  masterGreenTreatment=Array.isArray(data.greenTreatmentProducts)?data.greenTreatmentProducts:[];
   masterPoleForecast=data.poleForecast||{ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
   if(Array.isArray(data.inventoryMovements)){
     masterInventoryMovements=data.inventoryMovements;
@@ -1592,7 +1621,7 @@ function applyMasterPayload(data,sourceLabel){
     const raw=String(row?._productRange||row?.ProductRange||row?.['Product range']||row?.['Column M']||'').toLowerCase();
     return raw.includes('pole')||raw.includes('fenc');
   }).length;
-  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
+  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,greenTreatmentProducts:masterGreenTreatment,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
   return {count:Object.keys(masterProductsByCharge).length,hasLoadedSlotFeed,volumeRowCount,rangeRowCount};
 }
 function saveMasterCache(){
@@ -1602,6 +1631,7 @@ function saveMasterCache(){
       unassignedProducts:masterUnassignedProducts,
       allProducts:masterAllProducts,
       plannedScheduleProducts:masterPlannedSchedule,
+      greenTreatmentProducts:masterGreenTreatment,
       poleForecast:masterPoleForecast,
       inventoryMovements:masterInventoryMovements,
       columnMap:masterColumnMap,
@@ -1612,7 +1642,7 @@ function saveMasterCache(){
 }
 function masterPayloadRowCount(data){
   if(!data)return 0;
-  return Object.values(data.productsByCharge||{}).reduce((sum,rows)=>sum+(Array.isArray(rows)?rows.length:0),0)+(Array.isArray(data.unassignedProducts)?data.unassignedProducts.length:0)+(Array.isArray(data.allProducts)?data.allProducts.length:0)+(Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts.length:0);
+  return Object.values(data.productsByCharge||{}).reduce((sum,rows)=>sum+(Array.isArray(rows)?rows.length:0),0)+(Array.isArray(data.unassignedProducts)?data.unassignedProducts.length:0)+(Array.isArray(data.allProducts)?data.allProducts.length:0)+(Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts.length:0)+(Array.isArray(data.greenTreatmentProducts)?data.greenTreatmentProducts.length:0);
 }
 function readMasterCacheRecord(){
   const keys=[MASTER_CACHE_STORAGE_KEY,...MASTER_LEGACY_CACHE_KEYS];
@@ -1657,12 +1687,12 @@ function masterCacheFresh(){
 function payloadHasProductDescriptions(data){
   if(!data)return false;
   const grouped=Object.values(data.productsByCharge||{}).flat();
-  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[])];
+  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[]),...(data.greenTreatmentProducts||[])];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function masterHasProductDescriptions(){
   const grouped=Object.values(masterProductsByCharge||{}).flat();
-  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule];
+  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule,...masterGreenTreatment];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function refreshMasterViews(){
@@ -1670,6 +1700,7 @@ function refreshMasterViews(){
   if(activePanel==='live-log'||accessMode==='operator')buildLogPanel();
   if(activePanel==='live-board'||accessMode==='board')buildLiveBoard();
   if(activePanel==='pole-forecast')buildPoleForecast();
+  if(activePanel==='green-treatment')buildGreenTreatment();
 }
 function fmtM3(v){return `${(Number(v)||0).toFixed(1)} m3`;}
 function isoDateKeyForDayIdx(dayIdx){
@@ -1690,6 +1721,89 @@ function shedSortValue(name){
 }
 function poleForecastDayLabel(day,idx){
   return (day&&(day.dayName||day.name))||DAYS_7[idx]||`Day ${idx+1}`;
+}
+function parseScheduleDateValue(value){
+  const s=String(value||'').trim();
+  if(!s)return null;
+  let m=s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+  if(m){
+    const y=Number(m[3].length===2?'20'+m[3]:m[3]);
+    const d=new Date(y,Number(m[2])-1,Number(m[1]));
+    return Number.isNaN(d.getTime())?null:d;
+  }
+  m=s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+  if(m){
+    const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+    return Number.isNaN(d.getTime())?null:d;
+  }
+  const d=new Date(s);
+  return Number.isNaN(d.getTime())?null:d;
+}
+function scheduleDateKey(value){
+  const d=parseScheduleDateValue(value);
+  if(!d)return '';
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function chargeSortValue(value){
+  const m=String(value||'').match(/\d+/);
+  return m?Number(m[0]):99;
+}
+function greenTreatmentPlant(row){
+  const raw=String(row?._greenPlant||row?.plant||row?._greenPlantRaw||'').toLowerCase();
+  if(raw.includes('wtt'))return 'WTT';
+  if(raw.includes('hickson'))return 'Hickson';
+  return row?._greenPlant||row?.plant||'Unassigned';
+}
+function greenTreatmentPieces(row){
+  return parseReportNumber(row?._greenPieces||row?.pieces||0);
+}
+function greenTreatmentDayRows(dayIdx){
+  const key=isoDateKeyForDayIdx(dayIdx);
+  return (masterGreenTreatment||[]).filter(row=>scheduleDateKey(row._greenTreatmentDate||row.treatmentDate)===key);
+}
+function setGreenTreatmentDay(idx){greenTreatmentDayIdx=idx;buildGreenTreatment();}
+function buildGreenTreatment(){
+  const host=document.getElementById('green-treatment-content');
+  if(!host)return;
+  const dayRows=greenTreatmentDayRows(greenTreatmentDayIdx);
+  const selectedDate=boardDateForDayIdx(greenTreatmentDayIdx);
+  const dayTabs=computeWeek().map((d,idx)=>{
+    const count=greenTreatmentDayRows(idx).length;
+    return `<button class="green-day-tab ${idx===greenTreatmentDayIdx?'active':''}" type="button" onclick="setGreenTreatmentDay(${idx})">${escHtml(poleForecastDayLabel(d,idx).slice(0,3))}${count?` · ${count}`:''}</button>`;
+  }).join('');
+  const totalPieces=dayRows.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
+  const plantHtml=['WTT','Hickson'].map(plant=>{
+    const rows=dayRows.filter(row=>greenTreatmentPlant(row)===plant);
+    const groups={};
+    rows.forEach(row=>{
+      const charge=String(row._greenChargeAllocation||row.chargeAllocation||'Unallocated').trim()||'Unallocated';
+      if(!groups[charge])groups[charge]=[];
+      groups[charge].push(row);
+    });
+    const cards=Object.entries(groups).sort((a,b)=>chargeSortValue(a[0])-chargeSortValue(b[0])||a[0].localeCompare(b[0])).map(([charge,items])=>{
+      const pieces=items.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
+      const products=items.map(row=>{
+        const product=row._greenProductDescription||row.productDescription||'Product not listed';
+        const pcs=greenTreatmentPieces(row);
+        const packs=row._greenPacks||row.packs||'';
+        const per=row._greenPerPack||row.amountPerPack||'';
+        const meta=[pcs?`${pcs} pcs`:'',packs?`${packs} packs`:'',per?`${per}/pack`:'' ].filter(Boolean).join(' · ')||'Qty not listed';
+        return `<div class="green-product-row"><div class="green-product-name">${escHtml(product)}</div><div class="green-product-meta">${escHtml(meta)}</div></div>`;
+      }).join('');
+      return `<div class="green-charge-card"><div class="green-charge-title"><span>${escHtml(charge)}</span><span class="green-charge-count">${items.length} line${items.length===1?'':'s'} · ${pieces.toLocaleString('en-GB')} pcs</span></div>${products}</div>`;
+    }).join('');
+    const plantPieces=rows.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
+    return `<div class="green-plant-col"><div class="green-plant-head"><div class="green-plant-title">${escHtml(plant)}</div><div class="green-plant-total">${rows.length} line${rows.length===1?'':'s'} · ${plantPieces.toLocaleString('en-GB')} pcs</div></div>${cards||'<div class="green-empty">No planned green treatment for this plant on the selected day.</div>'}</div>`;
+  }).join('');
+  const bridgeNote=masterGreenTreatment.length?'':'No green treatment rows are loaded yet. Deploy the updated bridge script so Treatment Schedule Master columns D, G, H, I, J, K and L are returned.';
+  host.innerHTML=`<div class="green-day-tabs">${dayTabs}</div>
+    <div class="pole-forecast-grid">
+      <div class="pole-forecast-card"><div class="pole-forecast-label">Selected day</div><div class="pole-forecast-value">${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}))}</div><div class="pole-forecast-sub">${escHtml(isoDateKeyForDayIdx(greenTreatmentDayIdx))}</div></div>
+      <div class="pole-forecast-card"><div class="pole-forecast-label">Planned lines</div><div class="pole-forecast-value">${dayRows.length}</div><div class="pole-forecast-sub">From Treatment Schedule Master</div></div>
+      <div class="pole-forecast-card"><div class="pole-forecast-label">Pieces</div><div class="pole-forecast-value">${totalPieces.toLocaleString('en-GB')}</div><div class="pole-forecast-sub">Column G total for selected day</div></div>
+    </div>
+    ${bridgeNote?`<div class="report-card"><div class="report-title"><i class="ti ti-alert-circle"></i>Bridge update needed</div><div class="report-email-note">${escHtml(bridgeNote)}</div></div>`:''}
+    <div class="green-board-grid">${plantHtml}</div>`;
 }
 function poleForecastChargeDurationHours(){
   const pole=CT.pole||{};
