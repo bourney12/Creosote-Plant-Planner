@@ -286,20 +286,23 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-chart-legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:8px;}
 .pole-chart-key{display:inline-flex;align-items:center;gap:5px;}
 .pole-chart-swatch{width:12px;height:8px;border-radius:3px;background:var(--swatch);}
-.pole-timeline{display:grid;grid-template-columns:86px repeat(7,minmax(94px,1fr));border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg);}
-.pole-timeline-head,.pole-timeline-label,.pole-timeline-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
-.pole-timeline-head{background:var(--bg3);padding:7px 8px;font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;}
-.pole-timeline-label{background:var(--bg2);padding:12px 10px;font-size:11px;font-weight:700;color:var(--text);display:flex;align-items:center;}
-.pole-timeline-cell{position:relative;min-height:58px;background:linear-gradient(90deg,rgba(53,80,49,.07) 0 1px,transparent 1px);background-size:25% 100%;}
-.pole-timeline-bar{position:absolute;top:12px;height:28px;border-radius:5px;border:1px solid rgba(23,43,28,.18);background:rgba(64,130,109,.2);color:var(--text);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 5px;}
-.pole-timeline-bar.p2{background:rgba(64,130,109,.22);border-color:rgba(64,130,109,.34);}
-.pole-timeline-bar.p1{background:rgba(232,197,71,.24);border-color:rgba(191,145,43,.34);}
-.pole-timeline-hour{position:absolute;bottom:3px;font-family:var(--mono);font-size:8px;color:var(--text3);}
-.pole-timeline-hour.h0{left:4px}.pole-timeline-hour.h12{left:50%;transform:translateX(-50%)}.pole-timeline-hour.h24{right:4px}
+.pole-charge-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:8px;}
+.pole-charge-day{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;min-width:0;}
+.pole-charge-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;border-bottom:1px solid var(--border);padding-bottom:7px;margin-bottom:8px;}
+.pole-charge-dayname{font-size:12px;font-weight:800;color:var(--text);}
+.pole-charge-date{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px;}
+.pole-charge-total{font-size:22px;font-weight:800;color:var(--green);line-height:1;text-align:right;}
+.pole-charge-total span{display:block;font-family:var(--mono);font-size:8px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-top:2px;}
+.pole-charge-plant{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;border-radius:var(--radius);margin-top:6px;border:1px solid var(--border);}
+.pole-charge-plant.p2{background:rgba(64,130,109,.1);border-color:rgba(64,130,109,.22);}
+.pole-charge-plant.p1{background:rgba(232,197,71,.12);border-color:rgba(191,145,43,.22);}
+.pole-charge-plant-name{font-size:11px;font-weight:700;color:var(--text);}
+.pole-charge-plant-count{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--text);}
+.pole-charge-meta{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:7px;line-height:1.35;}
 .shed-bar{height:7px;border-radius:999px;background:rgba(53,80,49,.09);overflow:hidden;margin-top:5px;}
 .shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
 .pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
-@media(max-width:900px){.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-timeline{grid-template-columns:70px repeat(7,120px);overflow-x:auto;}.pole-timeline-wrap{overflow-x:auto;}}
+@media(max-width:900px){.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-charge-grid{grid-template-columns:repeat(2,minmax(140px,1fr));}}
 @media(max-width:900px){.report-split{grid-template-columns:1fr;}.report-dashboard-toolbar{align-items:stretch}.report-control{min-width:100%;}}
 .report-section{margin-bottom:24px;}
 .report-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
@@ -1739,26 +1742,24 @@ function poleForecastDailyChart(dayDashboardRows){
     <div class="pole-chart-legend"><span class="pole-chart-key"><span class="pole-chart-swatch" style="--swatch:var(--green)"></span>Poles per day</span><span class="pole-chart-key"><span class="pole-chart-swatch" style="--swatch:var(--amber)"></span>Rounded charge count</span></div>
   </div>`;
 }
-function poleForecastTimeline(dayDashboardRows){
-  const plan=buildPoleForecastChargePlan(dayDashboardRows);
-  const head=['<div class="pole-timeline-head">Plant</div>'].concat(dayDashboardRows.map(item=>`<div class="pole-timeline-head">${escHtml(item.name.slice(0,3))}<div>${escHtml(item.date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</div></div>`)).join('');
-  const rows=['p2','p1'].map(pid=>{
-    const label=pid==='p2'?'Plant 2':'Plant 1';
-    const cells=dayDashboardRows.map(day=>{
-      const bars=plan.bars.filter(b=>b.dayIdx===day.idx&&b.plant===pid).map(b=>{
-        const left=Math.max(0,Math.min(100,b.start/24*100));
-        const right=Math.max(0,Math.min(100,b.end/24*100));
-        const width=Math.max(4,right-left);
-        const clipped=b.end>24;
-        return `<div class="pole-timeline-bar ${pid}" style="left:${left}%;width:${width}%;" title="${label} ${day.name} ${b.label} ${hToStr(b.start)}-${hToStr(b.end)}">${b.label}${clipped?' +':''}</div>`;
-      }).join('');
-      return `<div class="pole-timeline-cell">${bars}<span class="pole-timeline-hour h0">00</span><span class="pole-timeline-hour h12">12</span><span class="pole-timeline-hour h24">24</span></div>`;
-    }).join('');
-    return `<div class="pole-timeline-label">${label}</div>${cells}`;
+function poleForecastChargeGrid(dayDashboardRows){
+  const html=dayDashboardRows.map(item=>{
+    const total=Math.max(0,Number(item.rounded)||0);
+    const p2=Math.min(2,total);
+    const p1=Math.max(0,total-2);
+    return `<div class="pole-charge-day">
+      <div class="pole-charge-head">
+        <div><div class="pole-charge-dayname">${escHtml(item.name)}</div><div class="pole-charge-date">${escHtml(item.date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</div></div>
+        <div class="pole-charge-total">${total}<span>charges</span></div>
+      </div>
+      <div class="pole-charge-plant p2"><span class="pole-charge-plant-name">Plant 2</span><span class="pole-charge-plant-count">${p2}</span></div>
+      <div class="pole-charge-plant p1"><span class="pole-charge-plant-name">Plant 1</span><span class="pole-charge-plant-count">${p1}</span></div>
+      <div class="pole-charge-meta">${Number(item.qty).toFixed(0)} poles · ${fmtM3(item.m3)} · ${item.charges.toFixed(2)} charge equivalent</div>
+    </div>`;
   }).join('');
-  return `<div class="report-card"><div class="report-title"><i class="ti ti-timeline"></i>Predicted pole charge timeline</div>
-    <div class="pole-timeline-wrap"><div class="pole-timeline">${head}${rows}</div></div>
-    <div class="report-email-note">Protocol model: first two pole charges per day are planned on Plant 2, then additional pole charges are placed on Plant 1. Block length uses the current Pole charge process and vacuum timings; spacing includes cylinder turnover.</div>
+  return `<div class="report-card"><div class="report-title"><i class="ti ti-layout-grid"></i>Daily charge allocation</div>
+    <div class="pole-charge-grid">${html}</div>
+    <div class="report-email-note">Protocol model: first two pole charges per day are allocated to Plant 2, then any extra pole charges are allocated to Plant 1.</div>
   </div>`;
 }
 function buildPoleForecast(){
@@ -1848,7 +1849,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Peak cube day</div><div class="pole-forecast-value">${escHtml((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).name||'-')}</div><div class="pole-forecast-sub">${fmtM3((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).m3||0)}</div></div>
   </div>
   ${poleForecastDailyChart(dayDashboardRows)}
-  ${poleForecastTimeline(dayDashboardRows)}
+  ${poleForecastChargeGrid(dayDashboardRows)}
   <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily cube and charge forecast</div>
     <table class="report-table-mini"><thead><tr><th>Day</th><th>Date</th><th>Poles</th><th>M3</th><th>Charge equiv.</th><th>Charges</th><th>Sheds</th><th>Lines</th></tr></thead><tbody>${dailyDashboardTable}</tbody></table>
   </div>
