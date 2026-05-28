@@ -1664,6 +1664,9 @@ function shedSortValue(name){
   const m=String(name||'').match(/([1-5])/);
   return m?Number(m[1]):99;
 }
+function poleForecastDayLabel(day,idx){
+  return (day&&(day.dayName||day.name))||DAYS_7[idx]||`Day ${idx+1}`;
+}
 function buildPoleForecast(){
   const host=document.getElementById('pole-forecast-content');
   if(!host)return;
@@ -1694,7 +1697,7 @@ function buildPoleForecast(){
     const dayRows=(pf.rows||[]).filter(r=>r.dayKey===key);
     const m3=Number(day.totalM3)||0;
     const charges=m3/avgCharge;
-    return {idx,key,name:d.name,date,day,rows:dayRows,qty:Number(day.totalQty)||0,m3,charges,rounded:Math.ceil(charges),hours:Number(day.totalHours)||0,sheds:Object.entries(day.sheds||{}).length};
+    return {idx,key,name:poleForecastDayLabel(d,idx),date,day,rows:dayRows,qty:Number(day.totalQty)||0,m3,charges,rounded:Math.ceil(charges),hours:Number(day.totalHours)||0,sheds:Object.entries(day.sheds||{}).length};
   });
   const dailyDashboardTable=dayDashboardRows.map(item=>`<tr><td>${escHtml(item.name)}</td><td>${escHtml(item.date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</td><td>${Number(item.qty).toFixed(0)}</td><td>${fmtM3(item.m3)}</td><td>${item.charges.toFixed(2)}</td><td>${item.rounded}</td><td>${item.sheds}</td><td>${item.rows.length}</td></tr>`).join('');
   const shedNames=[...new Set(dayDashboardRows.flatMap(item=>Object.keys(item.day.sheds||{})))].sort((a,b)=>{
@@ -1713,7 +1716,7 @@ function buildPoleForecast(){
   }).join('');
   const dayOptions=computeWeek().map((d,idx)=>{
     const date=boardDateForDayIdx(idx);
-    return `<option value="${idx}" ${idx===poleForecastDayIdx?'selected':''}>${escHtml(d.name)} - ${escHtml(date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</option>`;
+    return `<option value="${idx}" ${idx===poleForecastDayIdx?'selected':''}>${escHtml(poleForecastDayLabel(d,idx))} - ${escHtml(date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</option>`;
   }).join('');
   const shedEntries=Object.entries(selectedDay.sheds||{}).sort((a,b)=>{
     const av=shedSortValue(a[0]);
