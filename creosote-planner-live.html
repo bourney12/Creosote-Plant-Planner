@@ -1699,7 +1699,7 @@ function buildPoleForecast(){
     const m3=Number(data.totalM3)||0;
     const eq=m3/avgCharge;
     const rounded=Math.ceil(eq);
-    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(1)}</td><td>${r.cubeMissing?'Cube missing':fmtM3(r.totalM3)}</td><td>${Number(r.allocatedHours||0).toFixed(1)}h</td></tr>`).join('');
+    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(1)}</td><td>${r.cubeMissing?'Cube missing':fmtM3(r.totalM3)}</td><td>${Number(r.allocatedHours||0).toFixed(1)}h</td><td>${Number(r.minutesPerPole||0).toFixed(1)}</td><td>${escHtml(r.sourceDate&&r.sourceDate!==r.date?r.sourceDate:'')}</td></tr>`).join('');
     return `<div class="report-card">
       <div class="report-title"><i class="ti ti-building-factory-2"></i>${escHtml(shed)}</div>
       <div class="pole-forecast-grid">
@@ -1707,7 +1707,7 @@ function buildPoleForecast(){
         <div class="pole-forecast-card"><div class="pole-forecast-label">Planned m3</div><div class="pole-forecast-value">${fmtM3(m3)}</div><div class="pole-forecast-sub">From PMF code match</div></div>
         <div class="pole-forecast-card"><div class="pole-forecast-label">Charge equivalent</div><div class="pole-forecast-value">${eq.toFixed(2)}</div><div class="pole-forecast-sub">${rounded} rounded charge${rounded===1?'':'s'}</div></div>
       </div>
-      <table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Planned qty</th><th>M3</th><th>Hours</th></tr></thead><tbody>${products||'<tr><td colspan="5">No product rows returned for this shed.</td></tr>'}</tbody></table>
+      <table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Planned qty</th><th>M3</th><th>Hours</th><th>Min/pole</th><th>Rolled from</th></tr></thead><tbody>${products||'<tr><td colspan="7">No product rows returned for this shed.</td></tr>'}</tbody></table>
     </div>`;
   }).join('');
   const unmatchedRows=selectedRows.filter(r=>r.cubeMissing);
@@ -1727,7 +1727,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned m3</div><div class="pole-forecast-value">${fmtM3(weekM3)}</div><div class="pole-forecast-sub">Monday to Sunday</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Week charges</div><div class="pole-forecast-value">${weekCharges}</div><div class="pole-forecast-sub">At ${avgCharge} m3 per charge</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Selected day</div><div class="pole-forecast-value">${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}))}</div><div class="pole-forecast-sub">${escHtml(selectedDay.date||selectedDay.dayKey)}</div></div>
-    <div class="pole-forecast-card"><div class="pole-forecast-label">Planned poles</div><div class="pole-forecast-value">${Number(totalQty).toFixed(0)}</div><div class="pole-forecast-sub">Timed from Routings Master U/V/W</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Planned poles</div><div class="pole-forecast-value">${Number(totalQty).toFixed(0)}</div><div class="pole-forecast-sub">Timed from Routings Master M/U/V</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Planned m3</div><div class="pole-forecast-value">${fmtM3(totalM3)}</div><div class="pole-forecast-sub">PMF column C to E match</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Charge equivalent</div><div class="pole-forecast-value">${totalChargeEq.toFixed(2)}</div><div class="pole-forecast-sub">${totalCharges} rounded charge${totalCharges===1?'':'s'}</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Sheds planned</div><div class="pole-forecast-value">${shedEntries.length}</div><div class="pole-forecast-sub">Grouped by Routings Master column I</div></div>
