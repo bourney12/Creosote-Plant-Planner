@@ -1680,6 +1680,11 @@ function buildPoleForecast(){
   const totalM3=Number(selectedDay.totalM3)||0;
   const totalChargeEq=totalM3/avgCharge;
   const totalCharges=Math.ceil(totalChargeEq);
+  const weekKeys=computeWeek().map((d,idx)=>isoDateKeyForDayIdx(idx));
+  const weekDays=days.filter(d=>weekKeys.includes(d.dayKey));
+  const weekQty=weekDays.reduce((sum,d)=>sum+(Number(d.totalQty)||0),0);
+  const weekM3=weekDays.reduce((sum,d)=>sum+(Number(d.totalM3)||0),0);
+  const weekCharges=Math.ceil(weekM3/avgCharge);
   const dayOptions=computeWeek().map((d,idx)=>{
     const date=boardDateForDayIdx(idx);
     return `<option value="${idx}" ${idx===poleForecastDayIdx?'selected':''}>${escHtml(d.name)} - ${escHtml(date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</option>`;
@@ -1694,7 +1699,7 @@ function buildPoleForecast(){
     const m3=Number(data.totalM3)||0;
     const eq=m3/avgCharge;
     const rounded=Math.ceil(eq);
-    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td><td>${r.cubeMissing?'Cube missing':fmtM3(r.totalM3)}</td></tr>`).join('');
+    const products=rows.map(r=>`<tr><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(1)}</td><td>${r.cubeMissing?'Cube missing':fmtM3(r.totalM3)}</td><td>${Number(r.allocatedHours||0).toFixed(1)}h</td></tr>`).join('');
     return `<div class="report-card">
       <div class="report-title"><i class="ti ti-building-factory-2"></i>${escHtml(shed)}</div>
       <div class="pole-forecast-grid">
@@ -1702,7 +1707,7 @@ function buildPoleForecast(){
         <div class="pole-forecast-card"><div class="pole-forecast-label">Planned m3</div><div class="pole-forecast-value">${fmtM3(m3)}</div><div class="pole-forecast-sub">From PMF code match</div></div>
         <div class="pole-forecast-card"><div class="pole-forecast-label">Charge equivalent</div><div class="pole-forecast-value">${eq.toFixed(2)}</div><div class="pole-forecast-sub">${rounded} rounded charge${rounded===1?'':'s'}</div></div>
       </div>
-      <table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Planned qty</th><th>M3</th></tr></thead><tbody>${products||'<tr><td colspan="4">No product rows returned for this shed.</td></tr>'}</tbody></table>
+      <table class="report-table-mini"><thead><tr><th>Code</th><th>Product</th><th>Planned qty</th><th>M3</th><th>Hours</th></tr></thead><tbody>${products||'<tr><td colspan="5">No product rows returned for this shed.</td></tr>'}</tbody></table>
     </div>`;
   }).join('');
   const unmatchedRows=selectedRows.filter(r=>r.cubeMissing);
@@ -1710,7 +1715,7 @@ function buildPoleForecast(){
     <div class="report-title"><i class="ti ti-alert-triangle"></i>Missing PMF cubic metres for selected day</div>
     <div class="report-email-note">${unmatchedRows.length} routing line${unmatchedRows.length===1?'':'s'} on ${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long'}))} did not match PMF Associated Data column C.</div>
     <table class="report-table-mini"><thead><tr><th>Shed</th><th>Code</th><th>Product</th><th>Planned qty</th><th>Routing row</th></tr></thead><tbody>
-      ${unmatchedRows.map(r=>`<tr><td>${escHtml(r.shed||'')}</td><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(0)}</td><td>${escHtml(r.rowNumber||'')}</td></tr>`).join('')}
+      ${unmatchedRows.map(r=>`<tr><td>${escHtml(r.shed||'')}</td><td>${escHtml(r.productCode||'')}</td><td>${escHtml(r.productDescription||'')}</td><td>${Number(r.quantity||0).toFixed(1)}</td><td>${escHtml(r.rowNumber||'')}</td></tr>`).join('')}
     </tbody></table>
   </div>`:'';
   host.innerHTML=`<div class="report-dashboard-toolbar">
@@ -1718,8 +1723,11 @@ function buildPoleForecast(){
     <div class="report-control"><label>Average charge m3</label><input type="number" min="1" step="0.5" value="${escHtml(avgCharge)}" onchange="setPoleForecastAvg(this.value)"></div>
   </div>
   <div class="pole-forecast-grid">
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned poles</div><div class="pole-forecast-value">${Number(weekQty).toFixed(0)}</div><div class="pole-forecast-sub">After timing roll-over</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Week planned m3</div><div class="pole-forecast-value">${fmtM3(weekM3)}</div><div class="pole-forecast-sub">Monday to Sunday</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Week charges</div><div class="pole-forecast-value">${weekCharges}</div><div class="pole-forecast-sub">At ${avgCharge} m3 per charge</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Selected day</div><div class="pole-forecast-value">${escHtml(selectedDate.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}))}</div><div class="pole-forecast-sub">${escHtml(selectedDay.date||selectedDay.dayKey)}</div></div>
-    <div class="pole-forecast-card"><div class="pole-forecast-label">Planned poles</div><div class="pole-forecast-value">${Number(totalQty).toFixed(0)}</div><div class="pole-forecast-sub">From Routings Master column N</div></div>
+    <div class="pole-forecast-card"><div class="pole-forecast-label">Planned poles</div><div class="pole-forecast-value">${Number(totalQty).toFixed(0)}</div><div class="pole-forecast-sub">Timed from Routings Master U/V/W</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Planned m3</div><div class="pole-forecast-value">${fmtM3(totalM3)}</div><div class="pole-forecast-sub">PMF column C to E match</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Charge equivalent</div><div class="pole-forecast-value">${totalChargeEq.toFixed(2)}</div><div class="pole-forecast-sub">${totalCharges} rounded charge${totalCharges===1?'':'s'}</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Sheds planned</div><div class="pole-forecast-value">${shedEntries.length}</div><div class="pole-forecast-sub">Grouped by Routings Master column I</div></div>
