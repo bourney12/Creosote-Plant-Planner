@@ -274,18 +274,16 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-forecast-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
 .pole-forecast-value{font-size:24px;font-weight:800;color:var(--text);line-height:1;}
 .pole-forecast-sub{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.35;}
-.pole-chart{display:grid;grid-template-columns:repeat(7,minmax(70px,1fr));gap:8px;align-items:end;min-height:178px;padding-top:8px;}
+.pole-chart-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.pole-chart{display:grid;grid-template-columns:repeat(7,minmax(50px,1fr));gap:8px;align-items:end;min-height:178px;padding-top:8px;}
 .pole-chart-day{display:flex;flex-direction:column;gap:6px;min-width:0;}
 .pole-chart-bars{height:118px;display:flex;align-items:end;gap:5px;padding:0 8px;border-bottom:1px solid var(--border2);}
-.pole-chart-bar{flex:1;min-width:14px;border-radius:5px 5px 0 0;position:relative;}
+.pole-chart-bar{width:100%;min-width:14px;border-radius:5px 5px 0 0;position:relative;}
 .pole-chart-bar.poles{background:linear-gradient(180deg,var(--green),#9ab88e);}
 .pole-chart-bar.charges{background:linear-gradient(180deg,var(--amber),#e9d789);}
 .pole-chart-number{font-family:var(--mono);font-size:9px;color:var(--text2);text-align:center;white-space:nowrap;}
 .pole-chart-label{font-size:10px;font-weight:700;color:var(--text);text-align:center;}
 .pole-chart-date{font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;}
-.pole-chart-legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:8px;}
-.pole-chart-key{display:inline-flex;align-items:center;gap:5px;}
-.pole-chart-swatch{width:12px;height:8px;border-radius:3px;background:var(--swatch);}
 .pole-charge-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:8px;}
 .pole-charge-day{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;min-width:0;}
 .pole-charge-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;border-bottom:1px solid var(--border);padding-bottom:7px;margin-bottom:8px;}
@@ -302,7 +300,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .shed-bar{height:7px;border-radius:999px;background:rgba(53,80,49,.09);overflow:hidden;margin-top:5px;}
 .shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
 .pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
-@media(max-width:900px){.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-charge-grid{grid-template-columns:repeat(2,minmax(140px,1fr));}}
+@media(max-width:900px){.pole-chart-pair{grid-template-columns:1fr;}.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-charge-grid{grid-template-columns:repeat(2,minmax(140px,1fr));}}
 @media(max-width:900px){.report-split{grid-template-columns:1fr;}.report-dashboard-toolbar{align-items:stretch}.report-control{min-width:100%;}}
 .report-section{margin-bottom:24px;}
 .report-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
@@ -1720,27 +1718,28 @@ function buildPoleForecastChargePlan(dayDashboardRows){
   });
   return {bars,chargeHours,turnHours};
 }
-function poleForecastDailyChart(dayDashboardRows){
-  const maxPoles=Math.max(1,...dayDashboardRows.map(d=>d.qty));
-  const maxCharges=Math.max(1,...dayDashboardRows.map(d=>d.rounded));
+function poleForecastSingleChart(dayDashboardRows,type){
+  const isCharges=type==='charges';
+  const maxValue=Math.max(1,...dayDashboardRows.map(d=>isCharges?d.rounded:d.qty));
   const html=dayDashboardRows.map(item=>{
-    const polesH=Math.max(3,(item.qty/maxPoles)*100);
-    const chargesH=Math.max(3,(item.rounded/maxCharges)*100);
+    const value=isCharges?item.rounded:item.qty;
+    const height=Math.max(3,(value/maxValue)*100);
+    const label=isCharges?`${item.rounded} charge${item.rounded===1?'':'s'}`:`${Number(item.qty).toFixed(0)} poles`;
     return `<div class="pole-chart-day">
       <div class="pole-chart-bars">
-        <div class="pole-chart-bar poles" style="height:${polesH}%"></div>
-        <div class="pole-chart-bar charges" style="height:${chargesH}%"></div>
+        <div class="pole-chart-bar ${isCharges?'charges':'poles'}" style="height:${height}%"></div>
       </div>
-      <div class="pole-chart-number">${Number(item.qty).toFixed(0)} poles</div>
-      <div class="pole-chart-number">${item.rounded} charge${item.rounded===1?'':'s'}</div>
+      <div class="pole-chart-number">${label}</div>
       <div class="pole-chart-label">${escHtml(item.name.slice(0,3))}</div>
       <div class="pole-chart-date">${escHtml(item.date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</div>
     </div>`;
   }).join('');
-  return `<div class="report-card"><div class="report-title"><i class="ti ti-chart-bar"></i>Poles and charges per day</div>
+  return `<div class="report-card"><div class="report-title"><i class="ti ti-chart-bar"></i>${isCharges?'Charge count per day':'Poles per day'}</div>
     <div class="pole-chart">${html}</div>
-    <div class="pole-chart-legend"><span class="pole-chart-key"><span class="pole-chart-swatch" style="--swatch:var(--green)"></span>Poles per day</span><span class="pole-chart-key"><span class="pole-chart-swatch" style="--swatch:var(--amber)"></span>Rounded charge count</span></div>
   </div>`;
+}
+function poleForecastDailyCharts(dayDashboardRows){
+  return `<div class="pole-chart-pair">${poleForecastSingleChart(dayDashboardRows,'poles')}${poleForecastSingleChart(dayDashboardRows,'charges')}</div>`;
 }
 function poleForecastChargeGrid(dayDashboardRows){
   const html=dayDashboardRows.map(item=>{
@@ -1848,7 +1847,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Week charges</div><div class="pole-forecast-value">${weekCharges}</div><div class="pole-forecast-sub">At ${avgCharge} m3 per charge</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Peak cube day</div><div class="pole-forecast-value">${escHtml((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).name||'-')}</div><div class="pole-forecast-sub">${fmtM3((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).m3||0)}</div></div>
   </div>
-  ${poleForecastDailyChart(dayDashboardRows)}
+  ${poleForecastDailyCharts(dayDashboardRows)}
   ${poleForecastChargeGrid(dayDashboardRows)}
   <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily cube and charge forecast</div>
     <table class="report-table-mini"><thead><tr><th>Day</th><th>Date</th><th>Poles</th><th>M3</th><th>Charge equiv.</th><th>Charges</th><th>Sheds</th><th>Lines</th></tr></thead><tbody>${dailyDashboardTable}</tbody></table>
