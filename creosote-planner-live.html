@@ -1049,6 +1049,26 @@ function actualMatchesDay(entry,d){
   if(!entry)return false;
   return entry.actualDate===actualIsoDateForDay(d);
 }
+function currentWeekIsoDates(){
+  return new Set(Array.from({length:7},(_,idx)=>actualIsoDateForDay(idx)));
+}
+function pruneDatedLiveMap(map){
+  const allowed=currentWeekIsoDates();
+  let changed=false;
+  Object.keys(map||{}).forEach(key=>{
+    const entry=map[key];
+    if(!entry||!allowed.has(entry.actualDate)){
+      delete map[key];
+      changed=true;
+    }
+  });
+  return changed;
+}
+function pruneLiveStateToCurrentWeek(){
+  const actualChanged=pruneDatedLiveMap(actuals);
+  const gapChanged=pruneDatedLiveMap(gaps);
+  return actualChanged||gapChanged;
+}
 function getActual(d,pid,n){
   const act=actuals[actualKey(d,pid,n)]||null;
   return actualMatchesDay(act,d)?act:null;
@@ -1133,6 +1153,7 @@ async function loadData(){
       const g=await window.storage.get('gaps');
       if(g&&!lg)gaps=JSON.parse(g.value);
     }
+    if(pruneLiveStateToCurrentWeek())saveData();
   }catch(e){}
 }
 function loadLocalData(){
@@ -1141,6 +1162,7 @@ function loadLocalData(){
     if(la)actuals=JSON.parse(la);
     const lg=localStorage.getItem('creosote_gaps');
     if(lg)gaps=JSON.parse(lg);
+    if(pruneLiveStateToCurrentWeek())saveData();
   }catch(e){}
 }
 async function clearAllActuals(){
@@ -1469,8 +1491,11 @@ function buildPlantLiveColumns(day,dayItems){
     let state='empty',stateLabel='empty';
     if(rows.length||actual){
       const scheduleOnly=rows.length&&rows.every(r=>r._plannedOnly)&&!actual;
+      const today=new Date();today.setHours(0,0,0,0);
+      const slotDate=boardDateForDayIdx(day.dayIdx);
+      const isFutureSlot=slotDate>today;
       const hasCharge=chargeNums.length||normalizeChargeNumber(actual&&actual.act&&actual.act.chargeNum);
-      if(scheduleOnly)state='planned',stateLabel='planned';
+      if(scheduleOnly||(!actual&&isFutureSlot))state='planned',stateLabel='planned';
       else if(actual&&hasCharge&&actual.done)state='done',stateLabel='complete';
       else if(actual&&hasCharge&&actual.startAbs!==null&&actual.startAbs!==undefined)state='running',stateLabel='in treatment';
       else state='loaded',stateLabel='loaded';
@@ -2050,6 +2075,7 @@ async function pullLiveState(force=false){
     if(force||(!justPushed&&remoteStamp>=localStamp)){
       actuals=data.actuals||{};
       gaps=data.gaps||{};
+      pruneLiveStateToCurrentWeek();
       liveStateSync.updatedAt=data.updatedAt||liveStateSync.updatedAt;
       saveData();
       refreshLiveSurfaces(false);
