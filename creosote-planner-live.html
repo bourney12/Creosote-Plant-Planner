@@ -1333,7 +1333,6 @@ function plannedTextMatchesDay(text,dayIdx){
   const longMon=d.toLocaleString('en-GB',{month:'long'}).toLowerCase();
   const tokens=[
     `${dd}/${mm}/${yyyy}`,`${dm}/${mn}/${yyyy}`,`${dd}/${mm}/${yy}`,`${dm}/${mn}/${yy}`,
-    `${mm}/${dd}/${yyyy}`,`${mn}/${dm}/${yyyy}`,`${mm}/${dd}/${yy}`,`${mn}/${dm}/${yy}`,
     `${yyyy}-${mm}-${dd}`,`${dd}-${mm}-${yyyy}`,`${dd}.${mm}.${yyyy}`,`${dm}.${mn}.${yyyy}`,
     `${dm} ${mon}`,`${dd} ${mon}`,`${mon} ${dm}`,`${mon} ${dd}`,
     `${dm} ${longMon}`,`${dd} ${longMon}`,`${longMon} ${dm}`,`${longMon} ${dd}`
