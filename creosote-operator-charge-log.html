@@ -969,8 +969,23 @@ let accessMode='planner';
 let activePanel='week';
 
 function actualKey(d,pid,n){return `${d}_${pid}_${n}`;}
-function getActual(d,pid,n){return actuals[actualKey(d,pid,n)]||null;}
-function setActual(d,pid,n,val){const key=actualKey(d,pid,n);actuals[key]=val;saveData();pushLiveActual(key,val);}
+function actualIsoDateForDay(d){
+  const dt=boardDateForDayIdx(d);
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
+function actualMatchesDay(entry,d){
+  if(!entry)return false;
+  return entry.actualDate===actualIsoDateForDay(d);
+}
+function getActual(d,pid,n){
+  const act=actuals[actualKey(d,pid,n)]||null;
+  return actualMatchesDay(act,d)?act:null;
+}
+function setActual(d,pid,n,val){
+  const key=actualKey(d,pid,n);
+  val={...(val||{}),actualDate:actualIsoDateForDay(d)};
+  actuals[key]=val;saveData();pushLiveActual(key,val);
+}
 function historyHourForWeek(iso){
   if(!iso)return null;
   const dt=new Date(iso);
@@ -1008,8 +1023,15 @@ function historyChargesForDay(dayIdx,pid){
     .sort((a,b)=>a.startAbs-b.startAbs)
     .map(x=>x.h);
 }
-function getGap(d,pid,n){return gaps[`${d}_${pid}_gap${n}`]||null;}
-function setGap(d,pid,n,val){const key=`${d}_${pid}_gap${n}`;gaps[key]=val;saveData();pushLiveGap(key,val);}
+function getGap(d,pid,n){
+  const gap=gaps[`${d}_${pid}_gap${n}`]||null;
+  return actualMatchesDay(gap,d)?gap:null;
+}
+function setGap(d,pid,n,val){
+  const key=`${d}_${pid}_gap${n}`;
+  val={...(val||{}),actualDate:actualIsoDateForDay(d)};
+  gaps[key]=val;saveData();pushLiveGap(key,val);
+}
 function gapReasonText(gap){
   if(!gap)return 'Gap';
   if(gap.reason==='other')return gap.reasonDetail||'Other';
@@ -1247,6 +1269,10 @@ function plantForMasterRows(rows,fallback='p1'){
   const row=(rows||[]).find(r=>r._vesselNumber);
   return row?plantFromVessel(row._vesselNumber):fallback;
 }
+function isGreenTreatmentVessel(v){
+  const s=String(v||'').toLowerCase();
+  return s.includes('wtt')||s.includes('hickson')||s.includes('hicson')||s.includes('hixon');
+}
 function productCompareKey(row){
   const desc=productDescription(row).toLowerCase().replace(/\s+/g,' ').trim();
   const rawQty=String(row?._quantity||row?._scheduleOriginalQuantity||'').replace(/,/g,'').trim();
@@ -1275,6 +1301,7 @@ function getMasterSlots(day){
   const slots={p1:{},p2:{}};
   ['p1','p2'].forEach(pid=>{for(let n=1;n<=4;n++)slots[pid][n]={rows:[],plannedRows:[],actual:null,chargeNums:new Set()};});
   masterAllProducts.forEach(row=>{
+    if(isGreenTreatmentVessel(row._vesselNumber))return;
     const n=plannedChargeSlot(row._plannedCharge,day.dayIdx);
     if(!n||n<1||n>4)return;
     const key=normalizeChargeNumber(row._chargeNumber);
@@ -1283,6 +1310,7 @@ function getMasterSlots(day){
     if(key)slots[plant][n].chargeNums.add(key);
   });
   masterPlannedSchedule.forEach(row=>{
+    if(isGreenTreatmentVessel(row._vesselNumber))return;
     const n=plannedChargeSlot(row._plannedCharge,day.dayIdx);
     if(!n||n<1||n>4)return;
     const plant=plantFromVessel(row._vesselNumber);
