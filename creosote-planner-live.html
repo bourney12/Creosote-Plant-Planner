@@ -676,6 +676,45 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .inv-email-textarea:focus{border-color:var(--accent)}
 .inv-email-actions{display:flex;gap:8px;margin-top:8px}
 .inv-hint{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:7px}
+.nav-item{display:flex;align-items:center;gap:8px}
+.nav-badge{display:inline-block;margin-left:auto;font-size:8px;font-family:var(--mono);font-weight:700;padding:1px 5px;border-radius:99px;line-height:1.4;letter-spacing:.04em}
+.nav-badge.danger{background:rgba(224,92,92,.18);color:var(--red);border:1px solid rgba(224,92,92,.3)}
+.nav-badge.warn{background:rgba(232,147,71,.15);color:var(--amber);border:1px solid rgba(232,147,71,.3)}
+.inv-email-warn{display:flex;align-items:center;gap:8px;padding:7px 11px;background:rgba(232,147,71,.08);border:1px solid rgba(232,147,71,.22);border-radius:var(--radius);color:var(--amber);font-size:11px;margin-bottom:8px}
+.inv-runout-alert{margin-top:10px}
+.inv-runout-alert.alert,.alert.ok,.alert.danger{padding:8px 11px;border-radius:var(--radius);font-size:11px;font-family:var(--mono);border:1px solid;margin-bottom:10px}
+.alert.ok{background:rgba(47,125,72,.08);border-color:rgba(47,125,72,.22);color:var(--green)}
+.alert.danger{background:rgba(224,92,92,.08);border-color:rgba(224,92,92,.24);color:var(--red)}
+.inv-cal-chip{display:block;padding:2px 5px;border-radius:3px;font-size:8px;font-family:var(--mono);font-weight:600;background:rgba(47,125,72,.15);color:var(--green);border:1px solid rgba(47,125,72,.25);cursor:pointer;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-cal-chip:hover{background:rgba(47,125,72,.25)}
+.inv-suggest-bar{display:flex;align-items:center;gap:8px;margin:12px 0 14px;flex-wrap:wrap}
+.inv-suggest-status{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.inv-loading{text-align:center;padding:32px;color:var(--text3);font-family:var(--mono);font-size:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ti-loader-2.spinning{animation:spin 1s linear infinite;display:inline-block}
+.inv-empty{text-align:center;padding:24px;color:var(--text3);font-family:var(--mono);font-size:11px}
+.inv-empty i{display:block;font-size:20px;margin-bottom:6px;color:var(--text3)}
+.inv-empty p{margin:0;line-height:1.45}
+.inv-del-main{display:flex;align-items:center;gap:10px;width:100%}
+.inv-del-meta{font-family:var(--mono);font-size:10px;color:var(--text3);flex:1;min-width:120px}
+.inv-del-notes{font-family:var(--mono);font-size:10px;color:var(--text3);flex:1;min-width:130px}
+.inv-del-edit{display:grid;grid-template-columns:1.1fr 1fr .8fr 1fr auto;gap:6px;align-items:end;width:100%}
+.inv-del-edit label{display:block;font-size:8px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.inv-del-edit input,.inv-del-edit select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 6px;outline:none}
+.inv-del-edit input:focus,.inv-del-edit select:focus{border-color:var(--accent)}
+.inv-del-edit-actions{display:flex;gap:4px;align-items:center}
+.inv-modal-confirm{margin-top:10px;padding:8px 10px;background:rgba(224,92,92,.08);border:1px solid rgba(224,92,92,.2);border-radius:var(--radius);display:flex;align-items:center;gap:8px;font-size:11px;color:var(--red)}
+.inv-modal-confirm span{flex:1}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:5000;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.active{display:flex}
+.modal-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 18px 60px rgba(0,0,0,.28);padding:18px;width:min(460px,100%);max-height:92vh;overflow:auto}
+.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:4px}
+.modal-sub{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px}
+.modal-actions{display:flex;align-items:center;gap:8px;margin-top:12px}
+.qb{display:flex;gap:6px;flex-wrap:wrap}
+.qb button{font-size:10px;padding:4px 8px}
+@media(max-width:700px){.inv-del-edit{grid-template-columns:1fr 1fr}.inv-del-edit-actions{grid-column:1/-1}.inv-del-date,.inv-del-qty{width:auto;text-align:left}.inv-del-main{flex-wrap:wrap}.inv-del-acts{margin-left:auto}}
+@media(max-width:480px){.modal-card{padding:14px}.inv-cal-grid{font-size:10px;gap:2px}.inv-cal-cell{min-height:54px;padding:4px 2px}.inv-del-item{flex-wrap:wrap;gap:5px}.inv-suggest-bar .acc{width:100%;justify-content:center}.modal-actions{flex-wrap:wrap}.modal-actions button{flex:1}.inv-del-edit{grid-template-columns:1fr}.inv-del-edit-actions{justify-content:flex-start}}
 /* ═══════════════════════════════════════════════════
    END INVENTORY & FORECAST — CSS
    ═══════════════════════════════════════════════════ */
@@ -1038,10 +1077,10 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="card" style="margin-bottom:14px">
     <div class="card-title"><i class="ti ti-settings"></i> Forecast Settings</div>
     <div class="inv-fcast-settings">
-      <div class="inv-field"><label>Horizon (days)</label><input type="number" id="invHorizon" value="14" min="7" max="42" step="1" oninput="invFcastHorizon=+this.value||14;invRenderForecast()"></div>
-      <div class="inv-field"><label>Daily usage (kg)</label><input type="number" id="invDailyUse" value="45000" min="0" step="1000" oninput="invDailyUsage=+this.value||0;this.dataset.user=1;invRenderForecast()"></div>
-      <div class="inv-field"><label>Delivery size (kg)</label><input type="number" id="invDelSize" value="26000" min="1000" step="1000" oninput="invDelKg=+this.value||26000"></div>
-      <div class="inv-field"><label>Reorder point (kg)</label><input type="number" id="invReorder" value="80000" min="0" step="5000" oninput="invReorderKg=+this.value||80000;invRenderForecast()"></div>
+      <div class="inv-field"><label>Horizon (days)</label><input type="number" id="invHorizon" value="14" min="7" max="42" step="1" oninput="invFcastHorizon=+this.value||14;invSaveSettings();invRenderForecast()"></div>
+      <div class="inv-field"><label>Daily usage (kg)</label><input type="number" id="invDailyUse" value="45000" min="0" step="1000" oninput="invDailyUsage=+this.value||0;this.dataset.user=1;invSaveSettings();invRenderForecast()"></div>
+      <div class="inv-field"><label>Delivery size (kg)</label><input type="number" id="invDelSize" value="26000" min="1000" step="1000" oninput="invDelKg=+this.value||26000;invSaveSettings();invRenderForecast();invUpdateEmail()"></div>
+      <div class="inv-field"><label>Reorder point (kg)</label><input type="number" id="invReorder" value="80000" min="0" step="5000" oninput="invReorderKg=+this.value||80000;invSaveSettings();invRenderDashboard();invRenderForecast()"></div>
     </div>
   </div>
 
@@ -1050,6 +1089,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="card-title"><i class="ti ti-trending-up"></i> Stock Forecast</div>
     <div id="invFcastChart" style="margin-top:6px"><!-- Populated by invRenderForecast() --></div>
   </div>
+  <div class="inv-runout-alert alert ok" id="invRunoutAlert">Stock forecast loading.</div>
 
   <!-- Planned vs actual table -->
   <div class="card" style="margin-top:14px">
@@ -1064,13 +1104,20 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 <!-- ════════════════════════════════════════════════ -->
 <div class="panel" id="delivery-planner">
   <div class="sec-title">Delivery Planner</div>
-  <div class="sec-sub">Schedule deliveries · Generate order email · Mon–Fri only</div>
+  <div class="sec-sub">Schedule deliveries · Generate order email · Mon-Fri only</div>
+
+  <div class="inv-suggest-bar">
+    <button class="acc" onclick="invRunSuggestAll()" id="invSuggestAllBtn">
+      <i class="ti ti-magic"></i> Suggest Deliveries from Forecast
+    </button>
+    <span class="inv-suggest-status" id="invSuggestStatus"></span>
+  </div>
 
   <!-- Settings -->
   <div class="inv-del-settings">
     <div>
       <label>Supplier</label>
-      <select id="invSupplierSel" onchange="invSupplier=this.value;invUpdateEmail()">
+      <select id="invSupplierSel" onchange="invSupplier=this.value;invSaveSettings();invUpdateEmail()">
         <option value="Koppers">Koppers</option>
         <option value="Rutgers">Rutgers</option>
       </select>
@@ -1078,22 +1125,22 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div>
       <label>Default delivery (kg)</label>
       <input type="number" id="invDelSizeInp" value="26000" min="1000" step="1000"
-             oninput="invDelKg=+this.value||26000">
+             oninput="invDelKg=+this.value||26000;invSaveSettings();invRenderForecast();invUpdateEmail()">
     </div>
     <div>
       <label>Supplier email</label>
       <input type="text" id="invSupplierEmail" placeholder="orders@supplier.com"
-             oninput="invSupplierEmailVal=this.value">
+             oninput="invSupplierEmailVal=this.value;invSaveSettings();invUpdateEmail()">
     </div>
     <div>
       <label>Sender name</label>
       <input type="text" id="invSenderName" placeholder="Your name"
-             oninput="invSenderNameVal=this.value;invUpdateEmail()">
+             oninput="invSenderNameVal=this.value;invSaveSettings();invUpdateEmail()">
     </div>
     <div>
       <label>Site address</label>
       <input type="text" id="invSiteAddr" placeholder="Treatment plant address"
-             oninput="invSiteAddrVal=this.value;invUpdateEmail()">
+             oninput="invSiteAddrVal=this.value;invSaveSettings();invUpdateEmail()">
     </div>
   </div>
 
@@ -1105,7 +1152,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
       <button class="inv-cal-btn" onclick="invCalNext()">&#8250;</button>
     </div>
     <div class="inv-cal-grid" id="invCalGrid"></div>
-    <div class="inv-hint">Click a weekday to add a delivery · click again to add a second · click a third time to remove all</div>
+    <div class="inv-hint">Click an empty weekday to add a delivery. Click a delivery chip to edit it.</div>
   </div>
 
   <!-- Delivery list -->
@@ -1115,11 +1162,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <!-- Email generator -->
   <div class="inv-email-section">
     <div class="card-title" style="margin-bottom:10px"><i class="ti ti-mail"></i> Generate Order Email</div>
+    <div class="inv-email-warn" id="invEmailWarn" style="display:none">
+      <i class="ti ti-alert-triangle"></i> No deliveries fall within this date range.
+    </div>
     <div class="inv-email-range">
       <span>From</span>
-      <input type="date" id="invEmailFrom" onchange="invUpdateEmail()">
+      <input type="date" id="invEmailFrom" onchange="this.dataset.userSet=1;invUpdateEmail()">
       <span>To</span>
-      <input type="date" id="invEmailTo" onchange="invUpdateEmail()">
+      <input type="date" id="invEmailTo" onchange="this.dataset.userSet=1;invUpdateEmail()">
     </div>
     <textarea class="inv-email-textarea" id="invEmailTa" rows="11"></textarea>
     <div class="inv-email-actions">
@@ -1129,6 +1179,63 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   </div>
 </div>
 <!-- ════════════════════════════════════════════════ -->
+
+<!-- MODAL: ADD / EDIT DELIVERY -->
+<div class="modal-backdrop" id="invDelModal" onclick="if(event.target===this)invCloseDelModal()">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="invDelModalTitle">
+    <div class="modal-title" id="invDelModalTitle">Add Delivery</div>
+    <div class="modal-sub" id="invDelModalDate">-</div>
+
+    <div class="fg">
+      <label class="fl">Supplier</label>
+      <select id="invMSupplier" onchange="invToggleCustomSupplier()">
+        <option value="Koppers">Koppers</option>
+        <option value="Rutgers">Rutgers</option>
+        <option value="Other">Other...</option>
+      </select>
+      <input type="text" id="invMSupplierCustom" placeholder="Supplier name" style="display:none;margin-top:5px">
+    </div>
+
+    <div class="fg">
+      <label class="fl">Quantity (kg)</label>
+      <input type="number" id="invMQty" value="26000" min="1000" step="1000">
+      <div class="qb" style="margin-top:6px">
+        <button type="button" onclick="document.getElementById('invMQty').value=13000">13,000 kg</button>
+        <button type="button" onclick="document.getElementById('invMQty').value=26000">26,000 kg</button>
+        <button type="button" onclick="document.getElementById('invMQty').value=39000">39,000 kg</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Delivery Window</label>
+      <div class="qb">
+        <button type="button" id="invMWin_AM" onclick="invSetWindow('AM')" class="acc">AM</button>
+        <button type="button" id="invMWin_PM" onclick="invSetWindow('PM')">PM</button>
+        <button type="button" id="invMWin_full" onclick="invSetWindow('full')">Full day</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Notes (optional)</label>
+      <input type="text" id="invMNotes" maxlength="100" placeholder="e.g. Call ahead, second tank low">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" id="invMDeleteBtn" class="sm-red" onclick="invModalDelete()" style="margin-right:auto;display:none">
+        <i class="ti ti-trash"></i> Remove Delivery
+      </button>
+      <button type="button" onclick="invCloseDelModal()">Cancel</button>
+      <button type="button" class="acc" onclick="invModalSave()" id="invMSaveBtn">
+        <i class="ti ti-check"></i> Add Delivery
+      </button>
+    </div>
+    <div class="inv-modal-confirm" id="invMConfirmDelete" style="display:none">
+      <span>Remove this delivery?</span>
+      <button type="button" class="sm-red" onclick="invModalConfirmDelete()">Yes, remove</button>
+      <button type="button" onclick="invHideDeleteConfirm()">Keep it</button>
+    </div>
+  </div>
+</div>
 
 </div></div></div>
 
@@ -4248,6 +4355,8 @@ const INV_LOW_KG   =  80000;
 const INV_CRIT_KG  =  50000;
 
 /* ── Mutable state ── */
+const INV_SETTINGS_KEY = 'creosoteInvSettings';
+const INV_DEL_PLAN_KEY = 'invDeliveryPlan';
 let invFcastHorizon = 14;
 let invDailyUsage   = 45000;
 let invDelKg        = 26000;
@@ -4258,9 +4367,16 @@ let invSenderNameVal    = '';
 let invSiteAddrVal      = '';
 let invTankData     = {storageT1:{level:0},storageT2:{level:0},workT1:{level:0},workT2:{level:0}};
 let invChargeHist   = [];
-let invDelPlan      = [];   // [{date:'YYYY-MM-DD', kg:number, supplier:string}]
+let invDelPlan      = [];   // [{date:'YYYY-MM-DD', kg:number, supplier:string, window:string, notes:string, ref:string, addedAt:string}]
 let invCalYear      = new Date().getFullYear();
 let invCalMonth     = new Date().getMonth();
+let invDataLoading  = false;
+let invEditingRef   = null;
+let invModalMode    = 'add';
+let invModalDate    = null;
+let invModalRef     = null;
+let invModalWindow  = 'AM';
+let invLastFocus    = null;
 
 /* ── Helpers ── */
 function invAddDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
@@ -4270,14 +4386,73 @@ function invFmtKg(n){return Math.round(n).toLocaleString('en-GB')+' kg'}
 function invFmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
 function invFmtFull(d){return d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}
 function invTotal(){return(invTankData.storageT1?.level||0)+(invTankData.storageT2?.level||0)+(invTankData.workT1?.level||0)+(invTankData.workT2?.level||0)}
+function invDateKey(d){return d.toISOString().split('T')[0]}
+function invWindowLabel(w){return w==='full'?'Full day':(w||'AM')}
+function invMakeRef(date){
+  const prefix='DEL-'+date.replace(/-/g,'')+'-';
+  let n=1;
+  const used=new Set(invDelPlan.filter(d=>d.date===date&&d.ref).map(d=>d.ref));
+  while(used.has(prefix+String(n).padStart(3,'0')))n++;
+  return prefix+String(n).padStart(3,'0');
+}
+function invSupplierOptions(selected){
+  const s=selected||invSupplier;
+  const custom=s&&!['Koppers','Rutgers'].includes(s);
+  return `<option value="Koppers" ${s==='Koppers'?'selected':''}>Koppers</option><option value="Rutgers" ${s==='Rutgers'?'selected':''}>Rutgers</option>${custom?`<option value="${s}" selected>${s}</option>`:''}<option value="Other">Other...</option>`;
+}
+function invNormaliseDel(d,i){
+  const date=d.date||invDateKey(new Date());
+  return {window:'AM',notes:'',addedAt:new Date().toISOString(),ref:'DEL-'+date.replace(/-/g,'')+'-'+String(i+1).padStart(3,'0'),...d,date,kg:+d.kg||invDelKg,supplier:d.supplier||invSupplier};
+}
+function invAfterChange(){
+  invSaveDelPlan();
+  invRenderCalendar();
+  invRenderDelList();
+  invRenderForecast();
+  invUpdateEmail();
+  invUpdateNavBadges();
+}
 
 /* ── Storage ── */
+function invSaveSettings(){
+  try{
+    localStorage.setItem(INV_SETTINGS_KEY,JSON.stringify({
+      horizon:invFcastHorizon,
+      dailyUsage:invDailyUsage,
+      delKg:invDelKg,
+      reorderKg:invReorderKg,
+      supplier:invSupplier,
+      supplierEmail:invSupplierEmailVal,
+      senderName:invSenderNameVal,
+      siteAddr:invSiteAddrVal
+    }));
+  }catch(e){}
+}
+function invLoadSettings(){
+  try{
+    const s=JSON.parse(localStorage.getItem(INV_SETTINGS_KEY)||'{}');
+    if(s.horizon){invFcastHorizon=+s.horizon;const el=document.getElementById('invHorizon');if(el)el.value=invFcastHorizon}
+    if(s.dailyUsage){invDailyUsage=+s.dailyUsage;const el=document.getElementById('invDailyUse');if(el){el.value=invDailyUsage;el.dataset.user=1}}
+    if(s.delKg){invDelKg=+s.delKg;['invDelSize','invDelSizeInp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=invDelKg})}
+    if(s.reorderKg){invReorderKg=+s.reorderKg;const el=document.getElementById('invReorder');if(el)el.value=invReorderKg}
+    if(s.supplier){invSupplier=s.supplier;const el=document.getElementById('invSupplierSel');if(el&&['Koppers','Rutgers'].includes(invSupplier))el.value=invSupplier}
+    if(s.supplierEmail){invSupplierEmailVal=s.supplierEmail;const el=document.getElementById('invSupplierEmail');if(el)el.value=s.supplierEmail}
+    if(s.senderName){invSenderNameVal=s.senderName;const el=document.getElementById('invSenderName');if(el)el.value=s.senderName}
+    if(s.siteAddr){invSiteAddrVal=s.siteAddr;const el=document.getElementById('invSiteAddr');if(el)el.value=s.siteAddr}
+  }catch(e){}
+}
 function invLoadStorage(){
   try{const r=localStorage.getItem('bulkTankReadings');if(r)invTankData=JSON.parse(r)}catch(e){}
-  try{const r=localStorage.getItem('invDeliveryPlan');if(r)invDelPlan=JSON.parse(r).map(d=>({...d,date:d.date}))}catch(e){}
+  try{
+    const r=localStorage.getItem(INV_DEL_PLAN_KEY);
+    if(r){
+      invDelPlan=JSON.parse(r).map(invNormaliseDel);
+      localStorage.setItem(INV_DEL_PLAN_KEY,JSON.stringify(invDelPlan));
+    }
+  }catch(e){invDelPlan=[]}
 }
 function invSaveDelPlan(){
-  localStorage.setItem('invDeliveryPlan',JSON.stringify(invDelPlan));
+  localStorage.setItem(INV_DEL_PLAN_KEY,JSON.stringify(invDelPlan));
   const bridgeUrl=typeof liveBridgeUrl==='function'?liveBridgeUrl():'';
   if(bridgeUrl){
     fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -4317,6 +4492,9 @@ function invTankSVG(key,label,type,kg){
   const pct=Math.round(g.pct*100);
   const pCol=pct>=90?'var(--amber)':pct<20?'var(--red)':'var(--green)';
   const gid='ivg_'+key;
+  const reorderFrac=Math.min(Math.max(invReorderKg/(INV_SAFE||INV_MAX),0),1);
+  const reorderY=17+(178-(reorderFrac*178));
+  const statusPill=kg<INV_CRIT_KG?'CRITICAL':kg<invReorderKg?'LOW':'OK';
   return`<div class="inv-tank-col">
   <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:3px">
     <span class="inv-type-bdg ${type}">${type==='storage'?'Storage':'Process'}</span>
@@ -4341,9 +4519,11 @@ function invTankSVG(key,label,type,kg){
       <path d="${invWavePath(g.fillY)}" fill="#CC0000" opacity=".28" style="animation:invWave 3s linear infinite"/>
       <rect x="13" y="${g.fillY-1}" width="62" height="2.5" fill="#FF3333" opacity=".65"/>
       <line x1="13" x2="75" y1="20.6" y2="20.6" stroke="#c9782e" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="13" x2="75" y1="${reorderY.toFixed(1)}" y2="${reorderY.toFixed(1)}" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4,3"/>
     </g>
     <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5" opacity=".34"/>
     <text x="77" y="24" font-size="6.5" fill="#c9782e" font-family="'DM Mono',monospace">SAFE MAX</text>
+    <text x="77" y="${Math.max(30,reorderY-2).toFixed(1)}" font-size="8" fill="var(--amber)" font-family="'DM Mono',monospace">Reorder</text>
     <ellipse cx="44" cy="196" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
     <rect x="40" y="203" width="8" height="13" fill="#707070"/>
     <polygon points="36,209 44,215 36,215" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
@@ -4352,6 +4532,7 @@ function invTankSVG(key,label,type,kg){
   <div class="inv-tank-name">${label}</div>
   <div class="inv-tank-kg">${invFmtKg(kg)}</div>
   <div class="inv-tank-pct" style="color:${pCol}">${pct}%</div>
+  <span class="inv-st-bdg ${st.c}">${statusPill}</span>
 </div>`;
 }
 
@@ -4369,9 +4550,9 @@ function invRenderDashboard(){
 
   const banner=s('invBanner');const bannerTxt=s('invBannerText');
   if(banner&&bannerTxt){
-    if(total<=INV_CRIT_KG){banner.className='inv-banner danger';bannerTxt.textContent='Critical: stock below '+invFmtKg(INV_CRIT_KG)+' — order immediately'}
-    else if(total<=INV_LOW_KG){banner.className='inv-banner warn';bannerTxt.textContent='Low stock: '+invFmtKg(total)+' remaining — consider ordering'}
-    else{banner.className='inv-banner ok';bannerTxt.textContent='Stock healthy — '+invFmtKg(total)+' · '+pct+'% of safe capacity'}
+    if(total<=INV_CRIT_KG){banner.className='inv-banner danger';bannerTxt.textContent='Critical: stock below '+invFmtKg(INV_CRIT_KG)+' - order immediately'}
+    else if(total<=invReorderKg){banner.className='inv-banner warn';bannerTxt.textContent='Below reorder point ('+invFmtKg(invReorderKg)+'): '+invFmtKg(total)+' remaining'}
+    else{banner.className='inv-banner ok';bannerTxt.textContent='Stock healthy - '+invFmtKg(total)+'; reorder point '+invFmtKg(invReorderKg)}
   }
 
   const tanks=[
@@ -4402,6 +4583,21 @@ function invRenderDashboard(){
   }
 
   invRenderWeekChart();
+  invUpdateNavBadges();
+}
+
+function invUpdateNavBadges(){
+  const total=invTotal();
+  const navInv=document.getElementById('nav-inv-dashboard');
+  const navDel=document.getElementById('nav-delivery-planner');
+  [navInv,navDel].forEach(n=>n&&n.querySelectorAll('.nav-badge').forEach(b=>b.remove()));
+  if(navInv){
+    if(total<INV_CRIT_KG)navInv.insertAdjacentHTML('beforeend','<span class="nav-badge danger">CRITICAL</span>');
+    else if(total<invReorderKg)navInv.insertAdjacentHTML('beforeend','<span class="nav-badge warn">LOW</span>');
+  }
+  const today=invDateKey(new Date());
+  const upcomingDels=invDelPlan.filter(d=>d.date>=today).length;
+  if(navDel&&upcomingDels===0&&total<invReorderKg)navDel.insertAdjacentHTML('beforeend','<span class="nav-badge danger">!</span>');
 }
 
 /* ── Weekly chart (plain SVG) ── */
@@ -4440,7 +4636,8 @@ function invRenderWeekChart(){
 /* ── Usage table ── */
 function invRenderUsageTable(){
   const el=document.getElementById('invUsageTable');if(!el)return;
-  if(!invChargeHist.length){el.innerHTML='<p style="font-size:11px;color:var(--text3);padding:10px;font-family:var(--mono)">No charge history. Check bridge connection.</p>';return}
+  if(invDataLoading){el.innerHTML='<div class="inv-loading" id="invLoadingState"><i class="ti ti-loader-2 spinning"></i> Loading inventory data...</div>';return}
+  if(!invChargeHist.length){el.innerHTML='<div class="inv-empty"><i class="ti ti-database-off"></i><p>No usage data available. Connect the Google Apps Script bridge to see planned vs actual data.</p></div>';return}
   let tp=0,ta=0;
   const rows=invChargeHist.map(c=>{
     const plan=c.plannedKg||Math.round((c.m3||0)*INV_UPTAKE);
@@ -4464,7 +4661,7 @@ function invUpdateAvgs(){
   if(s('invAvg7'))s('invAvg7').textContent=invFmtKg(a7);
   if(s('invAvg14'))s('invAvg14').textContent=invFmtKg(a14);
   if(s('invAvg30'))s('invAvg30').textContent=invFmtKg(a30);
-  const inp=s('invDailyUse');if(inp&&!inp.dataset.user){inp.value=a14;invDailyUsage=a14}
+  const inp=s('invDailyUse');if(inp&&!inp.dataset.user){inp.value=a14;invDailyUsage=a14;invSaveSettings()}
 }
 
 /* ── Forecast chart ── */
@@ -4498,10 +4695,17 @@ function invRenderForecast(){
     const bh=(pt.after/maxS)*ph,by=ysc(pt.after);
     const col=pt.alert==='danger'?'#ba3d35':pt.alert==='warn'?'#c9782e':'#2f7d48';
     if(pt.isWe)svg+=`<rect x="${x}" y="${pl.t}" width="${bw}" height="${ph}" fill="rgba(46,62,46,.04)" rx="1"/>`;
-    svg+=`<rect x="${x+1}" y="${by}" width="${bw-2}" height="${bh}" fill="${col}" rx="2" opacity="${pt.isWe?.3:.8}"/>`;
+    svg+=`<rect x="${x+1}" y="${by}" width="${bw-2}" height="${bh}" fill="${col}" rx="2" opacity="${pt.isWe?.3:.8}"><title>${invFmtFull(pt.d)}: ${invFmtKg(pt.after)} after usage and deliveries</title></rect>`;
     if(pt.delKg>0){const dy=ysc(pt.stockBefore)-6;svg+=`<polygon points="${x+bw/2},${dy-7} ${x+bw/2+6},${dy} ${x+bw/2},${dy+7} ${x+bw/2-6},${dy}" fill="var(--accent)" opacity=".9"/>`}
     if(i===0||pt.d.getDay()===1||i===invFcastHorizon-1){const lbl=pt.d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});svg+=`<text x="${x+bw/2}" y="${H-6}" text-anchor="middle" fill="#879080">${lbl}</text>`}
   });
+  const risk=pts.find(p=>p.after<INV_CRIT_KG);
+  if(risk){
+    const i=pts.indexOf(risk);
+    const x=pl.l+(i/invFcastHorizon)*pw+(bw/2);
+    svg+=`<line x1="${x}" x2="${x}" y1="${pl.t}" y2="${pl.t+ph}" stroke="var(--red)" stroke-width="1.2" stroke-dasharray="4,3"/>`;
+    svg+=`<text x="${Math.min(W-95,Math.max(pl.l+5,x+4))}" y="${pl.t+10}" fill="var(--red)" font-size="9">Run-out risk ${risk.d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</text>`;
+  }
   svg+='</svg>';
   const suggests=[];
   pts.forEach((pt,i)=>{
@@ -4513,12 +4717,54 @@ function invRenderForecast(){
   });
   const sugHtml=suggests.slice(0,3).map(s=>`<div class="inv-suggest ${s.alert}"><i class="ti ti-alert-${s.alert==='danger'?'triangle':'circle'}" style="color:${s.alert==='danger'?'var(--red)':'var(--amber)'}"></i><span style="flex:1">Stock hits <strong>${s.alert}</strong> on <strong>${invFmtDate(s.trig)}</strong> — suggest delivery <strong>${invFmtDate(s.sd)}</strong></span><button class="sm-green" onclick="invAddSuggest('${s.ds}')">+ Add</button></div>`).join('');
   el.innerHTML=`${svg}<div class="inv-chart-legend"><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#2f7d48" rx="1" opacity=".8"/></svg> Healthy</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#c9782e" rx="1" opacity=".8"/></svg> Low</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#ba3d35" rx="1" opacity=".8"/></svg> Critical</span><span><svg width="10" height="7"><polygon points="5,1 9,4 5,8 1,4" fill="var(--accent)"/></svg> Delivery</span></div>${sugHtml}`;
+  const alert=document.getElementById('invRunoutAlert');
+  if(alert){
+    if(risk){
+      const days=Math.max(0,Math.round((risk.d-new Date())/86400000));
+      alert.className='inv-runout-alert alert danger';
+      alert.textContent='At current usage, stock critical by '+invFmtDate(risk.d)+' ('+days+' days).';
+    }else{
+      alert.className='inv-runout-alert alert ok';
+      alert.textContent='Stock sufficient for the full forecast period.';
+    }
+  }
 }
 
 function invAddSuggest(ds){
-  invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier});
-  invSaveDelPlan();invRenderCalendar();invRenderDelList();invRenderForecast();invUpdateEmail();
+  invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier,window:'AM',notes:'Auto-suggested',ref:invMakeRef(ds),addedAt:new Date().toISOString()});
+  invAfterChange();
   if(typeof showPanel==='function')showPanel('delivery-planner');
+}
+
+function invRunSuggestAll(){
+  const today=new Date();today.setHours(0,0,0,0);
+  let stock=invTotal();
+  let added=0;
+  for(let i=0;i<(invFcastHorizon||14);i++){
+    const day=invAddDays(today,i);
+    const ds=invDateKey(day);
+    stock-=invIsWe(day)?0:invDailyUsage;
+    stock+=invDelPlan.filter(x=>x.date===ds).reduce((s,x)=>s+x.kg,0);
+    if(stock<invReorderKg){
+      let target=invAddDays(day,-1);
+      while(invIsWe(target))target=invAddDays(target,-1);
+      const tds=invDateKey(target);
+      if(!invDelPlan.some(x=>x.date===tds)){
+        invDelPlan.push({date:tds,kg:invDelKg,supplier:invSupplier,window:'AM',notes:'Auto-suggested',ref:invMakeRef(tds),addedAt:new Date().toISOString()});
+        stock+=invDelKg;
+        added++;
+      }
+    }
+  }
+  invAfterChange();
+  const status=document.getElementById('invSuggestStatus');
+  const btn=document.getElementById('invSuggestAllBtn');
+  if(status)status.textContent='Added '+added+' suggested '+(added===1?'delivery':'deliveries')+' based on current forecast.';
+  if(btn){
+    const orig='<i class="ti ti-magic"></i> Suggest Deliveries from Forecast';
+    btn.innerHTML='<i class="ti ti-check"></i> Added '+added;
+    setTimeout(()=>{btn.innerHTML=orig},3000);
+  }
 }
 
 /* ── Calendar ── */
@@ -4547,62 +4793,190 @@ function invRenderCalendar(){
     let cls='inv-cal-cell '+(isWe?'we':'wd');
     if(isToday)cls+=' today';
     if(dels.length)cls+=' hasdel';
-    const oc=(!isWe&&inM)?`onclick="invToggleDel('${ds}')"`:'' ;
-    const badges=dels.map(del=>`<div class="inv-cal-del-bdg">${(del.kg/1000).toFixed(0)}k kg</div>`).join('');
+    const oc=(!isWe&&inM)?`onclick="invOpenDelModal('${ds}')"`:'' ;
+    const badges=dels.map(del=>`<button type="button" class="inv-cal-chip" onclick="event.stopPropagation();invOpenDelModal('${ds}','${del.ref}')" title="${del.supplier} ${invFmtKg(del.kg)}">${invWindowLabel(del.window)} ${(del.kg/1000).toFixed(0)}k</button>`).join('');
     html+=`<div class="${cls}" style="${!inM?'opacity:.3':''}" ${oc}><div class="inv-cal-dn${isToday?' today':''}">${d.getDate()}</div>${badges}</div>`;
   }
   grid.innerHTML=html;
 }
 function invToggleDel(ds){
-  const ex=invDelPlan.filter(x=>x.date===ds);
-  if(ex.length===0)invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier});
-  else if(ex.length===1)invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier});
-  else invDelPlan=invDelPlan.filter(x=>x.date!==ds);
-  invSaveDelPlan();invRenderCalendar();invRenderDelList();invRenderForecast();invUpdateEmail();
+  invOpenDelModal(ds);
+}
+
+function invToggleCustomSupplier(){
+  const sel=document.getElementById('invMSupplier');
+  const custom=document.getElementById('invMSupplierCustom');
+  if(custom)custom.style.display=sel&&sel.value==='Other'?'block':'none';
+}
+function invSetWindow(w){
+  invModalWindow=w;
+  ['AM','PM','full'].forEach(v=>{
+    const btn=document.getElementById('invMWin_'+v);
+    if(btn)btn.classList.toggle('acc',v===w);
+  });
+}
+function invOpenDelModal(date,ref=null){
+  invModalDate=date;
+  invModalRef=ref;
+  invModalMode=ref?'edit':'add';
+  invLastFocus=document.activeElement;
+  const del=ref?invDelPlan.find(d=>d.ref===ref):null;
+  const d=new Date(date+'T12:00:00');
+  document.getElementById('invDelModalDate').textContent=invFmtFull(d);
+  document.getElementById('invDelModalTitle').textContent=ref?'Edit Delivery':'Add Delivery';
+  document.getElementById('invMSaveBtn').innerHTML=ref?'<i class="ti ti-check"></i> Save Changes':'<i class="ti ti-check"></i> Add Delivery';
+  document.getElementById('invMDeleteBtn').style.display=ref?'inline-flex':'none';
+  document.getElementById('invMConfirmDelete').style.display='none';
+  const supplier=del?.supplier||invSupplier;
+  const sel=document.getElementById('invMSupplier');
+  const custom=document.getElementById('invMSupplierCustom');
+  if(sel)sel.value=['Koppers','Rutgers'].includes(supplier)?supplier:'Other';
+  if(custom){
+    custom.style.display=['Koppers','Rutgers'].includes(supplier)?'none':'block';
+    custom.value=['Koppers','Rutgers'].includes(supplier)?'':supplier;
+  }
+  document.getElementById('invMQty').value=del?.kg||invDelKg;
+  document.getElementById('invMNotes').value=del?.notes||'';
+  invSetWindow(del?.window||'AM');
+  const modal=document.getElementById('invDelModal');
+  modal.classList.add('active');
+  setTimeout(()=>document.getElementById('invMQty')?.focus(),0);
+}
+function invCloseDelModal(){
+  const modal=document.getElementById('invDelModal');
+  if(modal)modal.classList.remove('active');
+  if(invLastFocus&&typeof invLastFocus.focus==='function')invLastFocus.focus();
+}
+function invModalSave(){
+  const selSup=document.getElementById('invMSupplier').value;
+  const supplier=selSup==='Other'?(document.getElementById('invMSupplierCustom').value.trim()||'Other'):selSup;
+  const kg=parseInt(document.getElementById('invMQty').value,10);
+  if(!kg||kg<1000){document.getElementById('invMQty').focus();return}
+  const notes=document.getElementById('invMNotes').value.trim().slice(0,100);
+  const window_=invModalWindow;
+  if(invModalMode==='edit'&&invModalRef){
+    const idx=invDelPlan.findIndex(d=>d.ref===invModalRef);
+    if(idx>=0)Object.assign(invDelPlan[idx],{supplier,kg,notes,window:window_});
+  }else{
+    invDelPlan.push({date:invModalDate,kg,supplier,window:window_,notes,ref:invMakeRef(invModalDate),addedAt:new Date().toISOString()});
+  }
+  invCloseDelModal();
+  invAfterChange();
+}
+function invModalDelete(){
+  document.getElementById('invMConfirmDelete').style.display='flex';
+  document.getElementById('invMDeleteBtn').style.display='none';
+}
+function invHideDeleteConfirm(){
+  document.getElementById('invMConfirmDelete').style.display='none';
+  document.getElementById('invMDeleteBtn').style.display='inline-flex';
+}
+function invModalConfirmDelete(){
+  if(invModalRef)invDelPlan=invDelPlan.filter(d=>d.ref!==invModalRef);
+  invCloseDelModal();
+  invAfterChange();
 }
 
 /* ── Delivery list ── */
 function invRenderDelList(){
   const el=document.getElementById('invDelList');if(!el)return;
-  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date));
+  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date)||a.ref.localeCompare(b.ref));
   if(!sorted.length){el.innerHTML='<div class="inv-del-empty">No deliveries planned. Click a weekday on the calendar to add.</div>';return}
   const rows=sorted.map((del,i)=>{
     const d=new Date(del.date+'T12:00:00');
-    return`<div class="inv-del-item"><div class="inv-del-date">${d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</div><div class="inv-del-sup">${del.supplier}</div><div class="inv-del-qty">${del.kg.toLocaleString()} kg</div><div class="inv-del-acts"><button class="sm-blue" onclick="invEditDel(${i})" title="Edit"><i class="ti ti-edit"></i></button><button class="sm-red" onclick="invRemoveDel(${i})" title="Remove"><i class="ti ti-trash"></i></button></div></div>`;
+    if(invEditingRef===del.ref)return invRenderDelEdit(del,d);
+    return`<div class="inv-del-item"><div class="inv-del-main"><div class="inv-del-date">${d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</div><div class="inv-del-sup">${del.supplier}</div><div class="inv-del-meta">${invWindowLabel(del.window)} - ${del.ref}</div><div class="inv-del-notes">${del.notes||''}</div><div class="inv-del-qty">${del.kg.toLocaleString()} kg</div><div class="inv-del-acts"><button class="sm-blue" onclick="invStartInlineEdit('${del.ref}')" title="Edit"><i class="ti ti-edit"></i></button><button class="sm-red" onclick="invRemoveDelRef('${del.ref}')" title="Remove"><i class="ti ti-trash"></i></button></div></div></div>`;
   }).join('');
   const tot=sorted.reduce((s,d)=>s+d.kg,0);
-  el.innerHTML=rows+`<div class="inv-del-total">${sorted.length} deliveries · ${invFmtKg(tot)} total · avg ${invFmtKg(Math.round(tot/sorted.length))}/delivery</div>`;
+  const status=tot>=invReorderKg?'above':'below';
+  el.innerHTML=rows+`<div class="inv-del-total">${sorted.length} deliveries - ${invFmtKg(tot)} total (${status} reorder point ${invFmtKg(invReorderKg)}) - avg ${invFmtKg(Math.round(tot/sorted.length))}/delivery</div>`;
 }
-function invEditDel(i){
-  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date));
-  const del=sorted[i];
-  const nv=parseInt(prompt(`Delivery quantity (kg) for ${del.date}:`,del.kg),10);
-  if(nv&&nv>0){const ri=invDelPlan.findIndex(x=>x.date===del.date&&x.kg===del.kg&&x.supplier===del.supplier);if(ri>=0)invDelPlan[ri].kg=nv;invSaveDelPlan();invRenderDelList();invRenderCalendar();invRenderForecast();invUpdateEmail()}
+function invRenderDelEdit(del,d){
+  return`<div class="inv-del-item"><div class="inv-del-edit"><div><label>Date</label><input type="date" id="ed_date_${del.ref}" value="${del.date}"></div><div><label>Supplier</label><select id="ed_sup_${del.ref}">${invSupplierOptions(del.supplier)}</select></div><div><label>Quantity</label><input type="number" id="ed_kg_${del.ref}" value="${del.kg}" min="1000" step="1000"></div><div><label>Window</label><select id="ed_win_${del.ref}"><option value="AM" ${del.window==='AM'?'selected':''}>AM</option><option value="PM" ${del.window==='PM'?'selected':''}>PM</option><option value="full" ${del.window==='full'?'selected':''}>Full day</option></select></div><div class="inv-del-edit-actions"><button class="sm-green" onclick="invSaveInlineEdit('${del.ref}')" title="Save"><i class="ti ti-check"></i></button><button onclick="invCancelInlineEdit()" title="Cancel"><i class="ti ti-x"></i></button><button class="sm-red" onclick="invRemoveDelRef('${del.ref}')" title="Delete"><i class="ti ti-trash"></i></button></div></div></div>`;
+}
+function invStartInlineEdit(ref){
+  invEditingRef=ref;
+  invRenderDelList();
+}
+function invCancelInlineEdit(){
+  invEditingRef=null;
+  invRenderDelList();
+}
+function invSaveInlineEdit(ref){
+  const d=invDelPlan.find(x=>x.ref===ref);
+  if(!d)return;
+  const date=document.getElementById('ed_date_'+ref).value;
+  const kg=parseInt(document.getElementById('ed_kg_'+ref).value,10);
+  const supplier=document.getElementById('ed_sup_'+ref).value;
+  const window_=document.getElementById('ed_win_'+ref).value;
+  if(!date||!kg||kg<1000)return;
+  Object.assign(d,{date,kg,supplier,window:window_});
+  invEditingRef=null;
+  invAfterChange();
+}
+function invEditDel(ref){
+  if(typeof ref==='number'){
+    const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date)||a.ref.localeCompare(b.ref));
+    ref=sorted[ref]?.ref;
+  }
+  if(ref)invStartInlineEdit(ref);
 }
 function invRemoveDel(i){
-  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date));
+  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date)||a.ref.localeCompare(b.ref));
   const del=sorted[i];
-  const ri=invDelPlan.findIndex(x=>x.date===del.date&&x.kg===del.kg&&x.supplier===del.supplier);
-  if(ri>=0)invDelPlan.splice(ri,1);
-  invSaveDelPlan();invRenderDelList();invRenderCalendar();invRenderForecast();invUpdateEmail();
+  if(del)invRemoveDelRef(del.ref);
+}
+function invRemoveDelRef(ref){
+  invDelPlan=invDelPlan.filter(d=>d.ref!==ref);
+  invEditingRef=null;
+  invAfterChange();
 }
 
 /* ── Email ── */
+function invEnsureEmailRange(){
+  const fe=document.getElementById('invEmailFrom');
+  const te=document.getElementById('invEmailTo');
+  if(!fe||!te)return;
+  const allDates=invDelPlan.map(d=>d.date).sort();
+  if(allDates.length&&!fe.dataset.userSet){
+    fe.value=allDates[0];
+    te.value=allDates[allDates.length-1];
+  }else{
+    if(!fe.value)fe.value=invDateKey(new Date());
+    if(!te.value)te.value=invDateKey(invAddDays(new Date(),28));
+  }
+}
+function invOrderRef(){
+  return 'ORD-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(Math.random()*900+100);
+}
 function invUpdateEmail(){
   const ta=document.getElementById('invEmailTa');
   const fe=document.getElementById('invEmailFrom');
   const te=document.getElementById('invEmailTo');
+  const warn=document.getElementById('invEmailWarn');
   if(!ta||!fe||!te)return;
-  const from=new Date(fe.value),to=new Date(te.value);
+  invEnsureEmailRange();
+  const from=new Date(fe.value+'T00:00:00'),to=new Date(te.value+'T23:59:59');
   if(isNaN(from)||isNaN(to))return;
-  const inRange=invDelPlan.filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt>=from&&dt<=to}).sort((a,b)=>a.date.localeCompare(b.date));
-  const lines=inRange.map(del=>{const d=new Date(del.date+'T12:00:00');return'  '+invFmtFull(d)+'    —    '+del.kg.toLocaleString()+' kg'}).join('\n');
+  const inRange=invDelPlan.filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt>=from&&dt<=to}).sort((a,b)=>a.date.localeCompare(b.date)||a.ref.localeCompare(b.ref));
+  if(warn)warn.style.display=inRange.length?'none':'flex';
+  if(!inRange.length){
+    ta.value='';
+    ta.dataset.subject='Creosote delivery order - no deliveries selected';
+    return;
+  }
+  const orderRef=invOrderRef();
   const tot=inRange.reduce((s,d)=>s+d.kg,0);
-  const fStr=from.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-  const tStr=to.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-  const mStr=from.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  const subj=`Creosote Delivery Schedule — ${mStr}`;
-  const body=`Dear ${invSupplier} Team,\n\nPlease find below our delivery schedule for ${fStr} to ${tStr}.\n${invSiteAddrVal?'Delivery address: '+invSiteAddrVal+'\n':''}\nScheduled deliveries:\n\n${lines||'  No deliveries scheduled in this period'}\n\nTotal: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} · ${tot.toLocaleString()} kg\n\nPlease confirm receipt and advise of any scheduling conflicts.\nDeliveries accepted Monday to Friday between 07:00 and 16:00.\n\nKind regards,\n${invSenderNameVal||'[Sender name]'}\n${invSiteAddrVal||'[Site name]'}`;
+  const supplier=inRange[0]?.supplier||invSupplier;
+  const sep='-----------------------------------------------------';
+  const lines=inRange.map(del=>{
+    const d=invFmtFull(new Date(del.date+'T12:00:00')).padEnd(25,' ');
+    const w=invWindowLabel(del.window).padEnd(9,' ');
+    const q=(del.kg.toLocaleString('en-GB')+' kg').padEnd(12,' ');
+    return d+w+q+(del.notes||'');
+  }).join('\n');
+  const subj=`Creosote order ${orderRef} - ${inRange.length} deliveries - ${tot.toLocaleString('en-GB')} kg`;
+  const body=`ORDER REFERENCE: ${orderRef}\n\nDear ${supplier} Team,\n\nPlease place the following creosote delivery order on our behalf:\n\nDELIVERY ADDRESS:\n${invSiteAddrVal||'[Site address]'}\n\nSCHEDULED DELIVERIES:\nDate                     Window   Quantity    Notes\n${sep}\n${lines}\n${sep}\nTOTAL: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} | ${tot.toLocaleString('en-GB')} kg\n\nPlease confirm receipt of this order and advise of any scheduling conflicts.\nDeliveries accepted Monday to Friday, 07:00-16:00.\n\nKind regards,\n${invSenderNameVal||'[Sender name]'}\n${invSiteAddrVal||'[Site name]'}`;
   ta.value=body;ta.dataset.subject=subj;
 }
 function invCopyEmail(){
@@ -4616,31 +4990,48 @@ function invCopyEmail(){
 function invOpenMail(){
   const ta=document.getElementById('invEmailTa');
   const em=document.getElementById('invSupplierEmail');
-  if(!ta)return;
-  window.open(`mailto:${em?.value||''}?subject=${encodeURIComponent(ta.dataset.subject||'Creosote Delivery Schedule')}&body=${encodeURIComponent(ta.value)}`);
+  if(!ta||!ta.value){invUpdateEmail();return}
+  const win=window.open(`mailto:${em?.value||''}?subject=${encodeURIComponent(ta.dataset.subject||'Creosote Delivery Order')}&body=${encodeURIComponent(ta.value)}`);
+  if(!win)invCopyEmail();
 }
 
 /* ── Full refresh ── */
 async function invRefreshAll(){
   invLoadStorage();
+  invLoadSettings();
+  invDataLoading=true;
+  invRenderUsageTable();
   const hist=await invBridge('getChargeHistory',{days:30});
   if(hist?.charges)invChargeHist=hist.charges;
+  invDataLoading=false;
   invUpdateAvgs();
   invRenderDashboard();
   invRenderUsageTable();
   invRenderForecast();
+  invRenderCalendar();
+  invRenderDelList();
+  invUpdateEmail();
   const ts=document.getElementById('invRefreshTs');
   if(ts)ts.textContent='Refreshed: '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
 
+document.addEventListener('keydown',e=>{
+  const modal=document.getElementById('invDelModal');
+  if(!modal||!modal.classList.contains('active'))return;
+  if(e.key==='Escape'){e.preventDefault();invCloseDelModal();return}
+  if(e.key!=='Tab')return;
+  const focusable=[...modal.querySelectorAll('button,input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled&&el.offsetParent!==null);
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
+
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded',()=>{
   invLoadStorage();
-  // Default email date range
-  const fe=document.getElementById('invEmailFrom');
-  const te=document.getElementById('invEmailTo');
-  if(fe)fe.value=new Date().toISOString().split('T')[0];
-  if(te)te.value=invAddDays(new Date(),28).toISOString().split('T')[0];
+  invLoadSettings();
+  invEnsureEmailRange();
   invRenderCalendar();
   invRenderDelList();
   invRefreshAll();
