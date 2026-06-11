@@ -299,9 +299,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .access-operator .log-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:8px;align-items:stretch;}
 .access-operator .log-card{padding:9px 10px;border-radius:8px;min-width:0;width:100%;}
 .access-operator .log-card-title{font-size:10px;margin-bottom:7px;}
-.access-operator .charge-log-row{display:grid;grid-template-columns:80px 88px minmax(0,1fr) 76px;column-gap:8px;row-gap:6px;padding:9px 0 8px;align-items:center;border-bottom:2px solid rgba(46,62,46,.18);}
+.access-operator .charge-log-row{display:grid;grid-template-columns:78px 84px minmax(96px,1fr) 70px;column-gap:7px;row-gap:6px;padding:9px 0 8px;align-items:center;border-bottom:2px solid rgba(46,62,46,.18);}
 .access-operator .clr-pos{width:auto;font-size:12px;font-weight:800;color:var(--text);letter-spacing:.01em;}
-.access-operator .charge-log-products{border-bottom:2px solid rgba(46,62,46,.18);padding-bottom:5px;}
+.access-operator .charge-log-products{display:none!important;}
 .access-operator .charge-log-products .product-list{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
 .access-operator .charge-log-products .product-pill{font-size:8px;padding:2px 5px;border-radius:5px;line-height:1.25;max-width:100%;}
 .access-operator .log-card .charge-log-row:last-of-type{border-bottom:2px solid rgba(46,62,46,.18);}
@@ -309,10 +309,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .access-operator .clr-type{width:auto;}
 .access-operator .clr-num input,
 .access-operator .clr-type select{width:100%;}
-.access-operator .clr-times{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.access-operator .clr-times{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .access-operator .log-time-field{display:block;min-width:0;}
 .access-operator .log-time-field span{display:none;}
-.access-operator .log-time-field input{width:100%;height:24px;}
+.access-operator .log-time-field input{width:100%;height:28px;font-size:16px!important;}
 .access-operator .quick-now{height:24px;padding:2px 8px;margin:0;}
 .access-operator .clr-logged{width:auto;text-align:stretch;}
 .access-operator .master-chip{width:100%;}
@@ -767,7 +767,8 @@ const GAP_REASONS={
   maintenance:         'Maintenance / breakdown',
   flt_delay:           'FLT delay',
   crane_delay:         'Crane delay',
-  staffing:            'Staffing issue',
+  loading_charge:      'Loading charge',
+  unloading_charge:    'Unloading charge',
   compressor:          'Compressor issue',
   bogeys_trolleys:     'Waiting for bogeys / trolleys',
   product_change:      'Product / charge type change',
@@ -2513,8 +2514,8 @@ function buildLogDay(d){
         <div class="clr-type"><select oninput="updateActual(${d},'${pid}',${c.n},'tk',this.value)" style="font-size:11px;padding:4px 6px;">${typeOpts}</select></div>
         <div class="clr-logged"><span class="master-chip ${masterLinked?'linked':''}"><i class="ti ${masterLinked?'ti-circle-check':'ti-alert-circle'}"></i>${masterLinked?'Master':'No AU'}</span></div>
         <div class="clr-times">
-          <div class="log-time-group"><span class="time-caption">Start</span><label class="log-time-field"><span>Start</span><input type="time" value="${act.cin!==null&&act.cin!==undefined?hToStr(act.cin):''}" oninput="updateActualTime(${d},'${pid}',${c.n},'cin',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'cin')">Now</button></div>
-          <div class="log-time-group"><span class="time-caption">Finish</span><label class="log-time-field"><span>Finish</span><input type="time" value="${act.out!==null&&act.out!==undefined?hToStr(act.out):''}" oninput="updateActualTime(${d},'${pid}',${c.n},'out',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'out')">Now</button></div>
+          <div class="log-time-group"><span class="time-caption">Start</span><label class="log-time-field"><span>Start</span><input type="text" inputmode="numeric" pattern="[0-9:]*" placeholder="HH:MM" value="${act.cin!==null&&act.cin!==undefined?hToStr(act.cin):''}" onchange="updateActualTime(${d},'${pid}',${c.n},'cin',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'cin')">Now</button></div>
+          <div class="log-time-group"><span class="time-caption">Finish</span><label class="log-time-field"><span>Finish</span><input type="text" inputmode="numeric" pattern="[0-9:]*" placeholder="HH:MM" value="${act.out!==null&&act.out!==undefined?hToStr(act.out):''}" onchange="updateActualTime(${d},'${pid}',${c.n},'out',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'out')">Now</button></div>
         </div>
       </div><div class="charge-log-products"><div class="charge-log-master-note">${plannedMaster?`Master planned: ${escHtml(plannedMaster)}`:'No AU slot found for this charge'}${productCount?` · ${productCount} product${productCount===1?'':'s'}`:''}</div>${productDetail}</div>`;
     });
@@ -2535,7 +2536,7 @@ function buildLogDay(d){
       if(!act1||act1.out===null||act1.out===undefined)continue;
       if(!act2||act2.cin===null||act2.cin===undefined)continue;
       const gapMins=Math.round((act2.cin-act1.out)*60);
-      if(gapMins<=5)continue; // ignore tiny gaps
+      if(gapMins<=30)continue;
       const gap=getGap(d,pid,afterN)||{reason:''};
       const reasonOpts=Object.entries(GAP_REASONS).map(([k,v])=>`<option value="${k}"${gap.reason===k?' selected':''}>${v}</option>`).join('');
       const otherInput=gap.reason==='other'?`<input class="gap-other-input" type="text" value="${escHtml(gap.reasonDetail||'')}" placeholder="Type reason" oninput="updateGap(${d},'${pid}',${afterN},'reasonDetail',this.value,${act1.out},${act2.cin})">`:'';
@@ -2574,7 +2575,8 @@ function updateActualTime(d,pid,n,field,val){
   const masterCharge=masterChargeForSlot(d,pid,n);
   if(masterCharge)act.chargeNum=masterCharge;
   if(val){
-    const t=ph2(val);
+    const t=parseOperatorTime(val);
+    if(t===null){buildLogDay(d);return;}
     // Convert time-of-day to absolute hours for the correct day
     // If the time is before shift start by >12h, it's likely next day
     const dayBase=d*24;
@@ -2600,6 +2602,21 @@ function updateActualTime(d,pid,n,field,val){
 function setActualNow(d,pid,n,field){
   const now=new Date();
   updateActualTime(d,pid,n,field,`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
+}
+function parseOperatorTime(val){
+  const raw=String(val||'').trim();
+  if(!raw)return null;
+  let h,m;
+  if(raw.includes(':')){
+    const parts=raw.split(':');
+    h=Number(parts[0]);m=Number(parts[1]||0);
+  }else{
+    const digits=raw.replace(/\D/g,'');
+    if(digits.length<=2){h=Number(digits);m=0;}
+    else{h=Number(digits.slice(0,-2));m=Number(digits.slice(-2));}
+  }
+  if(!Number.isFinite(h)||!Number.isFinite(m)||h<0||h>23||m<0||m>59)return null;
+  return h+m/60;
 }
 function updateGap(d,pid,n,field,val,gapStart,gapEnd){
   const gap=getGap(d,pid,n)||{reason:'',gapStart,gapEnd};
