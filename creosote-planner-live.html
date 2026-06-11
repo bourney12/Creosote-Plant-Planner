@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -551,108 +551,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   .access-board .plant-live-grid{margin-bottom:0;}
 }
 
-/* â”€â”€ Inventory Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.inv-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
-.inv-kpi-row .stat { background:var(--bg2); }
 
-.inv-status-banner {
-  display:flex; align-items:center; gap:10px; padding:9px 14px;
-  border-radius:var(--radius); margin-bottom:14px;
-  font-size:12px; font-weight:600; border:1px solid;
-}
-.inv-status-banner.ok     { background:rgba(47,125,72,.1);  border-color:rgba(47,125,72,.25);  color:var(--green); }
-.inv-status-banner.warn   { background:rgba(201,120,46,.1); border-color:rgba(201,120,46,.25); color:var(--amber); animation:invPulse 2s infinite; }
-.inv-status-banner.danger { background:rgba(186,61,53,.1);  border-color:rgba(186,61,53,.25);  color:var(--red);   animation:invPulse 1s infinite; }
-@keyframes invPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
-
-/* Tank display panel */
-.inv-tank-panel { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px; }
-.inv-tank-panel-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); font-size:10px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.08em; }
-.inv-tank-grid { display:flex; gap:12px; align-items:flex-start; }
-.inv-tank-group { flex:1; }
-.inv-tank-group-label { font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.1em; text-align:center; margin-bottom:8px; }
-.inv-tank-group-row { display:flex; gap:8px; justify-content:center; }
-.inv-tank-group-divider { width:1px; background:var(--border); align-self:stretch; margin:16px 4px 0; flex-shrink:0; }
-.inv-tank-col { display:flex; flex-direction:column; align-items:center; gap:3px; }
-.inv-tank-name { font-size:9px; text-transform:uppercase; letter-spacing:.07em; color:var(--text2); font-family:var(--mono); text-align:center; margin-top:3px; }
-.inv-tank-kg   { font-size:11px; color:var(--text2); font-family:var(--mono); text-align:center; }
-.inv-tank-pct  { font-size:10px; font-family:var(--mono); text-align:center; }
-.inv-type-badge { font-size:8px; font-weight:600; padding:1px 6px; border-radius:99px; letter-spacing:.05em; text-transform:uppercase; font-family:var(--mono); }
-.inv-type-badge.storage { background:rgba(47,125,72,.15); color:var(--green); border:1px solid rgba(47,125,72,.25); }
-.inv-type-badge.process  { background:rgba(47,116,167,.15); color:var(--blue);  border:1px solid rgba(47,116,167,.25); }
-.inv-status-badge { font-size:8px; font-weight:600; padding:1px 6px; border-radius:99px; text-transform:uppercase; letter-spacing:.04em; font-family:var(--mono); }
-.inv-status-badge.normal   { background:rgba(47,125,72,.12);  color:var(--green); }
-.inv-status-badge.high     { background:rgba(201,120,46,.15); color:var(--amber); animation:invPulse 2s infinite; }
-.inv-status-badge.low      { background:rgba(201,120,46,.15); color:var(--amber); animation:invPulse 2s infinite; }
-.inv-status-badge.critical { background:rgba(186,61,53,.15);  color:var(--red);   animation:invPulse .8s infinite; }
-.inv-manifold { height:8px; background:#707070; border-radius:3px; margin:2px 4px 10px; }
-@keyframes invWave { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-/* Weekly chart */
-.inv-week-chart-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px; }
-.inv-chart-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.inv-chart-badges { display:flex; gap:8px; }
-.inv-chart-badge { font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:99px; border:1px solid; }
-
-/* â”€â”€ Usage & Forecast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.inv-section-title { font-size:10px; font-weight:600; color:var(--text3); letter-spacing:.08em; text-transform:uppercase; font-family:var(--mono); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
-.inv-table-wrap { overflow-x:auto; margin-bottom:14px; }
-.inv-table { width:100%; border-collapse:collapse; font-size:11px; }
-.inv-table th { font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); padding:6px 10px; border-bottom:1px solid var(--border2); text-align:left; background:var(--bg3); }
-.inv-table td { padding:7px 10px; border-bottom:1px solid var(--border); color:var(--text2); font-family:var(--mono); font-size:11px; }
-.inv-table tr:last-child td { border-bottom:none; }
-.inv-table tr.no-prod td { color:var(--text3); font-style:italic; }
-.inv-table tr.totals td { font-weight:700; color:var(--text); background:var(--bg3); border-top:1px solid var(--border2); }
-.inv-var.ok   { color:var(--green); }
-.inv-var.warn { color:var(--amber); }
-.inv-var.bad  { color:var(--red);   }
-
-.inv-forecast-settings { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:12px; display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
-.inv-forecast-field label { display:block; font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
-.inv-forecast-field input { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); color:var(--text); font-family:var(--mono); font-size:12px; font-weight:500; padding:5px 8px; width:100%; outline:none; }
-.inv-forecast-field input:focus { border-color:var(--accent); }
-
-.inv-rolling-avg { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
-
-/* â”€â”€ Delivery Planner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.inv-del-settings { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-lg); padding:12px 14px; margin-bottom:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
-.inv-del-settings label { display:block; font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
-
-.inv-cal-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px; }
-.inv-cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.inv-cal-month { font-size:13px; font-weight:700; color:var(--text); }
-.inv-cal-btn { background:none; border:1px solid var(--border2); border-radius:var(--radius); padding:4px 10px; cursor:pointer; color:var(--text2); font-size:12px; }
-.inv-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-.inv-cal-day-hdr { text-align:center; font-family:var(--mono); font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; padding:4px 0; }
-.inv-cal-cell { border-radius:var(--radius); padding:6px 4px; min-height:52px; text-align:center; font-size:11px; position:relative; transition:background .15s; }
-.inv-cal-cell.weekday { background:var(--bg3); border:1px solid var(--border); cursor:pointer; }
-.inv-cal-cell.weekday:hover { background:var(--bg4); border-color:var(--accent); }
-.inv-cal-cell.weekend { background:var(--bg); color:var(--text3); cursor:not-allowed; opacity:.5; }
-.inv-cal-cell.today { border-color:var(--accent) !important; border-width:2px !important; }
-.inv-cal-cell.has-delivery { background:rgba(183,131,47,.12); border-color:rgba(183,131,47,.35) !important; }
-.inv-cal-cell-date { font-family:var(--mono); font-size:10px; color:var(--text2); }
-.inv-cal-delivery-badge { display:inline-block; margin-top:3px; background:var(--accent); color:#fffdf7; font-family:var(--mono); font-size:8px; padding:1px 5px; border-radius:99px; white-space:nowrap; }
-
-.inv-del-list { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); margin-bottom:14px; overflow:hidden; }
-.inv-del-list-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid var(--border); font-size:11px; }
-.inv-del-list-item:last-child { border-bottom:none; }
-.inv-del-date { font-family:var(--mono); font-weight:600; color:var(--text); width:130px; flex-shrink:0; }
-.inv-del-supplier { color:var(--text2); flex:1; font-family:var(--mono); font-size:10px; }
-.inv-del-qty { font-family:var(--mono); color:var(--accent); font-weight:600; width:90px; text-align:right; flex-shrink:0; }
-.inv-del-actions { display:flex; gap:5px; }
-.inv-del-total-row { padding:8px 14px; background:var(--bg3); font-size:11px; font-family:var(--mono); color:var(--text2); border-top:1px solid var(--border2); }
-
-.inv-email-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; }
-.inv-email-preview { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:12px; font-family:var(--mono); font-size:11px; color:var(--text2); line-height:1.7; white-space:pre-wrap; margin:10px 0; max-height:280px; overflow-y:auto; }
-.inv-email-range { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-.inv-email-range label { font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; }
-.inv-email-range input[type=date] { background:var(--bg3); border:1px solid var(--border2); border-radius:var(--radius); color:var(--text); font-family:var(--mono); font-size:11px; padding:4px 8px; outline:none; }
-.inv-email-actions { display:flex; gap:8px; margin-top:8px; }
-.inv-email-textarea { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-family:var(--mono); font-size:11px; padding:10px 12px; line-height:1.65; resize:vertical; min-height:200px; outline:none; }
-.inv-email-textarea:focus { border-color:var(--accent); }
-
-@media (max-width:640px) {
-  .inv-kpi-row { grid-template-columns:1fr 1fr; }
   .inv-tank-grid { flex-direction:column; }
   .inv-tank-group-divider { width:100%; height:1px; margin:8px 0; }
   .inv-rolling-avg { grid-template-columns:1fr 1fr; }
@@ -683,7 +582,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <img class="brand-logo-main" src="assets/calders-grandidge-logo.png" alt="Calders & Grandidge">
     <div><div class="logo-text">Calders &amp; Grandidge</div><div class="logo-sub" id="mode-sub">Creosote treatment control</div></div>
     <div class="brand-divider"></div>
-    <div class="brand-partner"><img class="brand-logo-partner" src="assets/rundvirke-poles-logo.svg" alt="Rundvirke Poles"><span>wood protection · quality raw material</span></div>
+    <div class="brand-partner"><img class="brand-logo-partner" src="assets/rundvirke-poles-logo.svg" alt="Rundvirke Poles"><span>wood protection Â· quality raw material</span></div>
   </div>
   <div class="topbar-right">
     <div class="status-dot"></div>
@@ -733,7 +632,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 <!-- TIMELINE -->
 <div class="panel active" id="panel-week">
   <div class="sec-title">Week timeline</div>
-  <div class="sec-sub">Planned schedule + actual charge overlay · Drag to edit · Hover for details</div>
+  <div class="sec-sub">Planned schedule + actual charge overlay Â· Drag to edit Â· Hover for details</div>
   <div class="noise-bar" id="noise-bar">
     <div class="noise-toggle-wrap">
       <input type="checkbox" id="noise-on" onchange="go()">
@@ -743,14 +642,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="noise-times">
       <span>Quiet:</span>
       <input type="time" id="noise-start" value="22:00" onchange="go()">
-      <span>–</span>
+      <span>â€“</span>
       <input type="time" id="noise-end" value="06:00" onchange="go()">
     </div>
   </div>
   <div class="week-ctrl-bar">
     <div class="week-toggle">
-      <button class="wt-btn active" id="btn5" onclick="setWeekMode(5)">Mon–Fri</button>
-      <button class="wt-btn" id="btn7" onclick="setWeekMode(7)">Mon–Sun</button>
+      <button class="wt-btn active" id="btn5" onclick="setWeekMode(5)">Monâ€“Fri</button>
+      <button class="wt-btn" id="btn7" onclick="setWeekMode(7)">Monâ€“Sun</button>
     </div>
     <div class="view-toggle">
       <button class="vt-btn active plan" id="vt-plan" onclick="setViewMode('plan')">Plan</button>
@@ -759,11 +658,11 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     </div>
     <div class="zoom-ctrl">
       <span>Zoom:</span>
-      <button onclick="setZoom(-8)">−</button>
+      <button onclick="setZoom(-8)">âˆ’</button>
       <span id="zoom-label" style="font-family:var(--mono);min-width:38px;text-align:center;">56px</span>
       <button onclick="setZoom(8)">+</button>
     </div>
-    <button class="sm-blue" onclick="copyDay0ToAll()"><i class="ti ti-copy" style="font-size:11px;"></i> Mon→all</button>
+    <button class="sm-blue" onclick="copyDay0ToAll()"><i class="ti ti-copy" style="font-size:11px;"></i> Monâ†’all</button>
   </div>
   <div class="infobox" id="comp-note"></div>
   <div class="gAuto" id="week-stats"></div>
@@ -775,7 +674,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     </div>
   </div>
   <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:16px;">
-    <i class="ti ti-drag-drop" style="font-size:12px;margin-right:4px;"></i>Drag charge/shift bars to adjust · Hover for details · Log actuals in <span style="color:var(--green);cursor:pointer;" onclick="showPanel('live-log')">Log charges</span>
+    <i class="ti ti-drag-drop" style="font-size:12px;margin-right:4px;"></i>Drag charge/shift bars to adjust Â· Hover for details Â· Log actuals in <span style="color:var(--green);cursor:pointer;" onclick="showPanel('live-log')">Log charges</span>
   </div>
 </div>
 
@@ -796,7 +695,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="live-board-head">
     <div>
       <div class="sec-title">Live production timeline</div>
-      <div class="sec-sub">Running charges · expected finish times · refreshed automatically</div>
+      <div class="sec-sub">Running charges Â· expected finish times Â· refreshed automatically</div>
     </div>
     <div class="board-brand-strip">
       <img src="assets/calders-grandidge-logo.png" alt="Calders & Grandidge">
@@ -873,11 +772,11 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 <!-- CHARGE TYPES -->
 <div class="panel" id="panel-charge-types">
   <div class="sec-title">Charge type timing</div>
-  <div class="sec-sub">Process then vacuum — all in minutes</div>
-  <div style="font-size:10px;font-weight:600;color:var(--blue);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Fencing types — Plant 1</div>
+  <div class="sec-sub">Process then vacuum â€” all in minutes</div>
+  <div style="font-size:10px;font-weight:600;color:var(--blue);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Fencing types â€” Plant 1</div>
   <div class="g4" id="ct-fencing"></div>
   <div class="divider"></div>
-  <div style="font-size:10px;font-weight:600;color:var(--green);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Pole types — Plants 1 &amp; 2</div>
+  <div style="font-size:10px;font-weight:600;color:var(--green);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Pole types â€” Plants 1 &amp; 2</div>
   <div class="g4" id="ct-pole"></div>
 </div>
 
@@ -930,48 +829,45 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="help">FLT and crane ops restricted during quiet hours. Violations flagged as critical.</div>
   </div>
 </div>
-
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <!-- INVENTORY DASHBOARD                                        -->
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="panel" id="panel-inv-dashboard">
   <div class="sec-title">Inventory Dashboard</div>
-  <div class="sec-sub" id="invLastRefresh">Loadingâ€¦</div>
+  <div class="sec-sub" id="invLastRefresh">Loading...</div>
 
   <!-- KPI row -->
   <div class="inv-kpi-row">
     <div class="stat">
       <div class="stat-l">Total Stock</div>
-      <div class="stat-v" id="invKpiTotal">â€”</div>
-      <div class="stat-s" id="invKpiTotalPct">â€”</div>
+      <div class="stat-v" id="invKpiTotal">-</div>
+      <div class="stat-s" id="invKpiTotalPct">-</div>
     </div>
     <div class="stat">
       <div class="stat-l">Available to Safe Max</div>
-      <div class="stat-v ok" id="invKpiAvail">â€”</div>
-      <div class="stat-s" id="invKpiDelivs">â€”</div>
+      <div class="stat-v ok" id="invKpiAvail">-</div>
+      <div class="stat-s" id="invKpiDelivs">-</div>
     </div>
     <div class="stat">
       <div class="stat-l">Today Planned</div>
-      <div class="stat-v" id="invKpiPlanned">â€”</div>
+      <div class="stat-v" id="invKpiPlanned">-</div>
       <div class="stat-s">from production plan</div>
     </div>
     <div class="stat">
       <div class="stat-l">Today Actual</div>
-      <div class="stat-v" id="invKpiActual">â€”</div>
+      <div class="stat-v" id="invKpiActual">-</div>
       <div class="stat-s" id="invKpiActualVs">vs yesterday</div>
     </div>
   </div>
 
   <!-- Status banner -->
   <div class="inv-status-banner ok" id="invStatusBanner">
-    <i class="ti ti-circle-check"></i> Loading stock dataâ€¦
+    <i class="ti ti-circle-check"></i> Loading stock data...
   </div>
 
   <!-- Tank display -->
   <div class="inv-tank-panel">
     <div class="inv-tank-panel-hdr">
-      <span><i class="ti ti-droplet"></i> &nbsp;Bulk Tanks â€” Live Levels</span>
-      <span id="invTankReadingTime">â€”</span>
+      <span><i class="ti ti-droplet"></i> &nbsp;Bulk Tanks - Live Levels</span>
+      <span id="invTankReadingTime">-</span>
     </div>
     <div class="inv-tank-grid" id="invTankGrid">
       <!-- Populated by invRenderDashboard() -->
@@ -984,13 +880,10 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <!-- Populated by invRenderWeekChart() -->
   </div>
 </div>
-
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <!-- USAGE & FORECAST                                           -->
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="panel" id="panel-usage-forecast">
   <div class="sec-title">Usage & Forecast</div>
-  <div class="sec-sub">Planned vs actual consumption Â· Forward stock projection</div>
+  <div class="sec-sub">Planned vs actual consumption - Forward stock projection</div>
 
   <!-- Rolling averages -->
   <div class="card" style="margin-bottom:14px">
@@ -998,19 +891,19 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="inv-rolling-avg">
       <div class="stat">
         <div class="stat-l">7-day avg</div>
-        <div class="stat-v" id="invAvg7">â€”</div>
+        <div class="stat-v" id="invAvg7">-</div>
       </div>
       <div class="stat">
         <div class="stat-l">14-day avg</div>
-        <div class="stat-v" id="invAvg14">â€”</div>
+        <div class="stat-v" id="invAvg14">-</div>
       </div>
       <div class="stat">
         <div class="stat-l">30-day avg</div>
-        <div class="stat-v" id="invAvg30">â€”</div>
+        <div class="stat-v" id="invAvg30">-</div>
       </div>
       <div class="stat">
         <div class="stat-l">Uptake rate</div>
-        <div class="stat-v" id="invUptakeRate">115 kg/mÂ³</div>
+        <div class="stat-v" id="invUptakeRate">115 kg/m3</div>
         <div class="stat-s">target rate</div>
       </div>
     </div>
@@ -1018,7 +911,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 
   <!-- Planned vs Actual table -->
   <div class="card" style="margin-bottom:14px">
-    <div class="card-title"><i class="ti ti-table"></i> Planned vs Actual â€” Last 30 Days</div>
+    <div class="card-title"><i class="ti ti-table"></i> Planned vs Actual - Last 30 Days</div>
     <div class="inv-table-wrap" id="invUsageTable">
       <!-- Populated by invRenderUsageTable() -->
     </div>
@@ -1059,13 +952,10 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     </div>
   </div>
 </div>
-
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <!-- DELIVERY PLANNER                                           -->
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="panel" id="panel-delivery-planner">
   <div class="sec-title">Delivery Planner</div>
-  <div class="sec-sub">Schedule deliveries Â· Generate order email Â· Monâ€“Fri only</div>
+  <div class="sec-sub">Schedule deliveries - Generate order email - Mon-Fri only</div>
 
   <!-- Planner settings -->
   <div class="card inv-del-settings" style="margin-bottom:14px">
@@ -1101,9 +991,9 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <!-- Calendar -->
   <div class="inv-cal-wrap">
     <div class="inv-cal-nav">
-      <button class="inv-cal-btn" onclick="invCalMonth--; if(invCalMonth<0){invCalMonth=11;invCalYear--;} invRenderCalendar()">â€¹</button>
+      <button class="inv-cal-btn" onclick="invCalMonth--; if(invCalMonth<0){invCalMonth=11;invCalYear--;} invRenderCalendar()"><</button>
       <div class="inv-cal-month" id="invCalTitle"></div>
-      <button class="inv-cal-btn" onclick="invCalMonth++; if(invCalMonth>11){invCalMonth=0;invCalYear++;} invRenderCalendar()">â€º</button>
+      <button class="inv-cal-btn" onclick="invCalMonth++; if(invCalMonth>11){invCalMonth=0;invCalYear++;} invRenderCalendar()">></button>
     </div>
     <div class="inv-cal-grid" id="invCalGrid">
       <!-- Populated by invRenderCalendar() -->
@@ -1140,14 +1030,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 
 <script src="assets/charge-history-2026.js"></script>
 <script>
-// ═══════════════════════ CONSTANTS ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONSTANTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const POSITIONS=['Charge 1','Charge 2','Charge 3','Charge 4'];
 const DAYS_5=['Monday','Tuesday','Wednesday','Thursday','Friday'];
 const DAYS_7=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const PLANT_FAMILIES={p1:['fencing','pole'],p2:['pole']};
 
 const GAP_REASONS={
-  '':                  'Select reason…',
+  '':                  'Select reasonâ€¦',
   maintenance:         'Maintenance / breakdown',
   flt_delay:           'FLT delay',
   crane_delay:         'Crane delay',
@@ -1186,13 +1076,13 @@ Object.values(CT).forEach(ct=>{
 const STAGE_AVG={raiseAir:20,fill:32,raiseHyd:9,empty:36,raiseVac:22,ventRecover:5};
 const STAGE_LOOK={
   preTreat:{name:'Pre-treat / hot bath',short:'Bath',group:'prep',col:'#8b6f47',bg:'rgba(139,111,71,.34)',bd:'rgba(139,111,71,.55)'},
-  raiseAir:{name:'Raise initial air pressure',short:'Air↑',group:'air',col:'#2f7d48',bg:'rgba(47,125,72,.34)',bd:'rgba(47,125,72,.55)'},
+  raiseAir:{name:'Raise initial air pressure',short:'Airâ†‘',group:'air',col:'#2f7d48',bg:'rgba(47,125,72,.34)',bd:'rgba(47,125,72,.55)'},
   holdAir:{name:'Hold initial air pressure',short:'Air',group:'air',col:'#54a86b',bg:'rgba(84,168,107,.34)',bd:'rgba(84,168,107,.55)'},
   fill:{name:'Fill against air pressure',short:'Fill',group:'fill',col:'#4a9eff',bg:'rgba(74,158,255,.34)',bd:'rgba(74,158,255,.55)'},
-  raiseHyd:{name:'Raise hydraulic pressure',short:'Hyd↑',group:'pressure',col:'#e8c547',bg:'rgba(232,197,71,.38)',bd:'rgba(232,197,71,.6)'},
+  raiseHyd:{name:'Raise hydraulic pressure',short:'Hydâ†‘',group:'pressure',col:'#e8c547',bg:'rgba(232,197,71,.38)',bd:'rgba(232,197,71,.6)'},
   holdHyd:{name:'Hold hydraulic pressure',short:'Hyd',group:'pressure',col:'#e89347',bg:'rgba(232,147,71,.34)',bd:'rgba(232,147,71,.58)'},
   empty:{name:'Empty',short:'Empty',group:'empty',col:'#7c8ca3',bg:'rgba(124,140,163,.34)',bd:'rgba(124,140,163,.58)'},
-  raiseVac:{name:'Raise final vacuum',short:'Vac↑',group:'vacuum',col:'#9b7fe8',bg:'rgba(155,127,232,.34)',bd:'rgba(155,127,232,.58)'},
+  raiseVac:{name:'Raise final vacuum',short:'Vacâ†‘',group:'vacuum',col:'#9b7fe8',bg:'rgba(155,127,232,.34)',bd:'rgba(155,127,232,.58)'},
   holdVac:{name:'Hold final vacuum',short:'Vac',group:'vacuum',col:'#c4a8f8',bg:'rgba(196,168,248,.3)',bd:'rgba(196,168,248,.55)'},
   vent:{name:'Vent vacuum & recover',short:'Vent',group:'recover',col:'#3dd6b4',bg:'rgba(61,214,180,.28)',bd:'rgba(61,214,180,.5)'}
 };
@@ -1236,7 +1126,7 @@ function stageAtOffset(stages,mins){
   return stages[stages.length-1]||null;
 }
 function stageSummary(tk){
-  return chargeStagesFor(tk).map(s=>`${s.short} ${fmins(Math.round(s.mins))}`).join(' · ');
+  return chargeStagesFor(tk).map(s=>`${s.short} ${fmins(Math.round(s.mins))}`).join(' Â· ');
 }
 Object.keys(CT).forEach(k=>{const t=chargeStageTotals(k);CT[k].procMin=Math.round(t.proc);CT[k].vacMin=Math.round(t.vac);});
 function vesselStageId(stage){
@@ -1342,7 +1232,7 @@ let tippers=[mkPerson(0,'Tipper 1','day','07:30','16:30'),mkPerson(1,'Tipper 2',
 function mkDay(p1s='05:00',p2s='05:30'){return{p1Start:p1s,p2Start:p2s,p1Types:['fencing','fencing','fencing','fencing'],p2Types:['pole','pole','pole','pole']};}
 let dayConfigs=[mkDay(),mkDay(),mkDay(),mkDay(),mkDay(),mkDay(),mkDay()];
 
-// ═══════════════════════ ACTUALS DATA ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• ACTUALS DATA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // actuals[dayIdx][pid][slotIdx] = { chargeNum, cin, procEnd, vacEnd, out, logged }
 // gaps[dayIdx][pid][afterSlotIdx] = { reason, gapStart, gapEnd }
 let actuals={};
@@ -1449,7 +1339,7 @@ function gapReasonText(gap){
   return GAP_REASONS[gap.reason||'']||gap.reason||'No reason given';
 }
 
-// ═══════════════════════ PERSISTENCE ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PERSISTENCE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 async function saveData(){
   try{
     localStorage.setItem('creosote_actuals',JSON.stringify(actuals));
@@ -1494,7 +1384,7 @@ async function clearAllActuals(){
   go();buildLogPanel();
 }
 
-// ═══════════════════════ HELPERS ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HELPERS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function showPanel(t){
   if(accessMode==='operator'&&t!=='live-log')t='live-log';
   if(accessMode==='board'&&t!=='live-board')t='live-board';
@@ -1517,8 +1407,8 @@ function showPanel(t){
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function ph2(v){if(!v)return null;const[h,m]=v.split(':').map(Number);return h+m/60;}
 function hToStr(h){if(h===null||h===undefined)return'';const w=((h%24)+24)%24,fl=Math.floor(w),mn=Math.round((w-fl)*60);const ah=mn===60?(fl+1)%24:fl,am=mn===60?0:mn;return`${String(ah).padStart(2,'0')}:${String(am).padStart(2,'0')}`;}
-function tfAbs(h){if(h===null||h===undefined)return'—';const w=((h%24)+24)%24,fl=Math.floor(w),mn=Math.round((w-fl)*60);const ah=mn===60?(fl+1)%24:fl,am=mn===60?0:mn;const d=ah%12===0?12:ah%12;return`${d}:${String(am).padStart(2,'0')}${ah<12?'am':'pm'}`;}
-function fmins(m){if(m===null||m===undefined)return'—';const h=Math.floor(Math.abs(m)/60),mn=Math.abs(m)%60;const s=m<0?'-':'';return mn===0?`${s}${h}h`:`${s}${h}h ${mn}m`;}
+function tfAbs(h){if(h===null||h===undefined)return'â€”';const w=((h%24)+24)%24,fl=Math.floor(w),mn=Math.round((w-fl)*60);const ah=mn===60?(fl+1)%24:fl,am=mn===60?0:mn;const d=ah%12===0?12:ah%12;return`${d}:${String(am).padStart(2,'0')}${ah<12?'am':'pm'}`;}
+function fmins(m){if(m===null||m===undefined)return'â€”';const h=Math.floor(Math.abs(m)/60),mn=Math.abs(m)%60;const s=m<0?'-':'';return mn===0?`${s}${h}h`:`${s}${h}h ${mn}m`;}
 function currentWeekAbs(){const n=new Date();const d=(n.getDay()+6)%7;return d*24+n.getHours()+n.getMinutes()/60+n.getSeconds()/3600;}
 function absForActual(d,h){if(h===null||h===undefined)return null;return h>=24?h:d*24+h;}
 function actualTypeKey(c,act){return act&&act.tk&&CT[act.tk]?act.tk:c.tk;}
@@ -1563,7 +1453,7 @@ function rowValueExcept(row,keys,blocked){
   return '';
 }
 function productDescription(row){
-  const blockedProductFields=['range','quantity','qty','pieces','pcs','m3','m³','volume','charge','vessel','planned','date'];
+  const blockedProductFields=['range','quantity','qty','pieces','pcs','m3','mÂ³','volume','charge','vessel','planned','date'];
   const direct=
     row._productDescription||
     row.ProductDescription||
@@ -1572,13 +1462,13 @@ function productDescription(row){
     rowValueExcept(row,['product name','item name','timber description','timber','material description'],blockedProductFields)||
     rowValueExcept(row,['product','item','material','size','species'],blockedProductFields);
   if(direct)return direct;
-  const excluded=['range','quantity','qty','pieces','pcs','m3','m³','volume','charge','vessel','planned','date','customer','client','sales','order','reference','ref','po','row number'];
+  const excluded=['range','quantity','qty','pieces','pcs','m3','mÂ³','volume','charge','vessel','planned','date','customer','client','sales','order','reference','ref','po','row number'];
   const fallbacks=Object.entries(row)
     .filter(([h,v])=>v && !String(h).startsWith('_'))
     .filter(([h])=>!excluded.some(key=>h.toLowerCase().includes(key)))
     .map(([,v])=>String(v).trim())
     .filter(v=>looksLikeProductText(v));
-  return fallbacks.slice(0,3).join(' · ')||productSummary(row);
+  return fallbacks.slice(0,3).join(' Â· ')||productSummary(row);
 }
 function looksLikeProductText(value){
   const s=String(value||'').trim();
@@ -1594,13 +1484,13 @@ function productBoardSummary(row){
   const customer=rowValue(row,['customer','client','account','sales']);
   const order=rowValue(row,['order','reference','ref','po','job']);
   const qty=row._quantity||rowValue(row,['quantity','qty','pieces','pcs','no. of','number of','pack quantity','pack qty'])||rowValue(row,['column 35']);
-  const top=[customer,order].filter(Boolean).join(' · ');
+  const top=[customer,order].filter(Boolean).join(' Â· ');
   const plannedBits=row&&row._plannedOnly?[
     row._scheduleOriginalQuantity?`Orig ${row._scheduleOriginalQuantity}`:(qty?`Orig ${qty}`:''),
     row._schedulePacks?`${row._schedulePacks} packs`:'',
     row._schedulePackSize?`Pack ${row._schedulePackSize}`:''
   ].filter(Boolean):null;
-  const bottom=plannedBits&&plannedBits.length?plannedBits.join(' · '):[qty?`Qty ${qty}`:'',row._volumeM3?`${row._volumeM3} m3`:'' ].filter(Boolean).join(' · ');
+  const bottom=plannedBits&&plannedBits.length?plannedBits.join(' Â· '):[qty?`Qty ${qty}`:'',row._volumeM3?`${row._volumeM3} m3`:'' ].filter(Boolean).join(' Â· ');
   return `<div class="product-pill product-board-row">${top?`<span class="product-top">${escHtml(top)}</span>`:''}<span class="product-main">${escHtml(description)}</span><span class="product-sub">${bottom?escHtml(bottom):'Qty not listed'}</span></div>`;
 }
 function productHtml(chargeNum,limit=4){
@@ -1711,7 +1601,7 @@ function plannedActualVarianceHtml(plannedRows,actualRows){
   const bits=[];
   if(plannedOnly.length)bits.push(`Planned not matched: ${plannedOnly.map(escHtml).join(', ')}`);
   if(actualOnly.length)bits.push(`Actual not on plan: ${actualOnly.map(escHtml).join(', ')}`);
-  return `<div class="plan-variance-note"><b>Plan changed</b><div class="plan-variance-list">${bits.join(' · ')||'Actual product list differs from the planned schedule.'}</div></div>`;
+  return `<div class="plan-variance-note"><b>Plan changed</b><div class="plan-variance-list">${bits.join(' Â· ')||'Actual product list differs from the planned schedule.'}</div></div>`;
 }
 function getMasterSlots(day){
   if(masterSlotsCache[day.dayIdx])return masterSlotsCache[day.dayIdx];
@@ -1836,7 +1726,7 @@ function buildPlantLiveColumns(day,dayItems){
     const products=rows.length?productRowsHtml(rows,Infinity):(actual&&actual.act.chargeNum?productHtml(actual.act.chargeNum,Infinity):'<div class="product-list"><div class="product-pill">No Treatment Master products in this slot yet</div></div>');
     return `<div class="charge-live-card ${state}">
       <div class="charge-live-head">
-        <div><div class="charge-live-name">Charge ${n}</div><div class="charge-live-meta">${meta.join(' · ')||'Awaiting Treatment Master plan'}</div></div>
+        <div><div class="charge-live-name">Charge ${n}</div><div class="charge-live-meta">${meta.join(' Â· ')||'Awaiting Treatment Master plan'}</div></div>
         <div class="charge-live-state ${state}">${stateLabel}</div>
       </div>
       ${variance}
@@ -1896,7 +1786,7 @@ function treatmentVesselSvg(stage,stageObj){
       @keyframes ${id}-drain{0%{opacity:.95;transform:translateY(-14px)}100%{opacity:.15;transform:translateY(18px)}}
       @keyframes ${id}-needle{0%{transform:rotate(${needleFrom}deg)}100%{transform:rotate(${needleTo}deg)}}
 
-/* â”€â”€ Inventory Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Inventory Dashboard */
 .inv-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
 .inv-kpi-row .stat { background:var(--bg2); }
 
@@ -1939,7 +1829,7 @@ function treatmentVesselSvg(stage,stageObj){
 .inv-chart-badges { display:flex; gap:8px; }
 .inv-chart-badge { font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:99px; border:1px solid; }
 
-/* â”€â”€ Usage & Forecast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Usage & Forecast */
 .inv-section-title { font-size:10px; font-weight:600; color:var(--text3); letter-spacing:.08em; text-transform:uppercase; font-family:var(--mono); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
 .inv-table-wrap { overflow-x:auto; margin-bottom:14px; }
 .inv-table { width:100%; border-collapse:collapse; font-size:11px; }
@@ -1959,7 +1849,7 @@ function treatmentVesselSvg(stage,stageObj){
 
 .inv-rolling-avg { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
 
-/* â”€â”€ Delivery Planner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Delivery Planner */
 .inv-del-settings { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-lg); padding:12px 14px; margin-bottom:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
 .inv-del-settings label { display:block; font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
 
@@ -2061,7 +1951,7 @@ function updateMasterStatus(){
   const el=document.getElementById('master-sync-status');if(!el)return;
   el.className=`master-sync-status ${masterSync.state}`;
   const configured=!!liveBridgeUrl();
-  el.innerHTML=`${escHtml(masterSync.msg)} · <button class="sm-blue" type="button" data-master-connect>${configured?'Change':'Connect'}</button>`;
+  el.innerHTML=`${escHtml(masterSync.msg)} Â· <button class="sm-blue" type="button" data-master-connect>${configured?'Change':'Connect'}</button>`;
 }
 function openMasterConnect(){
   const modal=document.getElementById('master-connect-modal');
@@ -2146,8 +2036,8 @@ function loadMasterCache(options={}){
     const applied=applyMasterPayload(data,'cache');
     const age=Math.max(0,Math.round((Date.now()-(data.savedAt||Date.now()))/60000));
     if(!options.silent){
-      const descNote=masterHasProductDescriptions()?'':' · product text needs bridge refresh';
-      masterSync={state:'warn',msg:`Master cache loaded ${applied.count} charge${applied.count===1?'':'s'} · ${age} min old${descNote}`,last:data.savedAt||Date.now()};
+      const descNote=masterHasProductDescriptions()?'':' Â· product text needs bridge refresh';
+      masterSync={state:'warn',msg:`Master cache loaded ${applied.count} charge${applied.count===1?'':'s'} Â· ${age} min old${descNote}`,last:data.savedAt||Date.now()};
       updateMasterStatus();
     }
     return true;
@@ -2251,7 +2141,7 @@ function buildGreenTreatment(){
   const selectedDate=boardDateForDayIdx(greenTreatmentDayIdx);
   const dayTabs=computeWeek().map((d,idx)=>{
     const count=greenTreatmentDayRows(idx).length;
-    return `<button class="green-day-tab ${idx===greenTreatmentDayIdx?'active':''}" type="button" onclick="setGreenTreatmentDay(${idx})">${escHtml(poleForecastDayLabel(d,idx).slice(0,3))}${count?` · ${count}`:''}</button>`;
+    return `<button class="green-day-tab ${idx===greenTreatmentDayIdx?'active':''}" type="button" onclick="setGreenTreatmentDay(${idx})">${escHtml(poleForecastDayLabel(d,idx).slice(0,3))}${count?` Â· ${count}`:''}</button>`;
   }).join('');
   const totalPieces=dayRows.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
   const plantHtml=['WTT','Hickson'].map(plant=>{
@@ -2269,13 +2159,13 @@ function buildGreenTreatment(){
         const pcs=greenTreatmentPieces(row);
         const packs=row._greenPacks||row.packs||'';
         const per=row._greenPerPack||row.amountPerPack||'';
-        const meta=[pcs?`${pcs} pcs`:'',packs?`${packs} packs`:'',per?`${per}/pack`:'' ].filter(Boolean).join(' · ')||'Qty not listed';
+        const meta=[pcs?`${pcs} pcs`:'',packs?`${packs} packs`:'',per?`${per}/pack`:'' ].filter(Boolean).join(' Â· ')||'Qty not listed';
         return `<div class="green-product-row"><div class="green-product-name">${escHtml(product)}</div><div class="green-product-meta">${escHtml(meta)}</div></div>`;
       }).join('');
-      return `<div class="green-charge-card"><div class="green-charge-title"><span>${escHtml(charge)}</span><span class="green-charge-count">${items.length} line${items.length===1?'':'s'} · ${pieces.toLocaleString('en-GB')} pcs</span></div>${products}</div>`;
+      return `<div class="green-charge-card"><div class="green-charge-title"><span>${escHtml(charge)}</span><span class="green-charge-count">${items.length} line${items.length===1?'':'s'} Â· ${pieces.toLocaleString('en-GB')} pcs</span></div>${products}</div>`;
     }).join('');
     const plantPieces=rows.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
-    return `<div class="green-plant-col"><div class="green-plant-head"><div class="green-plant-title">${escHtml(plant)}</div><div class="green-plant-total">${rows.length} line${rows.length===1?'':'s'} · ${plantPieces.toLocaleString('en-GB')} pcs</div></div>${cards||'<div class="green-empty">No planned green treatment for this plant on the selected day.</div>'}</div>`;
+    return `<div class="green-plant-col"><div class="green-plant-head"><div class="green-plant-title">${escHtml(plant)}</div><div class="green-plant-total">${rows.length} line${rows.length===1?'':'s'} Â· ${plantPieces.toLocaleString('en-GB')} pcs</div></div>${cards||'<div class="green-empty">No planned green treatment for this plant on the selected day.</div>'}</div>`;
   }).join('');
   const bridgeNote=masterGreenTreatment.length?'':'No green treatment rows are loaded yet. Deploy the updated bridge script so Treatment Schedule Master columns D, G, H, I, J, K and L are returned.';
   host.innerHTML=`<div class="green-day-tabs">${dayTabs}</div>
@@ -2349,7 +2239,7 @@ function poleForecastChargeGrid(dayDashboardRows){
       </div>
       <div class="pole-charge-plant p2"><span class="pole-charge-plant-name">Plant 2</span><span class="pole-charge-plant-count">${p2}</span></div>
       <div class="pole-charge-plant p1"><span class="pole-charge-plant-name">Plant 1</span><span class="pole-charge-plant-count">${p1}</span></div>
-      <div class="pole-charge-meta">${Number(item.qty).toFixed(0)} poles · ${fmtM3(item.m3)} · ${item.charges.toFixed(2)} charge equivalent</div>
+      <div class="pole-charge-meta">${Number(item.qty).toFixed(0)} poles Â· ${fmtM3(item.m3)} Â· ${item.charges.toFixed(2)} charge equivalent</div>
     </div>`;
   }).join('');
   return `<div class="report-card"><div class="report-title"><i class="ti ti-layout-grid"></i>Daily charge allocation</div>
@@ -2510,10 +2400,10 @@ async function pullLiveState(force=false){
       refreshLiveSurfaces(false);
     }
     liveStateSync.lastPull=Date.now();
-    updateLiveSyncStatus('ok',`Live sync connected · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+    updateLiveSyncStatus('ok',`Live sync connected Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
     return true;
   }catch(err){
-    updateLiveSyncStatus('warn',`Live sync waiting · ${err&&err.message?err.message:'bridge unavailable'}`);
+    updateLiveSyncStatus('warn',`Live sync waiting Â· ${err&&err.message?err.message:'bridge unavailable'}`);
     return false;
   }finally{
     liveStateSync.loading=false;
@@ -2526,7 +2416,7 @@ async function pushLiveActual(key,val){
   try{
     const data=await loadJsonp(bridgeUrl,{action:'saveActual',key,value:JSON.stringify(val||{})});
     if(data&&data.ok!==false)liveStateSync.updatedAt=data.updatedAt||new Date().toISOString();
-    updateLiveSyncStatus('ok',`Live sync updated · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+    updateLiveSyncStatus('ok',`Live sync updated Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
   }catch(err){
     updateLiveSyncStatus('warn','Live sync queued locally');
   }
@@ -2538,7 +2428,7 @@ async function pushLiveGap(key,val){
   try{
     const data=await loadJsonp(bridgeUrl,{action:'saveGap',key,value:JSON.stringify(val||{})});
     if(data&&data.ok!==false)liveStateSync.updatedAt=data.updatedAt||new Date().toISOString();
-    updateLiveSyncStatus('ok',`Live sync updated · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+    updateLiveSyncStatus('ok',`Live sync updated Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
   }catch(err){
     updateLiveSyncStatus('warn','Live sync queued locally');
   }
@@ -2596,9 +2486,9 @@ async function refreshProductMaster(){
       const plannedCount=masterPlannedSchedule.length;
       const forecastDays=masterPoleForecast&&Array.isArray(masterPoleForecast.days)?masterPoleForecast.days.length:0;
       const volumeMsg=`${applied.volumeRowCount||0} m3 row${applied.volumeRowCount===1?'':'s'}`;
-      const scheduleMsg=plannedCount?` · ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
-      const forecastMsg=forecastDays?` · ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
-      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} · ${volumeMsg}${scheduleMsg}${forecastMsg} · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
+      const scheduleMsg=plannedCount?` Â· ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
+      const forecastMsg=forecastDays?` Â· ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
+      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} Â· ${volumeMsg}${scheduleMsg}${forecastMsg} Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
       refreshMasterViews();
       return;
     }
@@ -2612,7 +2502,7 @@ async function refreshProductMaster(){
     let productIdx=headers.findIndex(h=>/product.*description|item.*description|stock.*description|sales.*description|material.*description|timber.*description|description|product|material|timber|item|size/i.test(h)&&!/range|quantity|qty|pieces|pcs|volume|m3|m\^3|cbm|cubic|charge|vessel|planned|date/i.test(h));
     if(productIdx<0&&headers.length>27)productIdx=27; // AB fallback
     const quantityIdx=headers.length>34?34:headers.findIndex(h=>/quantity|qty|pieces|pcs/i.test(h));
-    const volumeIdx=headers.length>36?36:headers.findIndex(h=>/volume|m3|m\^3|cbm|cubic/i.test(String(h||'').replace(/³/g,'3')));
+    const volumeIdx=headers.length>36?36:headers.findIndex(h=>/volume|m3|m\^3|cbm|cubic/i.test(String(h||'').replace(/Â³/g,'3')));
     const plannedIdx=headers.length>46?46:headers.findIndex(h=>/planned.*charge|charge.*date/i.test(h));
     const vesselIdx=headers.findIndex(h=>/vessel/i.test(h));
     const map={},unassigned=[],all=[];
@@ -2696,7 +2586,7 @@ function getNoiseParams(){const on=document.getElementById('noise-on').checked;c
 function noiseWindowOk(sH,eH,ns,ne){const steps=Math.ceil((eH-sH)*60);for(let i=0;i<steps;i++){const w=((sH+i/60)%24+24)%24;if(w>=ns||w<ne)return false;}return true;}
 function opShiftAt(absH){for(const op of operators){if(personOnAt(op,absH))return op.shift;}return'overtime';}
 
-// ═══════════════════════ COMPUTE PLANNED ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• COMPUTE PLANNED â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function computePlantDay(pid,dayIdx,absStart,turnMin,fltMin,craneMin,totalSets,delayMin,prevCraneEnd,noise){
   const cfg=dayConfigs[dayIdx],types=pid==='p1'?cfg.p1Types:cfg.p2Types;
   const charges=[];
@@ -2762,7 +2652,7 @@ function computeWeek(){
     if(compConflict){
       if(diffMin>0){p2Delay=compMin;compMsg=`P2 waits ${compMin}m for compressor.`;}
       else if(diffMin<0){p1Delay=compMin;compMsg=`P1 waits ${compMin}m for compressor.`;}
-      else{p2Delay=compMin;compMsg=`Same start — P2 waits ${compMin}m.`;}
+      else{p2Delay=compMin;compMsg=`Same start â€” P2 waits ${compMin}m.`;}
     }
     const r1=computePlantDay('p1',d,absP1,turnMin,fltMin,craneMin,totalSets,p1Delay,p1CE,noise);
     const r2=computePlantDay('p2',d,absP2,turnMin,fltMin,craneMin,totalSets,p2Delay,p2CE,noise);
@@ -2779,7 +2669,7 @@ function computeWeek(){
   return days;
 }
 
-// ═══════════════════════ TOOLTIP ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOOLTIP â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const ttEl=document.getElementById('tooltip');
 function showTT(e,data){
   document.getElementById('tt-title').textContent=data.title;
@@ -2803,32 +2693,32 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMasterConnect()
 function chargeTT(c,day,act){
   const actCt=actualChargeType(c,act);
   const issues=[];
-  if(c.outfeedBlocked)issues.push({sev:'warn',msg:'▲ Carry-over: outfeed occupied, start delayed'});
-  if(c.wrongFamily)issues.push({sev:'danger',msg:'⚠ Wrong plant: incompatible charge type'});
-  if(c.fltConflict)issues.push({sev:'warn',msg:`⚠ FLT prep window short: only ${fmins(c.fltWindowMin)} available`});
-  if(c.fltOperatorConflict)issues.push({sev:'danger',msg:'⚠ FLT conflict: no tipper + operator in process'});
-  else if(c.fltOperatorNeeded)issues.push({sev:'warn',msg:'ℹ Operator covering FLT (no tipper on shift)'});
-  if(c.fltNoiseViolation)issues.push({sev:'danger',msg:'⚠ FLT prep in quiet hours'});
-  if(c.craneNoiseViolation)issues.push({sev:'danger',msg:'⚠ Crane unload in quiet hours'});
-  if(c.needsCrane&&!c.craneOk)issues.push({sev:'warn',msg:'⚠ No crane available for outfeed unload'});
-  if(opShiftAt(c.cin)==='overtime')issues.push({sev:'warn',msg:'⚠ Process starts outside operator shift'});
+  if(c.outfeedBlocked)issues.push({sev:'warn',msg:'â–² Carry-over: outfeed occupied, start delayed'});
+  if(c.wrongFamily)issues.push({sev:'danger',msg:'âš  Wrong plant: incompatible charge type'});
+  if(c.fltConflict)issues.push({sev:'warn',msg:`âš  FLT prep window short: only ${fmins(c.fltWindowMin)} available`});
+  if(c.fltOperatorConflict)issues.push({sev:'danger',msg:'âš  FLT conflict: no tipper + operator in process'});
+  else if(c.fltOperatorNeeded)issues.push({sev:'warn',msg:'â„¹ Operator covering FLT (no tipper on shift)'});
+  if(c.fltNoiseViolation)issues.push({sev:'danger',msg:'âš  FLT prep in quiet hours'});
+  if(c.craneNoiseViolation)issues.push({sev:'danger',msg:'âš  Crane unload in quiet hours'});
+  if(c.needsCrane&&!c.craneOk)issues.push({sev:'warn',msg:'âš  No crane available for outfeed unload'});
+  if(opShiftAt(c.cin)==='overtime')issues.push({sev:'warn',msg:'âš  Process starts outside operator shift'});
   if(act){
-    issues.push({sev:'info',msg:`✓ Actual charge #${act.chargeNum||'—'} logged`});
+    issues.push({sev:'info',msg:`âœ“ Actual charge #${act.chargeNum||'â€”'} logged`});
     const varMin=act.cin!==null?Math.round((act.cin-c.cin)*60):null;
     if(varMin!==null)issues.push({sev:Math.abs(varMin)>30?'warn':'ok',msg:`Start variance: ${fmins(varMin)} vs plan`});
   } else {
-    issues.push({sev:'ok',msg:'No actuals logged yet — log in "Log charges"'});
+    issues.push({sev:'ok',msg:'No actuals logged yet â€” log in "Log charges"'});
   }
   if(!issues.filter(i=>i.sev!=='ok'&&i.sev!=='info').length&&!act)issues.push({sev:'ok',msg:'No plan issues detected'});
   const rows=[['Plan in',tfAbs(c.cin)],['Plan proc',tfAbs(c.procEnd)],['Plan vac',tfAbs(c.vacEnd)]];
   rows.push(['Treatment stages',stageSummary(actualTypeKey(c,act))]);
   const p=CHARGE_PARAMS[actualTypeKey(c,act)]||{};
-  rows.push(['Parameters',`${p.temp||'-'}°C · air ${p.airBar||'-'} bar · hyd ${p.hydBar||'-'} bar`]);
+  rows.push(['Parameters',`${p.temp||'-'}Â°C Â· air ${p.airBar||'-'} bar Â· hyd ${p.hydBar||'-'} bar`]);
   if(act&&act.cin!==null)rows.push(['Actual start',tfAbs(act.cin)],['Actual finish',tfAbs(act.out)]);
   return{title:`${c.position} - ${actCt.name}`,rows,issues};
 }
 
-// ═══════════════════════ DRAG ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DRAG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let dragState=null;
 function startDrag(e,cfg){
   dragState={cfg,startX:e.clientX,origVal:origForDrag(cfg),moved:false};
@@ -2851,7 +2741,7 @@ function applyDrag(cfg,orig,dH){
 }
 function onDU(){dragState=null;document.removeEventListener('mousemove',onDM);document.removeEventListener('mouseup',onDU);}
 
-// ═══════════════════════ GANTT ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• GANTT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function renderLinearGantt(days,noise,opts={}){
   const isBoard=!!opts.board;
   const effectiveView=opts.viewMode||viewMode;
@@ -2960,7 +2850,7 @@ function renderLinearGantt(days,noise,opts={}){
       const ri=rowDefs.findIndex(r=>r.type===rowType&&r.person===person);if(ri<0)return;
       const rowY=tops[ri],shiftCol=SHIFT_DEFS[person.shift]?.col||'rgba(200,200,200,.2)';
       const segs=e<s?[[s,24],[0,e]]:[[s,e]];
-      const ttData={title:`${person.name} — ${role}`,rows:[['Shift',SHIFT_DEFS[person.shift]?.name||person.shift],['Hours',`${hToStr(s)} – ${hToStr(e)}`]],issues:[]};
+      const ttData={title:`${person.name} â€” ${role}`,rows:[['Shift',SHIFT_DEFS[person.shift]?.name||person.shift],['Hours',`${hToStr(s)} â€“ ${hToStr(e)}`]],issues:[]};
       for(let d=0;d<weekMode;d++){const base=d*24*hourPx;segs.forEach(([ss,se])=>addBar(base+ss*hourPx,rowY+2,(se-ss)*hourPx,CROW-4,`background:${shiftCol};color:rgba(255,255,255,.7);`,person.shift,ttData,{type:'person',person}));}
     });
   }
@@ -2984,7 +2874,7 @@ function renderLinearGantt(days,noise,opts={}){
       const ttData=chargeTT(c,day,act);
       const dragCfg=isBoard?null:{type:c.pid==='p1'?'charge_p1':'charge_p2',dayIdx:c.dayIdx};
 
-      // ── PLANNED BARS (shown in plan or both mode) ──
+      // â”€â”€ PLANNED BARS (shown in plan or both mode) â”€â”€
       if(effectiveView==='plan'||effectiveView==='both'){
         const alpha=effectiveView==='both'&&act?'.35':'1';
         if(c.needsFlt&&c.fltStart!==null){
@@ -2994,13 +2884,13 @@ function renderLinearGantt(days,noise,opts={}){
         }
         addBar(px(c.cin),BT,wd(ct.procMin/60),BH,`background:${ct.bg};color:${ct.tx};border:1px solid ${ct.bd};z-index:7;opacity:${alpha};`,ct.name,ttData,dragCfg);
         addBar(px(c.cin+ct.procMin/60),BT,wd(ct.vacMin/60),BH,`background:${ct.vacbg};color:${ct.vactx};border:1px solid ${ct.vacbd};z-index:7;opacity:${alpha};`,'VAC',ttData,null);
-        const tEl=document.createElement('div');tEl.style.cssText=`position:absolute;left:${px(c.vacEnd)}px;top:${BT}px;width:${wd(turnH)}px;height:${BH}px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mono);z-index:7;pointer-events:none;opacity:${alpha};`;tEl.textContent='↑';cv.appendChild(tEl);
+        const tEl=document.createElement('div');tEl.style.cssText=`position:absolute;left:${px(c.vacEnd)}px;top:${BT}px;width:${wd(turnH)}px;height:${BH}px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mono);z-index:7;pointer-events:none;opacity:${alpha};`;tEl.textContent='â†‘';cv.appendChild(tEl);
         if(c.needsCrane&&c.craneStart!=null){const cf=!c.craneOk||c.craneNoiseViolation;addBar(px(c.craneStart),BT,wd(craneH),BH,`background:${cf?'rgba(224,92,92,.7)':'rgba(232,147,71,.7)'};color:${cf?'#fff':'#0e0f11'};border:${cf?'1.5px solid var(--red)':'none'};z-index:8;opacity:${alpha};`,'crane',ttData,null);}
         if(opShiftAt(c.cin)==='overtime'){const otEl=document.createElement('div');otEl.style.cssText=`position:absolute;left:${px(c.cin)}px;top:${BT}px;width:${wd(ct.procMin/60)}px;height:${BH}px;background:rgba(232,197,71,.13);border:1px solid rgba(232,197,71,.35);z-index:9;pointer-events:none;border-radius:3px;opacity:${alpha};`;cv.appendChild(otEl);}
-        if(c.outfeedBlocked){const mk=document.createElement('div');mk.style.cssText=`position:absolute;left:${px(c.cin)-1}px;top:${BT-5}px;font-size:9px;color:var(--amber);z-index:10;font-family:var(--mono);pointer-events:none;`;mk.textContent='▲';cv.appendChild(mk);}
+        if(c.outfeedBlocked){const mk=document.createElement('div');mk.style.cssText=`position:absolute;left:${px(c.cin)-1}px;top:${BT-5}px;font-size:9px;color:var(--amber);z-index:10;font-family:var(--mono);pointer-events:none;`;mk.textContent='â–²';cv.appendChild(mk);}
       }
 
-      // ── ACTUAL BARS (shown in live or both mode) ──
+      // â”€â”€ ACTUAL BARS (shown in live or both mode) â”€â”€
       if((effectiveView==='live'||effectiveView==='both')&&act&&act.cin!==null){
         const est=getActualEstimate(c,act);
         const actCt=actualChargeType(c,act);
@@ -3047,7 +2937,7 @@ function renderLinearGantt(days,noise,opts={}){
       }
     }
 
-      // ── GAP BARS between actual charges ──
+      // â”€â”€ GAP BARS between actual charges â”€â”€
       if(effectiveView!=='plan'){
         const gap=getGap(c.dayIdx,c.pid,c.n);
         if(gap&&gap.gapStart!==null&&gap.gapEnd!==null){
@@ -3077,7 +2967,7 @@ function renderLinearGantt(days,noise,opts={}){
   }
 }
 
-// ═══════════════════════ MAIN GO ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN GO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function collectLiveItems(days){
   const items=[];
   days.forEach(day=>['p1','p2'].forEach(pid=>{
@@ -3097,7 +2987,7 @@ function buildBoardDayTabs(items){
   let html='';
   for(let i=0;i<weekMode;i++){
     const hasLive=items.some(x=>x.charge.dayIdx===i);
-    html+=`<button class="board-day-tab ${i===boardDayTab?'active':''} ${hasLive?'has-live':''}" onclick="setBoardDay(${i})">${names[i].slice(0,3)}${hasLive?' ●':''}</button>`;
+    html+=`<button class="board-day-tab ${i===boardDayTab?'active':''} ${hasLive?'has-live':''}" onclick="setBoardDay(${i})">${names[i].slice(0,3)}${hasLive?' â—':''}</button>`;
   }
   document.getElementById('board-day-tabs').innerHTML=html;
 }
@@ -3130,7 +3020,7 @@ function buildBoardReport(day,dayItems){
     if(!drivers.length&&Math.abs(finishVar)>30){drivers.push(finishVar>0?'late finish':'early finish');addReason(finishVar>0?'late_finish':'early_finish',finishVar);}
     totalStartVariance+=startVar;totalFinishVariance+=finishVar;varianceCount++;
     const sev=Math.abs(startVar)>60||Math.abs(finishVar)>60?'danger':(Math.abs(startVar)>30||Math.abs(finishVar)>30?'warn':'');
-    varianceRows.push(`<div class="variance-row"><div class="variance-chip">P${c.pid==='p1'?1:2} C${c.n}</div><div><div style="font-weight:600;color:var(--text);">${c.position} · ${c.ct.name}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3);">plan ${tfAbs(c.cin)}-${tfAbs(c.actualOut)} · actual ${tfAbs(absForActual(c.dayIdx,act.cin))}-${tfAbs(absForActual(c.dayIdx,est.out))}</div></div><div class="variance-chip ${sev}">${startVar>=0?'+':''}${fmins(startVar)}</div><div class="variance-chip ${sev}">${finishVar>=0?'+':''}${fmins(finishVar)}</div></div>`);
+    varianceRows.push(`<div class="variance-row"><div class="variance-chip">P${c.pid==='p1'?1:2} C${c.n}</div><div><div style="font-weight:600;color:var(--text);">${c.position} Â· ${c.ct.name}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3);">plan ${tfAbs(c.cin)}-${tfAbs(c.actualOut)} Â· actual ${tfAbs(absForActual(c.dayIdx,act.cin))}-${tfAbs(absForActual(c.dayIdx,est.out))}</div></div><div class="variance-chip ${sev}">${startVar>=0?'+':''}${fmins(startVar)}</div><div class="variance-chip ${sev}">${finishVar>=0?'+':''}${fmins(finishVar)}</div></div>`);
   });
   const dayGaps=[];
   ['p1','p2'].forEach(pid=>{for(let n=1;n<=4;n++){const gap=getGap(day.dayIdx,pid,n);if(gap&&gap.gapStart!==null)dayGaps.push({...gap,pid,n});}});
@@ -3186,7 +3076,7 @@ function buildBoardStageCard(pid,dayItems){
     `started ${stage?tfAbs(stage.startAbs):tfAbs(running.startAbs)}`,
     stage?`${fmins(stage.remainingMin)} left`:`ETA ${tfAbs(running.outAbs)}`
   ];
-  return `<div class="board-card running"><div class="board-label">${label} stage</div><div class="board-value">${stage?stage.name:'Running'}</div><div class="board-sub">${subBits.join(' · ')}</div><div class="board-sub" style="margin-top:4px;color:${stage?stage.col:'var(--text2)'};">${type.name}</div></div>`;
+  return `<div class="board-card running"><div class="board-label">${label} stage</div><div class="board-value">${stage?stage.name:'Running'}</div><div class="board-sub">${subBits.join(' Â· ')}</div><div class="board-sub" style="margin-top:4px;color:${stage?stage.col:'var(--text2)'};">${type.name}</div></div>`;
 }
 function runningChargeLabel(item){
   return `P${item.pid==='p1'?1:2} C${item.charge.n}`;
@@ -3242,7 +3132,7 @@ function go(){
   buildDayConfigTabs(days);
   const compDays=days.filter(d=>d.compConflict);
   const cn=document.getElementById('comp-note');
-  if(compDays.length){cn.style.display='block';cn.innerHTML=`<strong>Compressor conflicts:</strong> `+compDays.map(d=>`${d.dayName} — ${d.compMsg}`).join(' | ');}
+  if(compDays.length){cn.style.display='block';cn.innerHTML=`<strong>Compressor conflicts:</strong> `+compDays.map(d=>`${d.dayName} â€” ${d.compMsg}`).join(' | ');}
   else cn.style.display='none';
   const wC=issues.filter(i=>i.sev!=='ok').length;
   const pill=document.getElementById('bneck-pill');
@@ -3251,7 +3141,7 @@ function go(){
   if(activePanel==='live-board')buildLiveBoard();
 }
 
-// ═══════════════════════ LOG PANEL ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LOG PANEL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildLogPanel(){
   const names=weekMode===5?DAYS_5:DAYS_7;
   const syncPill=document.getElementById('operator-sync-pill');
@@ -3264,7 +3154,7 @@ function buildLogPanel(){
   let tabHtml='';
   for(let i=0;i<weekMode;i++){
     const hasActuals=['p1','p2'].some(pid=>[1,2,3,4].some(n=>getActual(i,pid,n)));
-    tabHtml+=`<div class="day-tab${i===logDayTab?' active':''}${hasActuals?' has-actual':''}" onclick="setLogDayTab(${i})">${names[i].slice(0,3)}${hasActuals?' ●':''}</div>`;
+    tabHtml+=`<div class="day-tab${i===logDayTab?' active':''}${hasActuals?' has-actual':''}" onclick="setLogDayTab(${i})">${names[i].slice(0,3)}${hasActuals?' â—':''}</div>`;
   }
   document.getElementById('log-day-tabs').innerHTML=tabHtml;
   buildLogDay(logDayTab);
@@ -3313,7 +3203,7 @@ function buildLogDay(d){
           <div class="log-time-group"><span class="time-caption">Start</span><label class="log-time-field"><span>Start</span><input type="text" inputmode="numeric" pattern="[0-9:]*" placeholder="HH:MM" value="${act.cin!==null&&act.cin!==undefined?hToStr(act.cin):''}" onchange="updateActualTime(${d},'${pid}',${c.n},'cin',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'cin')">Now</button></div>
           <div class="log-time-group"><span class="time-caption">Finish</span><label class="log-time-field"><span>Finish</span><input type="text" inputmode="numeric" pattern="[0-9:]*" placeholder="HH:MM" value="${act.out!==null&&act.out!==undefined?hToStr(act.out):''}" onchange="updateActualTime(${d},'${pid}',${c.n},'out',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'out')">Now</button></div>
         </div>
-      </div><div class="charge-log-products"><div class="charge-log-master-note">${plannedMaster?`Master planned: ${escHtml(plannedMaster)}`:'No AU slot found for this charge'}${productCount?` · ${productCount} product${productCount===1?'':'s'}`:''}</div>${productDetail}</div>`;
+      </div><div class="charge-log-products"><div class="charge-log-master-note">${plannedMaster?`Master planned: ${escHtml(plannedMaster)}`:'No AU slot found for this charge'}${productCount?` Â· ${productCount} product${productCount===1?'':'s'}`:''}</div>${productDetail}</div>`;
     });
     html+=`</div>`;
   });
@@ -3321,7 +3211,7 @@ function buildLogDay(d){
 
   // Gap logging section
   html+=`<div style="margin-top:4px;"><div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Inter-charge gaps &amp; reasons</div>`;
-  html+=`<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">When there is a gap between charges, log the reason here. Gaps are auto-detected from actual times — add a reason code to explain why.</div>`;
+  html+=`<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">When there is a gap between charges, log the reason here. Gaps are auto-detected from actual times â€” add a reason code to explain why.</div>`;
 
   html+=`<div class="gap-log-grid">`;
   ['p1','p2'].forEach((pid,pi)=>{
@@ -3338,7 +3228,7 @@ function buildLogDay(d){
       const otherInput=gap.reason==='other'?`<input class="gap-other-input" type="text" value="${escHtml(gap.reasonDetail||'')}" placeholder="Type reason" oninput="updateGap(${d},'${pid}',${afterN},'reasonDetail',this.value,${act1.out},${act2.cin})">`:'';
       html+=`<div class="gap-card">
         <span class="gap-badge">GAP</span>
-        <div class="gap-times">After C${afterN}<br>${tfAbs(act1.out)} – ${tfAbs(act2.cin)}</div>
+        <div class="gap-times">After C${afterN}<br>${tfAbs(act1.out)} â€“ ${tfAbs(act2.cin)}</div>
         <div class="gap-duration">${fmins(gapMins)}</div>
         <div class="gap-reason"><select onchange="updateGap(${d},'${pid}',${afterN},'reason',this.value,${act1.out},${act2.cin})">${reasonOpts}</select>${otherInput}</div>
       </div>`;
@@ -3381,9 +3271,9 @@ function updateActualTime(d,pid,n,field,val){
     if(field==='procEnd'&&act.cin!==null&&t<(act.cin%24)-1)absT+=24;
     if(field==='out'&&act.procEnd!==null&&t<(act.procEnd%24)-1)absT+=24;
     act[field]=absT;
-    // auto-compute vacEnd as midpoint (proc→out) if both set and vacEnd not explicitly set
+    // auto-compute vacEnd as midpoint (procâ†’out) if both set and vacEnd not explicitly set
     if(field==='out'&&act.cin!==null&&act.vacEnd===null&&act.procEnd!==null){
-      // vacEnd not directly logged — leave null, just use out
+      // vacEnd not directly logged â€” leave null, just use out
     }
     act.vacEnd=act.procEnd; // simplified: vacEnd = procEnd for display (actual process ends = vac starts)
   } else {
@@ -3426,7 +3316,7 @@ function clearPlantActuals(d,pid){
   saveData();clearLivePlantRemote(d,pid);buildLogDay(d);go();
 }
 
-// ═══════════════════════ WEEKLY REPORT ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• WEEKLY REPORT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildReport(){
   const days=computeWeek();
   const dNames=weekMode===5?DAYS_5:DAYS_7;
@@ -3486,7 +3376,7 @@ function buildReport(){
     sorted.forEach(g=>{
       const mins=Math.round((g.gapEnd-g.gapStart)*60);
       const reason=gapReasonText(g);
-      html+=`<div class="gap-row"><div class="gr-day">${g.dayName.slice(0,3)}</div><div class="gr-plant">P${g.pid==='p1'?1:2}</div><div class="gr-window">${tfAbs(g.gapStart)} – ${tfAbs(g.gapEnd)}</div><div class="gr-dur">${fmins(mins)}</div><div class="gr-reason">${reason}</div></div>`;
+      html+=`<div class="gap-row"><div class="gr-day">${g.dayName.slice(0,3)}</div><div class="gr-plant">P${g.pid==='p1'?1:2}</div><div class="gr-window">${tfAbs(g.gapStart)} â€“ ${tfAbs(g.gapEnd)}</div><div class="gr-dur">${fmins(mins)}</div><div class="gr-reason">${reason}</div></div>`;
     });
     // Gap reason breakdown
     const reasonCounts={};allGaps.forEach(g=>{const r=g.reason==='other'?gapReasonText(g):(g.reason||'other');reasonCounts[r]=(reasonCounts[r]||0)+1;});
@@ -3496,7 +3386,7 @@ function buildReport(){
   }
 
   // Charge-by-charge table
-  html+=`<div class="report-section"><div class="report-title"><i class="ti ti-table" style="font-size:16px;"></i>Charge detail — plan vs actual</div>
+  html+=`<div class="report-section"><div class="report-title"><i class="ti ti-table" style="font-size:16px;"></i>Charge detail â€” plan vs actual</div>
   <div class="twrap"><table><thead><tr><th>Day</th><th>Plant</th><th>Pos.</th><th>Charge #</th><th>Type</th><th>Plan in</th><th>Act. in</th><th>Variance</th><th>Plan dur.</th><th>Act. dur.</th><th>Plan out</th><th>Act. out</th></tr></thead><tbody>`;
 
   for(let d=0;d<weekMode;d++){
@@ -3516,13 +3406,13 @@ function buildReport(){
           <td style="color:var(--text3);font-family:var(--mono);font-size:10px;">${dNames[d].slice(0,3)}</td>
           <td style="font-family:var(--mono);font-size:10px;">P${pid==='p1'?1:2}</td>
           <td><span class="pos-bdg">${c.position}</span></td>
-          <td style="font-family:var(--mono);font-size:11px;font-weight:600;">${act.chargeNum||'—'}</td>
+          <td style="font-family:var(--mono);font-size:11px;font-weight:600;">${act.chargeNum||'â€”'}</td>
           <td><span class="ct-bdg" style="background:${actualChargeType(c,act).colBg};color:${actualChargeType(c,act).tx};border:1px solid ${actualChargeType(c,act).colBd};">${actualChargeType(c,act).name}</span></td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.cin)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(act.cin)}</td>
           <td style="font-family:var(--mono);font-size:11px;font-weight:600;color:${varCol};">${varMins>=0?'+':''}${fmins(varMins)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${fmins(planDur)}</td>
-          <td style="font-family:var(--mono);font-size:10px;${actDur&&Math.abs(actDur-planDur)>30?'color:var(--amber);font-weight:600;':''}">${actDur?fmins(actDur):'—'}</td>
+          <td style="font-family:var(--mono);font-size:10px;${actDur&&Math.abs(actDur-planDur)>30?'color:var(--amber);font-weight:600;':''}">${actDur?fmins(actDur):'â€”'}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.actualOut)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(act.out)}</td>
         </tr>`;
@@ -3533,7 +3423,7 @@ function buildReport(){
   document.getElementById('report-content').innerHTML=html;
 }
 
-// ═══════════════════════ STATS ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function reportIsoDate(date){
   const d=new Date(date);
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -3614,11 +3504,11 @@ function parseReportNumber(value){
 }
 function rowVolumeM3(row){
   if(!row)return 0;
-  const direct=row._volumeM3||row.VolumeM3||row['Volume m3']||row['Volume m³']||row['Column AK']||row['Column 37'];
+  const direct=row._volumeM3||row.VolumeM3||row['Volume m3']||row['Volume mÂ³']||row['Column AK']||row['Column 37'];
   if(direct)return parseReportNumber(direct);
   const hit=Object.entries(row).find(([h,v])=>{
     if(!v)return false;
-    const key=String(h||'').toLowerCase().replace(/³/g,'3');
+    const key=String(h||'').toLowerCase().replace(/Â³/g,'3');
     return key.includes('volume')||key.includes('m3')||key.includes('m^3')||key.includes('cbm')||key.includes('cubic');
   });
   return hit?parseReportNumber(hit[1]):0;
@@ -3803,7 +3693,7 @@ function inventoryBarChart(agg,total,label='Qty'){
   if(!rows.length)return '<div class="report-email-note">No rows in this period.</div>';
   return rows.map(([name,qty])=>{
     const pct=total?qty/total*100:0;
-    return `<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;"><span>${escHtml(name)}</span><span style="font-family:var(--mono);color:var(--text2);">${qty.toLocaleString('en-GB')} ${escHtml(label)} · ${fmtPct2(pct)}</span></div><div style="height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:${Math.max(2,Math.min(100,pct))}%;background:var(--red);"></div></div></div>`;
+    return `<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;"><span>${escHtml(name)}</span><span style="font-family:var(--mono);color:var(--text2);">${qty.toLocaleString('en-GB')} ${escHtml(label)} Â· ${fmtPct2(pct)}</span></div><div style="height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:${Math.max(2,Math.min(100,pct))}%;background:var(--red);"></div></div></div>`;
   }).join('');
 }
 function collectInventoryMetrics(){
@@ -4194,37 +4084,37 @@ function renderStats(days,bogeys,noise){
   `;
 }
 
-// ═══════════════════════ BOTTLENECKS ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• BOTTLENECKS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function detectBottlenecks(days,bogeys,trolleys,fltMin,craneMin,noise){
   const issues=[],allVis=days.flatMap(d=>[...d.p1,...d.p2]).filter(c=>c.fitsIn24);
   const dN=weekMode===5?DAYS_5:DAYS_7;
   const tag=c=>`${dN[c.dayIdx].slice(0,3)} P${c.pid==='p1'?1:2}C${c.n}`;
   const wr=days.flatMap(d=>d.p2).filter(c=>c.wrongFamily);
-  wr.forEach(c=>issues.push({cat:'Wrong plant',sev:'danger',msg:`${dN[c.dayIdx]} P2 C${c.n}: "${c.ct.name}" is fencing — Plant 2 is poles only.`}));
+  wr.forEach(c=>issues.push({cat:'Wrong plant',sev:'danger',msg:`${dN[c.dayIdx]} P2 C${c.n}: "${c.ct.name}" is fencing â€” Plant 2 is poles only.`}));
   if(!wr.length)issues.push({cat:'Wrong plant',sev:'ok',msg:'All charges assigned to compatible vessels.'});
   const opC=allVis.filter(c=>c.needsFlt&&c.fltOperatorConflict);
   const opN=allVis.filter(c=>c.needsFlt&&c.fltOperatorNeeded&&!c.fltOperatorConflict);
-  opC.forEach(c=>issues.push({cat:'FLT — operator conflict',sev:'danger',msg:`${tag(c)}: no tipper + operator in process — trolley prep unattended.`}));
-  if(!opC.length&&opN.length)issues.push({cat:'FLT — operator conflict',sev:'warn',msg:`${opN.length} charge${opN.length>1?'s require':'requires'} operator to cover FLT prep.`});
-  if(!opC.length&&!opN.length)issues.push({cat:'FLT — operator conflict',sev:'ok',msg:'All fencing FLT prep windows covered by tippers.'});
-  if(noise.on){const fN=allVis.filter(c=>c.fltNoiseViolation),cN=allVis.filter(c=>c.craneNoiseViolation);fN.forEach(c=>issues.push({cat:'Noise — FLT',sev:'danger',msg:`${tag(c)}: FLT prep in quiet hours.`}));cN.forEach(c=>issues.push({cat:'Noise — crane',sev:'danger',msg:`${tag(c)}: crane unload in quiet hours.`}));if(!fN.length)issues.push({cat:'Noise — FLT',sev:'ok',msg:'No FLT in quiet hours.'});if(!cN.length)issues.push({cat:'Noise — crane',sev:'ok',msg:'No crane ops in quiet hours.'});}
-  else{issues.push({cat:'Noise — FLT',sev:'ok',msg:'Noise constraint off.'});issues.push({cat:'Noise — crane',sev:'ok',msg:'Noise constraint off.'});}
-  const crG=allVis.filter(c=>c.needsCrane&&!c.craneOk);crG.forEach(c=>issues.push({cat:'No crane',sev:'warn',msg:`${tag(c)}: outfeed unload ${tfAbs(c.craneStart)}–${tfAbs(c.craneEnd)} — no crane on shift.`}));const crAll=allVis.filter(c=>c.needsCrane);if(!crG.length&&crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'All pole outfeed windows have crane coverage.'});if(!crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'No pole charges — cranes not required.'});
-  const bl=allVis.filter(c=>c.outfeedBlocked);bl.forEach(c=>issues.push({cat:'Carry-over block',sev:'warn',msg:`${tag(c)}: outfeed occupied — start delayed to ${tfAbs(c.cin)}.`}));if(!bl.length)issues.push({cat:'Carry-over block',sev:'ok',msg:'No carry-over blocks this week.'});
+  opC.forEach(c=>issues.push({cat:'FLT â€” operator conflict',sev:'danger',msg:`${tag(c)}: no tipper + operator in process â€” trolley prep unattended.`}));
+  if(!opC.length&&opN.length)issues.push({cat:'FLT â€” operator conflict',sev:'warn',msg:`${opN.length} charge${opN.length>1?'s require':'requires'} operator to cover FLT prep.`});
+  if(!opC.length&&!opN.length)issues.push({cat:'FLT â€” operator conflict',sev:'ok',msg:'All fencing FLT prep windows covered by tippers.'});
+  if(noise.on){const fN=allVis.filter(c=>c.fltNoiseViolation),cN=allVis.filter(c=>c.craneNoiseViolation);fN.forEach(c=>issues.push({cat:'Noise â€” FLT',sev:'danger',msg:`${tag(c)}: FLT prep in quiet hours.`}));cN.forEach(c=>issues.push({cat:'Noise â€” crane',sev:'danger',msg:`${tag(c)}: crane unload in quiet hours.`}));if(!fN.length)issues.push({cat:'Noise â€” FLT',sev:'ok',msg:'No FLT in quiet hours.'});if(!cN.length)issues.push({cat:'Noise â€” crane',sev:'ok',msg:'No crane ops in quiet hours.'});}
+  else{issues.push({cat:'Noise â€” FLT',sev:'ok',msg:'Noise constraint off.'});issues.push({cat:'Noise â€” crane',sev:'ok',msg:'Noise constraint off.'});}
+  const crG=allVis.filter(c=>c.needsCrane&&!c.craneOk);crG.forEach(c=>issues.push({cat:'No crane',sev:'warn',msg:`${tag(c)}: outfeed unload ${tfAbs(c.craneStart)}â€“${tfAbs(c.craneEnd)} â€” no crane on shift.`}));const crAll=allVis.filter(c=>c.needsCrane);if(!crG.length&&crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'All pole outfeed windows have crane coverage.'});if(!crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'No pole charges â€” cranes not required.'});
+  const bl=allVis.filter(c=>c.outfeedBlocked);bl.forEach(c=>issues.push({cat:'Carry-over block',sev:'warn',msg:`${tag(c)}: outfeed occupied â€” start delayed to ${tfAbs(c.cin)}.`}));if(!bl.length)issues.push({cat:'Carry-over block',sev:'ok',msg:'No carry-over blocks this week.'});
   days.forEach(d=>{const dp=[...d.p1,...d.p2].filter(c=>c.fitsIn24&&c.needsCrane).length;if(dp>bogeys)issues.push({cat:'Bogey shortage',sev:'warn',msg:`${d.dayName}: ${dp} pole charges exceed bogey pool of ${bogeys}.`});});if(!days.some(d=>[...d.p1,...d.p2].filter(c=>c.fitsIn24&&c.needsCrane).length>bogeys))issues.push({cat:'Bogey shortage',sev:'ok',msg:`Bogey pool of ${bogeys} sufficient.`});
   const fC=allVis.filter(c=>c.fltConflict);fC.forEach(c=>issues.push({cat:'Trolley prep window',sev:'warn',msg:`${tag(c)}: FLT prep only ${fmins(c.fltWindowMin)}, need ${fmins(fltMin)}.`}));if(!fC.length)issues.push({cat:'Trolley prep window',sev:'ok',msg:'FLT prep windows sufficient.'});
   const dr=days.flatMap(d=>[...d.p1,...d.p2]).filter(c=>!c.fitsIn24);dr.forEach(c=>issues.push({cat:'Exceeds 24 h',sev:'warn',msg:`${tag(c)} (${c.ct.name}): treatment exceeds 24 h.`}));if(!dr.length)issues.push({cat:'Exceeds 24 h',sev:'ok',msg:'All treatments complete within 24 h.'});
   const ot=allVis.filter(c=>opShiftAt(c.cin)==='overtime');if(ot.length)issues.push({cat:'Operator overtime',sev:'warn',msg:`${ot.length} charge${ot.length>1?'s':''} outside operator shift hours.`});else issues.push({cat:'Operator overtime',sev:'ok',msg:'All process phases within operator shift hours.'});
   // Actual data issues
   const totalGaps=Object.keys(gaps).filter(k=>gaps[k]&&gaps[k].gapStart!==null&&!gaps[k].reason).length;
-  if(totalGaps)issues.push({cat:'Gaps without reason',sev:'warn',msg:`${totalGaps} logged gap${totalGaps>1?'s':''} have no reason code — add in Log charges.`});
+  if(totalGaps)issues.push({cat:'Gaps without reason',sev:'warn',msg:`${totalGaps} logged gap${totalGaps>1?'s':''} have no reason code â€” add in Log charges.`});
   return issues;
 }
 
 function renderBottlenecks(issues){
-  const cats=['Wrong plant','FLT — operator conflict','Noise — FLT','Noise — crane','No crane','Carry-over block','Bogey shortage','Trolley prep window','Exceeds 24 h','Operator overtime','Gaps without reason'];
+  const cats=['Wrong plant','FLT â€” operator conflict','Noise â€” FLT','Noise â€” crane','No crane','Carry-over block','Bogey shortage','Trolley prep window','Exceeds 24 h','Operator overtime','Gaps without reason'];
   const map={};cats.forEach(c=>map[c]=[]);issues.forEach(i=>{if(map[i.cat])map[i.cat].push(i);});
-  let sH='';cats.forEach(cat=>{const arr=map[cat];if(!arr||!arr.length)return;const hD=arr.some(i=>i.sev==='danger'),hW=arr.some(i=>i.sev!=='ok');const sev=hD?'danger':hW?'warn':'ok';const icon=sev==='ok'?'ti-circle-check':sev==='danger'?'ti-circle-x':'ti-alert-triangle';const count=arr.filter(i=>i.sev!=='ok').length;const detail=hW?(count>1?`${count} issues`:(arr.find(i=>i.sev!=='ok')?.msg||'').slice(0,70)+'…'):(arr[0]?.msg||'').slice(0,65);sH+=`<div class="bneck-row"><div class="bneck-ico ${sev}"><i class="ti ${icon}"></i></div><div class="bneck-cat">${cat}</div><div class="bneck-detail">${detail}</div><div style="flex-shrink:0;"><span class="badge ${sev}">${sev==='ok'?'Clear':hD?'Critical':'Warning'}</span></div></div>`;});
+  let sH='';cats.forEach(cat=>{const arr=map[cat];if(!arr||!arr.length)return;const hD=arr.some(i=>i.sev==='danger'),hW=arr.some(i=>i.sev!=='ok');const sev=hD?'danger':hW?'warn':'ok';const icon=sev==='ok'?'ti-circle-check':sev==='danger'?'ti-circle-x':'ti-alert-triangle';const count=arr.filter(i=>i.sev!=='ok').length;const detail=hW?(count>1?`${count} issues`:(arr.find(i=>i.sev!=='ok')?.msg||'').slice(0,70)+'â€¦'):(arr[0]?.msg||'').slice(0,65);sH+=`<div class="bneck-row"><div class="bneck-ico ${sev}"><i class="ti ${icon}"></i></div><div class="bneck-cat">${cat}</div><div class="bneck-detail">${detail}</div><div style="flex-shrink:0;"><span class="badge ${sev}">${sev==='ok'?'Clear':hD?'Critical':'Warning'}</span></div></div>`;});
   document.getElementById('bsum-rows').innerHTML=sH;
   const warns=issues.filter(i=>i.sev!=='ok'),oks=issues.filter(i=>i.sev==='ok');
   let det='';if(warns.length){det+=`<div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;">Issues</div>`;det+=warns.map(i=>`<div class="alert ${i.sev}"><i class="ti ti-${i.sev==='danger'?'circle-x':'alert-triangle'}"></i><span>${i.msg}</span></div>`).join('');}
@@ -4232,7 +4122,7 @@ function renderBottlenecks(issues){
   document.getElementById('bneck-detail').innerHTML=det;
 }
 
-// ═══════════════════════ TABLE ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function renderTable(days){
   const dN=weekMode===5?DAYS_5:DAYS_7;let html='';
   days.forEach(d=>{
@@ -4257,11 +4147,11 @@ function renderTable(days){
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.procEnd)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.vacEnd)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.actualOut)}</td>
-          <td style="font-family:var(--mono);font-size:10px;color:${act&&act.cin!==null?'var(--teal)':'var(--text3)'};">${act&&act.cin!==null?tfAbs(act.cin):'—'}</td>
-          <td style="font-family:var(--mono);font-size:10px;">${act&&act.procEnd!==null?tfAbs(act.procEnd):'—'}</td>
-          <td style="font-family:var(--mono);font-size:10px;">${act&&act.out!==null?tfAbs(act.out):'—'}</td>
-          <td style="font-family:var(--mono);font-size:11px;font-weight:600;color:${varMins===null?'var(--text3)':Math.abs(varMins)>30?'var(--amber)':'var(--green)'};">${varMins!==null?(varMins>=0?'+':'')+fmins(varMins):'—'}</td>
-          <td>${flags.join('')||'—'}</td>
+          <td style="font-family:var(--mono);font-size:10px;color:${act&&act.cin!==null?'var(--teal)':'var(--text3)'};">${act&&act.cin!==null?tfAbs(act.cin):'â€”'}</td>
+          <td style="font-family:var(--mono);font-size:10px;">${act&&act.procEnd!==null?tfAbs(act.procEnd):'â€”'}</td>
+          <td style="font-family:var(--mono);font-size:10px;">${act&&act.out!==null?tfAbs(act.out):'â€”'}</td>
+          <td style="font-family:var(--mono);font-size:11px;font-weight:600;color:${varMins===null?'var(--text3)':Math.abs(varMins)>30?'var(--amber)':'var(--green)'};">${varMins!==null?(varMins>=0?'+':'')+fmins(varMins):'â€”'}</td>
+          <td>${flags.join('')||'â€”'}</td>
         </tr>`;
       });
     });
@@ -4269,16 +4159,16 @@ function renderTable(days){
   document.getElementById('full-tbody').innerHTML=html;
 }
 
-// ═══════════════════════ DAY CONFIG ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DAY CONFIG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildDayConfigTabs(days){
   const names=weekMode===5?DAYS_5:DAYS_7;let html='';
-  for(let i=0;i<weekMode;i++){const hB=days&&days[i]&&[...days[i].p1,...days[i].p2].some(c=>c.outfeedBlocked);html+=`<div class="day-tab${i===activeDayTab?' active':''}${hB?' has-co':''}" onclick="setDayTab(${i})">${names[i].slice(0,3)}${hB?' ▲':''}</div>`;}
+  for(let i=0;i<weekMode;i++){const hB=days&&days[i]&&[...days[i].p1,...days[i].p2].some(c=>c.outfeedBlocked);html+=`<div class="day-tab${i===activeDayTab?' active':''}${hB?' has-co':''}" onclick="setDayTab(${i})">${names[i].slice(0,3)}${hB?' â–²':''}</div>`;}
   document.getElementById('day-config-tabs').innerHTML=html;buildDayConfigPanel();
 }
 function setDayTab(i){activeDayTab=i;const days=computeWeek();buildDayConfigTabs(days);buildDayConfigPanel();}
 function buildDayConfigPanel(){
   const d=activeDayTab,cfg=dayConfigs[d],names=weekMode===5?DAYS_5:DAYS_7;
-  let html=`<div class="card" style="margin-bottom:10px;"><div class="card-title">${names[d]} — plant start times</div><div class="g2"><div class="fg"><label class="fl">Plant 1 start</label><input type="time" value="${cfg.p1Start}" onchange="dayConfigs[${d}].p1Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p1Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p1Start='06:00';buildDayConfigPanel();go()">06:00</button><button onclick="dayConfigs[${d}].p1Start='07:00';buildDayConfigPanel();go()">07:00</button></div></div><div class="fg"><label class="fl">Plant 2 start</label><input type="time" value="${cfg.p2Start}" onchange="dayConfigs[${d}].p2Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p2Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p2Start='05:30';buildDayConfigPanel();go()">05:30</button><button onclick="dayConfigs[${d}].p2Start='06:00';buildDayConfigPanel();go()">06:00</button></div></div></div></div>
+  let html=`<div class="card" style="margin-bottom:10px;"><div class="card-title">${names[d]} â€” plant start times</div><div class="g2"><div class="fg"><label class="fl">Plant 1 start</label><input type="time" value="${cfg.p1Start}" onchange="dayConfigs[${d}].p1Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p1Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p1Start='06:00';buildDayConfigPanel();go()">06:00</button><button onclick="dayConfigs[${d}].p1Start='07:00';buildDayConfigPanel();go()">07:00</button></div></div><div class="fg"><label class="fl">Plant 2 start</label><input type="time" value="${cfg.p2Start}" onchange="dayConfigs[${d}].p2Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p2Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p2Start='05:30';buildDayConfigPanel();go()">05:30</button><button onclick="dayConfigs[${d}].p2Start='06:00';buildDayConfigPanel();go()">06:00</button></div></div></div></div>
   <div class="g2"><div class="card"><div class="card-title"><div class="cdot" style="background:var(--blue)"></div>Plant 1 slots</div><div class="help" style="margin-bottom:8px;">All types. Drag to reorder.</div><ul class="slot-list" id="p1-slots-${d}"></ul></div><div class="card"><div class="card-title"><div class="cdot" style="background:var(--green)"></div>Plant 2 slots</div><div class="help" style="margin-bottom:8px;">Pole types only.</div><ul class="slot-list" id="p2-slots-${d}"></ul></div></div>`;
   document.getElementById('day-config-content').innerHTML=html;buildSlots(d);
 }
@@ -4301,7 +4191,7 @@ function buildSlots(d){
   });
 }
 
-// ═══════════════════════ PERSON PANELS ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PERSON PANELS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildPersonPanel(people,gridId,cfgId,accentRgb){
   const shiftOnlyCards=gridId==='op-person-grid';
   const shiftKeys=Object.keys(SHIFT_DEFS);let gh='';
@@ -4320,15 +4210,15 @@ function buildPersonPanel(people,gridId,cfgId,accentRgb){
   const el2=document.getElementById(cfgId);if(el2)el2.innerHTML=shiftOnlyCards?`<div class="shift-config-wrap" style="grid-column:1/-1;"><div class="shift-config-title">Shift time selections</div></div>${sc}`:sc;
 }
 
-// ═══════════════════════ CHARGE TYPES ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CHARGE TYPES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildCtPanel(){
-  function card(k,ct){const p=CHARGE_PARAMS[k]||{};return`<div class="card" style="background:var(--bg3);"><div class="card-title"><div class="cdot" style="background:${ct.col}"></div>${ct.name}</div><div class="fg"><label class="fl">Process (min)</label><div class="fv"><span id="cv-p-${k}">${ct.procMin}</span><span class="fu">min</span></div><input type="range" id="ct-p-${k}" min="15" max="480" step="15" value="${ct.procMin}" oninput="ctS('${k}','p');go()"></div><div class="fg"><label class="fl">Vacuum (min)</label><div class="fv"><span id="cv-v-${k}">${ct.vacMin}</span><span class="fu">min</span></div><input type="range" id="ct-v-${k}" min="15" max="360" step="15" value="${ct.vacMin}" oninput="ctS('${k}','v');go()"></div><div style="font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Total: <span id="cv-t-${k}" style="font-weight:600;color:var(--text2);">${fmins(ct.procMin+ct.vacMin)}</span></div><div style="font-size:9px;color:var(--text3);line-height:1.35;margin-top:6px;font-family:var(--mono);">QF112: ${p.temp||'-'}°C · Air ${p.airBar||'-'} bar · Hyd ${p.hydBar||'-'} bar</div><div style="font-size:9px;color:var(--text2);line-height:1.45;margin-top:5px;">${stageSummary(k)}</div></div>`;}
+  function card(k,ct){const p=CHARGE_PARAMS[k]||{};return`<div class="card" style="background:var(--bg3);"><div class="card-title"><div class="cdot" style="background:${ct.col}"></div>${ct.name}</div><div class="fg"><label class="fl">Process (min)</label><div class="fv"><span id="cv-p-${k}">${ct.procMin}</span><span class="fu">min</span></div><input type="range" id="ct-p-${k}" min="15" max="480" step="15" value="${ct.procMin}" oninput="ctS('${k}','p');go()"></div><div class="fg"><label class="fl">Vacuum (min)</label><div class="fv"><span id="cv-v-${k}">${ct.vacMin}</span><span class="fu">min</span></div><input type="range" id="ct-v-${k}" min="15" max="360" step="15" value="${ct.vacMin}" oninput="ctS('${k}','v');go()"></div><div style="font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Total: <span id="cv-t-${k}" style="font-weight:600;color:var(--text2);">${fmins(ct.procMin+ct.vacMin)}</span></div><div style="font-size:9px;color:var(--text3);line-height:1.35;margin-top:6px;font-family:var(--mono);">QF112: ${p.temp||'-'}Â°C Â· Air ${p.airBar||'-'} bar Â· Hyd ${p.hydBar||'-'} bar</div><div style="font-size:9px;color:var(--text2);line-height:1.45;margin-top:5px;">${stageSummary(k)}</div></div>`;}
   document.getElementById('ct-fencing').innerHTML=Object.entries(CT).filter(([k,v])=>v.family==='fencing').map(([k,ct])=>card(k,ct)).join('');
   document.getElementById('ct-pole').innerHTML=Object.entries(CT).filter(([k,v])=>v.family==='pole').map(([k,ct])=>card(k,ct)).join('');
 }
 function ctS(k,p){const ct=CT[k],v=parseInt(document.getElementById(`ct-${p}-${k}`).value);if(p==='p')ct.procMin=v;else ct.vacMin=v;document.getElementById(`cv-${p}-${k}`).textContent=v;document.getElementById(`cv-t-${k}`).textContent=fmins(ct.procMin+ct.vacMin);}
 
-// ═══════════════════════ LEGEND ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LEGEND â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function buildLegend(noise){
   let html='';
   ['raiseAir','fill','holdHyd','empty','holdVac','vent'].forEach(k=>{const s=STAGE_LOOK[k];html+=`<div class="leg-item"><div class="leg-sw" style="background:${s.bg};border:1px solid ${s.bd};"></div>${s.short}</div>`;});
@@ -4338,14 +4228,14 @@ function buildLegend(noise){
   html+=`<div class="leg-item"><div class="leg-sw" style="background:rgba(224,92,92,.25);border:1px solid var(--red);"></div>FLT:conflict</div>`;
   html+=`<div class="leg-item"><div class="leg-sw" style="background:rgba(255,255,255,.15);border:2px solid #fff;"></div>Actual charge</div>`;
   html+=`<div class="leg-item"><div class="leg-sw" style="background:rgba(224,92,92,.2);border:1px dashed var(--red);"></div>Gap</div>`;
-  html+=`<div class="leg-item"><div style="font-size:11px;color:var(--amber);">▲</div>Carry-over</div>`;
+  html+=`<div class="leg-item"><div style="font-size:11px;color:var(--amber);">â–²</div>Carry-over</div>`;
   if(noise.on)html+=`<div class="leg-item"><div class="leg-sw" style="background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.25);"></div>Quiet hrs</div>`;
   document.getElementById('legend').innerHTML=html;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ------------------------------------------------------------
 // CREOSOTE INVENTORY, USAGE & DELIVERY PLANNER
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ------------------------------------------------------------
 
 const INV_TANK_MAX_KG      = 100000;
 const INV_TANK_SAFE_KG     =  98000;
@@ -4355,7 +4245,7 @@ const INV_TOTAL_SAFE_KG    = 392000;
 const INV_LOW_ALERT_KG     =  80000;
 const INV_CRIT_ALERT_KG    =  50000;
 
-// â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 let invTankData   = { storageT1:{level:0}, storageT2:{level:0}, workT1:{level:0}, workT2:{level:0} };
 let invChargeHistory = [];   // from bridge
 let invDeliveryPlan  = [];   // persisted to localStorage
@@ -4370,7 +4260,7 @@ let invSupplierEmail    = '';
 let invSiteAddress      = '';
 let invSenderName       = '';
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invAddDays(d, n) {
   const r = new Date(d); r.setDate(r.getDate() + n); return r;
 }
@@ -4392,7 +4282,7 @@ function invTotalStock() {
        + (invTankData.workT1?.level||0)    + (invTankData.workT2?.level||0);
 }
 
-// â”€â”€ Load Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invLoadFromStorage() {
   try {
     const raw = localStorage.getItem('bulkTankReadings');
@@ -4430,7 +4320,7 @@ async function invRefreshAll() {
   invUpdateRollingAvg();
 }
 
-// â”€â”€ Tank SVG Renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 // Exact SCADA-style cylindrical vessels matching the operator log design
 
 function invTankGeom(levelKg) {
@@ -4469,7 +4359,7 @@ function invBuildTankSVG(key, label, type, levelKg) {
       <span class="inv-type-badge ${type}">${type==='storage'?'Storage':'Process'}</span>
       <span class="inv-status-badge ${st.cls}">${st.text}</span>
     </div>
-    <svg width="88" height="224" viewBox="0 0 88 224" style="overflow:visible" role="img" aria-label="${label} â€” ${pct}% full â€” ${invFmtKg(levelKg)}">
+    <svg width="88" height="224" viewBox="0 0 88 224" style="overflow:visible" role="img" aria-label="${label} - ${pct}% full - ${invFmtKg(levelKg)}">
       <defs>
         <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stop-color="#4A4A4A"/>
@@ -4518,7 +4408,7 @@ function invBuildTankSVG(key, label, type, levelKg) {
   </div>`;
 }
 
-// â”€â”€ Dashboard Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invRenderDashboard() {
   const total    = invTotalStock();
   const avail    = Math.max(0, INV_TOTAL_SAFE_KG - total);
@@ -4539,13 +4429,13 @@ function invRenderDashboard() {
   if (banner) {
     if (total <= INV_CRIT_ALERT_KG) {
       banner.className = 'inv-status-banner danger';
-      banner.innerHTML = '<i class="ti ti-alert-triangle"></i> Critical: Stock below ' + invFmtKg(INV_CRIT_ALERT_KG) + ' â€” order urgently';
+      banner.innerHTML = '<i class="ti ti-alert-triangle"></i> Critical: Stock below ' + invFmtKg(INV_CRIT_ALERT_KG) + ' - order urgently';
     } else if (total <= INV_LOW_ALERT_KG) {
       banner.className = 'inv-status-banner warn';
-      banner.innerHTML = '<i class="ti ti-alert-circle"></i> Low stock: ' + invFmtKg(total) + ' remaining â€” consider ordering';
+      banner.innerHTML = '<i class="ti ti-alert-circle"></i> Low stock: ' + invFmtKg(total) + ' remaining - consider ordering';
     } else {
       banner.className = 'inv-status-banner ok';
-      banner.innerHTML = '<i class="ti ti-circle-check"></i> Stock healthy â€” ' + invFmtKg(total) + ' Â· ' + totalPct + '% of safe capacity';
+      banner.innerHTML = '<i class="ti ti-circle-check"></i> Stock healthy - ' + invFmtKg(total) + ' - ' + totalPct + '% of safe capacity';
     }
   }
 
@@ -4580,7 +4470,7 @@ function invRenderDashboard() {
   invRenderWeekChart();
 }
 
-// â”€â”€ Weekly Usage Chart (plain SVG) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invRenderWeekChart() {
   const chartEl = document.getElementById('invWeekChart');
   if (!chartEl) return;
@@ -4591,7 +4481,7 @@ function invRenderWeekChart() {
   const days    = Array.from({length:5}, (_,i) => invAddDays(monDate, i));
   const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
 
-  // Mock data until bridge returns real data â€” replace with bridge response
+  // Mock data until bridge returns real data - replace with bridge response
   const planned = days.map(d => {
     const dayCharges = invChargeHistory.filter(c => invIsSameDay(new Date(c.date), d));
     return dayCharges.reduce((s,c) => s + (c.plannedKg||0), 0) || (invIsWeekend(d) ? 0 : invForecastDailyUse * 0.8);
@@ -4661,13 +4551,13 @@ function invRenderWeekChart() {
     ${svg}
     <div style="display:flex;gap:16px;margin-top:8px;font-size:9px;font-family:var(--mono);color:var(--text3)">
       <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="1"/></svg> Planned</span>
-      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--green)" rx="1" opacity=".85"/></svg> Actual (Â±15%)</span>
-      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--amber)" rx="1" opacity=".85"/></svg> Variance 15â€“30%</span>
+      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--green)" rx="1" opacity=".85"/></svg> Actual (+/-15%)</span>
+      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--amber)" rx="1" opacity=".85"/></svg> Variance 15-30%</span>
       <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--red)" rx="1" opacity=".85"/></svg> >30% variance</span>
     </div>`;
 }
 
-// â”€â”€ Usage Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invRenderUsageTable() {
   const tableEl = document.getElementById('invUsageTable');
   if (!tableEl) return;
@@ -4685,10 +4575,10 @@ function invRenderUsageTable() {
     totalPlan += plan; totalAct += act;
     return `<tr>
       <td>${new Date(c.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
-      <td>${c.product||'â€”'}</td>
-      <td>${c.m3 ? c.m3.toLocaleString() : 'â€”'}</td>
-      <td>${plan > 0 ? invFmtKg(plan) : 'â€”'}</td>
-      <td>${act > 0 ? invFmtKg(act) : 'â€”'}</td>
+      <td>${c.product||'-'}</td>
+      <td>${c.m3 ? c.m3.toLocaleString() : '-'}</td>
+      <td>${plan > 0 ? invFmtKg(plan) : '-'}</td>
+      <td>${act > 0 ? invFmtKg(act) : '-'}</td>
       <td class="inv-var ${varCls}">${varKg>0?'+':''}${varKg.toLocaleString()} kg</td>
       <td class="inv-var ${varCls}">${varPct>0?'+':''}${varPct}%</td>
     </tr>`;
@@ -4700,7 +4590,7 @@ function invRenderUsageTable() {
   tableEl.innerHTML = `
     <table class="inv-table">
       <thead><tr>
-        <th>Date</th><th>Product</th><th>mÂ³</th>
+        <th>Date</th><th>Product</th><th>m3</th>
         <th>Planned kg</th><th>Actual kg</th><th>Variance</th><th>Var %</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -4714,7 +4604,7 @@ function invRenderUsageTable() {
     </table>`;
 }
 
-// â”€â”€ Rolling Average â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invUpdateRollingAvg() {
   const now = new Date();
   function avgDays(n) {
@@ -4742,7 +4632,7 @@ function invUpdateRollingAvg() {
   }
 }
 
-// â”€â”€ Forecast Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invRenderForecastChart() {
   const chartEl = document.getElementById('invForecastChart');
   if (!chartEl) return;
@@ -4831,7 +4721,7 @@ function invRenderForecastChart() {
     <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:${s.alert==='danger'?'rgba(186,61,53,.08)':'rgba(201,120,46,.08)'};border:1px solid ${s.alert==='danger'?'rgba(186,61,53,.25)':'rgba(201,120,46,.25)'};border-radius:var(--radius);margin-top:8px;font-size:11px">
       <i class="ti ti-alert-triangle" style="color:${s.alert==='danger'?'var(--red)':'var(--amber)'}"></i>
       <span style="flex:1;font-family:var(--mono);color:var(--text2)">
-        Stock hits ${s.alert} threshold on <strong>${invFmtDate(s.triggerDate)}</strong> â€” suggest delivery <strong>${invFmtDate(s.suggestDate)}</strong>
+        Stock hits ${s.alert} threshold on <strong>${invFmtDate(s.triggerDate)}</strong> - suggest delivery <strong>${invFmtDate(s.suggestDate)}</strong>
       </span>
       <button class="sm-green" onclick="invAddDeliveryFromSuggest('${s.suggestDate.toISOString()}')">+ Add to Plan</button>
     </div>`).join('');
@@ -4851,7 +4741,7 @@ function invAddDeliveryFromSuggest(isoDate) {
   invRenderDeliveryList();
 }
 
-// â”€â”€ Delivery Calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invRenderCalendar() {
   const calEl = document.getElementById('invCalGrid');
   const titleEl = document.getElementById('invCalTitle');
@@ -4948,7 +4838,7 @@ function invRenderDeliveryList() {
   const totalKg     = sorted.reduce((s,d)=>s+d.kg,0);
   const avgKg       = Math.round(totalKg/sorted.length);
 
-  listEl.innerHTML = rows + `<div class="inv-del-total-row">${sorted.length} deliveries Â· ${invFmtKg(totalKg)} total Â· avg ${invFmtKg(avgKg)}/delivery</div>`;
+  listEl.innerHTML = rows + `<div class="inv-del-total-row">${sorted.length} deliveries - ${invFmtKg(totalKg)} total - avg ${invFmtKg(avgKg)}/delivery</div>`;
 }
 
 function invEditDelivery(idx) {
@@ -4982,7 +4872,7 @@ function invSaveDeliveryPlan() {
   invFetchBridge('saveDeliveryPlan', { data: invDeliveryPlan });
 }
 
-// â”€â”€ Email Generator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 function invUpdateEmailPreview() {
   const fromEl   = document.getElementById('invEmailFrom');
   const toEl     = document.getElementById('invEmailTo');
@@ -5000,7 +4890,7 @@ function invUpdateEmailPreview() {
   const deliveryLines = inRange.map(del => {
     const d = new Date(del.date);
     const dayStr = d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-    return `  ${dayStr}    â€”    ${del.kg.toLocaleString()} kg`;
+    return `  ${dayStr}    -    ${del.kg.toLocaleString()} kg`;
   }).join('\n');
 
   const totalKg = inRange.reduce((s,d)=>s+d.kg,0);
@@ -5008,7 +4898,7 @@ function invUpdateEmailPreview() {
   const toStr   = to.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
   const monthStr = from.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
 
-  const subject = `Creosote Delivery Schedule â€” ${monthStr}`;
+  const subject = `Creosote Delivery Schedule - ${monthStr}`;
   const body = `Dear ${invSupplier} Team,
 
 Please find below our delivery schedule for ${fromStr} to ${toStr}.
@@ -5017,7 +4907,7 @@ Scheduled deliveries:
 
 ${deliveryLines || '  No deliveries scheduled in this period'}
 
-Total: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} Â· ${totalKg.toLocaleString()} kg
+Total: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} - ${totalKg.toLocaleString()} kg
 
 Please confirm receipt and advise of any scheduling conflicts.
 Deliveries accepted Monday to Friday between 07:00 and 16:00.
@@ -5036,7 +4926,7 @@ function invCopyEmail() {
   navigator.clipboard.writeText(textarea.value).then(() => {
     const btn = document.getElementById('invCopyBtn');
     if (btn) {
-      btn.textContent = 'âœ“ Copied';
+      btn.textContent = 'Copied';
       btn.style.color = 'var(--green)';
       setTimeout(() => { btn.textContent = 'Copy Email'; btn.style.color=''; }, 2000);
     }
@@ -5052,7 +4942,7 @@ function invOpenMailClient() {
   window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(textarea.value)}`);
 }
 
-// â”€â”€ Initialise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function() {
   invLoadFromStorage();
 
@@ -5074,11 +4964,11 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(invRefreshAll, 30000);
 });
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 // END INVENTORY & FORECAST MODULE
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ------------------------------------------------------------
 
-// ═══════════════════════ INIT ═══════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function updateClock(){const n=new Date();document.getElementById('live-time').textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 function applyAccessMode(){
