@@ -270,6 +270,40 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .report-table-mini td{padding:6px 4px;border-bottom:1px solid var(--border);vertical-align:top;}
 .report-email-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.45;margin-top:8px;}
 @media(max-width:900px){.report-split{grid-template-columns:1fr;}.report-dashboard-toolbar{align-items:stretch}.report-control{min-width:100%;}}
+/* CREOSOTE INVENTORY */
+.inventory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.inventory-field{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.inventory-field label{font-size:9px;color:var(--text3);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;}
+.inventory-field input,.inventory-field select,.inventory-field textarea{background:#fffef9;border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:12px;padding:6px 8px;border-radius:var(--radius);outline:none;width:100%;}
+.inventory-field input:focus,.inventory-field select:focus,.inventory-field textarea:focus{border-color:var(--accent);}
+.inventory-field textarea{resize:vertical;min-height:54px;}
+.inventory-field .field-warn{display:none;font-size:9px;color:var(--amber);font-family:var(--mono);}
+.inventory-field.warn input{border-color:rgba(201,120,46,.55);background:rgba(201,120,46,.06);}
+.inventory-field.warn .field-warn{display:block;}
+.inventory-section-title{font-size:10px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:12px 0 8px;}
+.inventory-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);font-weight:700;margin:8px 0 10px;}
+.inventory-delivery-fields{display:none;}
+.inventory-delivery-fields.active{display:grid;}
+.inventory-banner{display:none;margin-bottom:10px;border-radius:var(--radius);padding:8px 11px;font-size:11px;line-height:1.45;border:1px solid transparent;}
+.inventory-banner.ok{display:block;color:var(--green);background:rgba(47,125,72,.08);border-color:rgba(47,125,72,.24);}
+.inventory-banner.warn{display:block;color:var(--amber);background:rgba(201,120,46,.08);border-color:rgba(201,120,46,.26);}
+.inventory-banner.danger{display:block;color:var(--red);background:rgba(186,61,53,.08);border-color:rgba(186,61,53,.24);}
+.inventory-status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.tank-bar{height:7px;background:var(--bg4);border-radius:999px;overflow:hidden;margin-top:8px;}
+.tank-bar-fill{height:100%;border-radius:999px;background:var(--green);transition:width .25s ease;}
+.tank-bar-fill.warn{background:var(--amber);}
+.tank-bar-fill.danger{background:var(--red);}
+.inventory-stat-large{margin:0 0 12px;}
+.inventory-intel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px;}
+.inventory-setting-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--text3);font-family:var(--mono);font-size:10px;}
+.inventory-setting-row input{width:64px;background:#fffef9;border:1px solid var(--border2);border-radius:var(--radius);padding:5px 7px;font-family:var(--mono);font-size:11px;color:var(--text);}
+.inventory-alert-badge{display:inline-flex;align-items:center;gap:5px;margin-top:6px;border-radius:999px;padding:3px 8px;font-family:var(--mono);font-size:9px;font-weight:800;color:var(--red);border:1px solid rgba(186,61,53,.3);background:rgba(186,61,53,.1);animation:pulse 1s infinite;}
+.creo-reorder-pill{display:none;font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:99px;border:1px solid rgba(201,120,46,.35);color:var(--amber);background:rgba(201,120,46,.1);animation:pulse 1.5s infinite;}
+.creo-reorder-pill.danger{color:var(--red);border-color:rgba(186,61,53,.35);background:rgba(186,61,53,.1);}
+.delivery-actions{display:flex;gap:5px;flex-wrap:wrap;}
+.delivery-actions button{border-radius:999px;font-size:9px;padding:2px 7px;}
+.delivery-cancelled td{text-decoration:line-through;color:var(--text3);opacity:.65;}
+@media(max-width:600px){.inventory-grid,.inventory-status-grid,.inventory-intel-grid{grid-template-columns:1fr;}.inventory-setting-row{align-items:flex-start;}}
 .report-section{margin-bottom:24px;}
 .report-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .gap-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius-lg);margin-bottom:6px;border-left:3px solid var(--gap-col);}
@@ -287,8 +321,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .kpi-sub{font-size:10px;color:var(--text3);font-family:var(--mono);}
 .kpi-val.ok{color:var(--green);}.kpi-val.warn{color:var(--amber);}.kpi-val.danger{color:var(--red);}
 .access-operator .topbar .mode-badge,.access-operator .topbar .bneck-pill,.access-operator #op-shortcuts{display:none!important;}
-.access-operator .sidebar{display:none!important;}
-.access-operator .main{display:block;}
+.access-operator .sidebar{display:block!important;width:170px;top:50px;height:calc(100vh - 50px);}
+.access-operator .main{display:flex;}
 .access-operator .content{padding:10px 12px;overflow-y:auto;}
 .access-operator .sec-title{font-size:16px;}
 .access-operator .sec-sub{display:none;}
@@ -532,6 +566,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="topbar-right">
     <div class="status-dot"></div>
     <div class="live-time" id="live-time"></div>
+    <div class="creo-reorder-pill" id="creo-reorder-pill"></div>
     <div id="op-shortcuts" style="display:flex;gap:6px;align-items:center;">
       <a class="access-link" href="creosote-operator-charge-log.html">Operator app</a>
       <a class="access-link" href="creosote-live-board.html">Live board</a>
@@ -553,6 +588,11 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="nav-item active" onclick="showPanel('week')"><i class="ti ti-timeline"></i>Timeline</div>
     <div class="nav-item" onclick="showPanel('bottlenecks')"><i class="ti ti-alert-triangle"></i>Bottlenecks</div>
     <div class="nav-item" onclick="showPanel('table')"><i class="ti ti-table"></i>Full table</div>
+  </div>
+  <div class="sidebar-section inventory-menu-section">
+    <div class="sidebar-label">Inventory</div>
+    <div class="nav-item" onclick="showPanel('tank-levels')"><i class="ti ti-droplet"></i>Tank Levels</div>
+    <div class="nav-item" onclick="showPanel('deliveries')"><i class="ti ti-truck"></i>Deliveries</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Configuration</div>
@@ -626,6 +666,33 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="operator-sync-pill" id="operator-sync-pill"><i class="ti ti-cloud"></i><span>Master sheet not loaded</span></div>
   </div>
   <div id="log-content"></div>
+</div>
+
+<!-- TANK LEVELS -->
+<div class="panel" id="panel-tank-levels">
+  <div class="sec-title">Tank Levels</div>
+  <div class="sec-sub">Daily creosote stock entry, receiving capacity and reorder intelligence</div>
+  <div id="inventory-level-banner" class="inventory-banner"></div>
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title"><i class="ti ti-droplet"></i> Daily Tank Level Entry</div>
+    <div class="help" id="inventory-today-subtitle" style="margin:0 0 10px;"></div>
+    <div id="inventory-level-form"></div>
+  </div>
+  <div id="inventory-status-cards"></div>
+  <div id="inventory-intelligence"></div>
+</div>
+
+<!-- DELIVERIES -->
+<div class="panel" id="panel-deliveries">
+  <div class="sec-title">Deliveries</div>
+  <div class="sec-sub">Schedule incoming creosote deliveries and review received loads</div>
+  <div id="inventory-delivery-banner" class="inventory-banner"></div>
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title"><i class="ti ti-truck-delivery"></i> Schedule Delivery</div>
+    <div id="inventory-delivery-form"></div>
+  </div>
+  <div id="inventory-scheduled-table"></div>
+  <div id="inventory-delivery-history"></div>
 </div>
 
 <!-- LIVE BOARD -->
@@ -1106,18 +1173,20 @@ async function clearAllActuals(){
 
 // ═══════════════════════ HELPERS ═══════════════════════
 function showPanel(t){
-  if(accessMode==='operator'&&t!=='live-log')t='live-log';
+  if(accessMode==='operator'&&!['live-log','tank-levels','deliveries'].includes(t))t='live-log';
   if(accessMode==='board'&&t!=='live-board')t='live-board';
   activePanel=t;
-  const all=['week','live-log','live-board','report','bottlenecks','table','days','charge-types','equipment','operators','cranes','tippers','noise'];
+  const all=['week','live-log','live-board','report','bottlenecks','table','tank-levels','deliveries','days','charge-types','equipment','operators','cranes','tippers','noise'];
   all.forEach(p=>{const el=document.getElementById('panel-'+p);if(el)el.classList.toggle('active',p===t);});
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const map={week:3,bottlenecks:4,table:5,'live-log':0,'live-board':1,report:2,days:6,'charge-types':7,equipment:8,operators:9,cranes:10,tippers:11,noise:12};
+  const map={week:3,bottlenecks:4,table:5,'live-log':0,'live-board':1,report:2,'tank-levels':6,deliveries:7,days:8,'charge-types':9,equipment:10,operators:11,cranes:12,tippers:13,noise:14};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[t]])items[map[t]].classList.add('active');
   if(t==='live-log')buildLogPanel();
   if(t==='live-board')buildLiveBoard();
   if(t==='report')buildReport();
+  if(t==='tank-levels')CreoInventory.renderTankLevels();
+  if(t==='deliveries')CreoInventory.renderDeliveries();
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function ph2(v){if(!v)return null;const[h,m]=v.split(':').map(Number);return h+m/60;}
@@ -3364,6 +3433,272 @@ function buildLegend(noise){
   document.getElementById('legend').innerHTML=html;
 }
 
+const CreoInventory=(()=>{
+  const MAX_TANK=100000,TARGET_STOCK=120000,DEFAULT_THRESHOLD=10;
+  const SUPPLIERS=['Koppers B','Koppers C','Rutgers'];
+  const fieldDefs=[
+    ['tank1Level','Storage Tank 1 Level','number','0','Storage Tanks (litres)'],
+    ['tank1Temp','Storage Tank 1 Temp (deg C)','number','0'],
+    ['tank2Level','Storage Tank 2 Level','number','0'],
+    ['tank2Temp','Storage Tank 2 Temp (deg C)','number','0'],
+    ['workTank1Level','Work Tank 1 Level','number','0','Work Tanks (litres)'],
+    ['workTank1Temp','Work Tank 1 Temp (deg C)','number','0'],
+    ['workTank2Level','Work Tank 2 Level','number','0'],
+    ['workTank2Temp','Work Tank 2 Temp (deg C)','number','0']
+  ];
+  const todayIso=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  const fmtDate=iso=>{const d=new Date(`${iso}T00:00:00`);return Number.isNaN(d.getTime())?iso:d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});};
+  const n=v=>Number(v)||0;
+  const litres=v=>`${Math.round(n(v)).toLocaleString('en-GB')} L`;
+  const totalStock=r=>n(r?.tank1Level)+n(r?.tank2Level)+n(r?.workTank1Level)+n(r?.workTank2Level);
+  const storageCapacity=r=>(MAX_TANK-n(r?.tank1Level))+(MAX_TANK-n(r?.tank2Level));
+  const levelClass=p=>p>90?'danger':p>=70?'warn':'ok';
+  const capacityClass=v=>v<40000?'danger':v<=80000?'warn':'ok';
+  const daysClass=v=>v<7?'danger':v<=14?'warn':'ok';
+  const keyForDate=date=>`creo_levels_${date}`;
+  const threshold=()=>parseInt(localStorage.getItem('creo_reorder_threshold_days')||DEFAULT_THRESHOLD,10)||DEFAULT_THRESHOLD;
+  const setBanner=(id,msg,type='ok')=>{const el=document.getElementById(id);if(el){el.className=`inventory-banner ${type}`;el.textContent=msg;}};
+  const clearBanner=id=>{const el=document.getElementById(id);if(el){el.className='inventory-banner';el.textContent='';}};
+  function allRecords(){
+    const out=[];
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i);
+      if(!key||!key.startsWith('creo_levels_'))continue;
+      try{const rec=JSON.parse(localStorage.getItem(key));if(rec&&rec.date)out.push(rec);}catch(e){}
+    }
+    return out.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  }
+  function latestRecord(){return allRecords().at(-1)||null;}
+  function avgUsage(){
+    const recs=allRecords();
+    const usage=[];
+    for(let i=1;i<recs.length;i++){
+      const cur=recs[i],prev=recs[i-1];
+      const day=new Date(`${cur.date}T00:00:00`).getDay();
+      if(day===0||day===6)continue;
+      const used=totalStock(prev)+n(cur.deliveryVolume)-totalStock(cur);
+      if(Number.isFinite(used)&&used>=0)usage.push(used);
+    }
+    const last=usage.slice(-5);
+    if(last.length<3)return null;
+    return Math.round(last.reduce((a,b)=>a+b,0)/last.length);
+  }
+  function stockMetrics(){
+    const rec=latestRecord();
+    const avg=avgUsage();
+    const stock=totalStock(rec);
+    const days=avg&&avg>0?Math.floor(stock/avg):null;
+    return {rec,avg,stock,days,threshold:threshold()};
+  }
+  function maybeNumber(v){return v===''||v===null||v===undefined?'':Number(v);}
+  function fieldValue(rec,key){return rec&&rec[key]!==undefined&&rec[key]!==null?rec[key]:'';}
+  function renderInput(key,label,type,placeholder,rec){
+    const warn=key.toLowerCase().includes('temp')?'Temperature outside 60-140 deg C operating range':'Must be 0-100,000 litres';
+    return `<div class="inventory-field" data-inventory-field="${key}"><label for="inv-${key}">${label}</label><input id="inv-${key}" type="${type}" placeholder="${placeholder}" value="${escHtml(fieldValue(rec,key))}" oninput="CreoInventory.validateEntry()"><span class="field-warn">${warn}</span></div>`;
+  }
+  function buildLevelForm(){
+    const today=todayIso();
+    const rec=JSON.parse(localStorage.getItem(keyForDate(today))||'null')||latestRecord()||{};
+    const subtitle=document.getElementById('inventory-today-subtitle');
+    if(subtitle)subtitle.textContent=`Today: ${fmtDate(today)}`;
+    let html='<div class="inventory-grid">';
+    fieldDefs.forEach(([key,label,type,placeholder,section])=>{
+      if(section)html+=`</div><div class="inventory-section-title">${section}</div><div class="inventory-grid">`;
+      html+=renderInput(key,label,type,placeholder,rec);
+    });
+    html+='</div>';
+    html+=`<label class="inventory-toggle"><input type="checkbox" id="inv-deliveryReceived" ${rec.deliveryReceived?'checked':''} onchange="CreoInventory.toggleDeliveryFields()"> Delivery Received Today</label>`;
+    html+=`<div class="inventory-grid inventory-delivery-fields${rec.deliveryReceived?' active':''}" id="inventory-delivery-fields">
+      <div class="inventory-field"><label>Supplier</label><select id="inv-deliverySupplier">${SUPPLIERS.map(s=>`<option value="${s}"${rec.deliverySupplier===s?' selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="inventory-field"><label>Volume Delivered (litres)</label><input id="inv-deliveryVolume" type="number" placeholder="0" value="${escHtml(fieldValue(rec,'deliveryVolume'))}"></div>
+      <div class="inventory-field"><label>Batch / Certificate Number</label><input id="inv-deliveryBatch" type="text" value="${escHtml(fieldValue(rec,'deliveryBatch'))}"></div>
+      <div class="inventory-field" data-inventory-field="deliveryFlashPoint"><label>Flash Point (deg C)</label><input id="inv-deliveryFlashPoint" type="number" placeholder="0" value="${escHtml(fieldValue(rec,'deliveryFlashPoint'))}" oninput="CreoInventory.validateEntry()"><span class="field-warn">Temperature outside 60-140 deg C operating range</span></div>
+    </div>`;
+    html+=`<div class="inventory-field"><label>Operator Notes</label><textarea id="inv-notes" rows="2" placeholder="Optional notes for handover...">${escHtml(rec.notes||'')}</textarea></div>`;
+    html+=`<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;"><button type="button" class="acc" onclick="CreoInventory.saveToday(false)">Save Today's Levels</button><span class="help" id="inventory-save-state"></span></div>`;
+    const form=document.getElementById('inventory-level-form');
+    if(form)form.innerHTML=html;
+    validateEntry();
+  }
+  function toggleDeliveryFields(){
+    const on=document.getElementById('inv-deliveryReceived')?.checked;
+    document.getElementById('inventory-delivery-fields')?.classList.toggle('active',!!on);
+  }
+  function collectRecord(){
+    const today=todayIso();
+    const rec={action:'saveTankLevels',date:today};
+    fieldDefs.forEach(([key])=>rec[key]=maybeNumber(document.getElementById(`inv-${key}`)?.value));
+    rec.deliveryReceived=!!document.getElementById('inv-deliveryReceived')?.checked;
+    rec.deliverySupplier=rec.deliveryReceived?(document.getElementById('inv-deliverySupplier')?.value||''):'';
+    rec.deliveryVolume=rec.deliveryReceived?maybeNumber(document.getElementById('inv-deliveryVolume')?.value):0;
+    rec.deliveryBatch=rec.deliveryReceived?(document.getElementById('inv-deliveryBatch')?.value||''):'';
+    rec.deliveryFlashPoint=rec.deliveryReceived?maybeNumber(document.getElementById('inv-deliveryFlashPoint')?.value):0;
+    rec.notes=document.getElementById('inv-notes')?.value||'';
+    rec.savedAt=new Date().toISOString();
+    return rec;
+  }
+  function validateEntry(){
+    let ok=true;
+    const rec=collectRecord();
+    const checks=[
+      ['tank1Level',rec.tank1Level>=0&&rec.tank1Level<=MAX_TANK],
+      ['tank2Level',rec.tank2Level>=0&&rec.tank2Level<=MAX_TANK],
+      ['workTank1Level',rec.workTank1Level>=0&&rec.workTank1Level<=MAX_TANK],
+      ['workTank2Level',rec.workTank2Level>=0&&rec.workTank2Level<=MAX_TANK],
+      ['tank1Temp',rec.tank1Temp===''||(rec.tank1Temp>=0&&rec.tank1Temp<=200&&rec.tank1Temp>=60&&rec.tank1Temp<=140)],
+      ['tank2Temp',rec.tank2Temp===''||(rec.tank2Temp>=0&&rec.tank2Temp<=200&&rec.tank2Temp>=60&&rec.tank2Temp<=140)],
+      ['workTank1Temp',rec.workTank1Temp===''||(rec.workTank1Temp>=0&&rec.workTank1Temp<=200&&rec.workTank1Temp>=60&&rec.workTank1Temp<=140)],
+      ['workTank2Temp',rec.workTank2Temp===''||(rec.workTank2Temp>=0&&rec.workTank2Temp<=200&&rec.workTank2Temp>=60&&rec.workTank2Temp<=140)],
+      ['deliveryFlashPoint',!rec.deliveryReceived||rec.deliveryFlashPoint===''||(rec.deliveryFlashPoint>=0&&rec.deliveryFlashPoint<=200&&rec.deliveryFlashPoint>=60&&rec.deliveryFlashPoint<=140)]
+    ];
+    checks.forEach(([key,pass])=>{document.querySelector(`[data-inventory-field="${key}"]`)?.classList.toggle('warn',!pass);if(!pass)ok=false;});
+    return ok;
+  }
+  async function saveToday(force=false){
+    const rec=collectRecord();
+    if(!validateEntry()){setBanner('inventory-level-banner','Check tank levels and temperatures before saving.','danger');return;}
+    const key=keyForDate(rec.date);
+    if(localStorage.getItem(key)&&!force){
+      setBanner('inventory-level-banner',`Tank levels have already been saved for ${fmtDate(rec.date)}. You can overwrite them if these are the latest readings.`,'warn');
+      showModal('Overwrite tank levels?',`Levels already exist for ${fmtDate(rec.date)}. Save these readings over the existing record?`,[
+        ['Cancel','',()=>{}],
+        ['Overwrite','acc',()=>saveToday(true)]
+      ]);
+      return;
+    }
+    localStorage.setItem(key,JSON.stringify(rec));
+    localStorage.setItem('creo_last_sync',new Date().toISOString());
+    const synced=await bridgeSave(rec);
+    setBanner('inventory-level-banner',synced?`Tank levels saved for ${fmtDate(rec.date)}`:'Saved locally - will sync when online',synced?'ok':'warn');
+    buildLevelForm();renderStatus();renderIntelligence();updateReorderAlert();
+  }
+  async function bridgeSave(payload){
+    const url=liveBridgeUrl();
+    if(!url)return false;
+    try{
+      const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+      if(res&&res.ok!==false)return true;
+    }catch(e){}
+    try{
+      const data=await loadJsonp(url,{action:payload.action||'saveTankLevels',payload:JSON.stringify(payload)});
+      return !!data&&data.ok!==false;
+    }catch(e){return false;}
+  }
+  async function fetchRecent(){
+    try{
+      const data=await loadJsonp(liveBridgeUrl(),{action:'getTankLevels',days:30});
+      const records=Array.isArray(data?.records)?data.records:(Array.isArray(data?.levels)?data.levels:[]);
+      records.forEach(rec=>{if(rec&&rec.date&&!localStorage.getItem(keyForDate(rec.date)))localStorage.setItem(keyForDate(rec.date),JSON.stringify(rec));});
+      if(records.length)localStorage.setItem('creo_last_sync',new Date().toISOString());
+    }catch(e){}
+  }
+  function renderTankCard(title,level,temp,withPercent=true){
+    const pct=Math.max(0,Math.min(100,(n(level)/MAX_TANK)*100));
+    const cls=levelClass(pct);
+    return `<div class="stat" style="animation:fadeIn .18s ease;"><div class="stat-l">${title}</div><div class="stat-v ${cls==='danger'?'danger':cls==='warn'?'warn':'ok'}">${litres(level)}</div><div class="stat-s">${withPercent?`${Math.round(pct)}% full · `:''}${temp===''||temp===undefined?'Temp not recorded':`${temp} deg C`}</div>${withPercent?`<div class="tank-bar"><div class="tank-bar-fill ${cls==='ok'?'':cls}" style="width:${pct}%"></div></div>`:''}</div>`;
+  }
+  function renderStatus(){
+    const rec=latestRecord()||{};
+    const cap=storageCapacity(rec);
+    const cls=capacityClass(cap);
+    const html=`<div class="inventory-status-grid">
+      ${renderTankCard('Storage Tank 1',rec.tank1Level,rec.tank1Temp)}
+      ${renderTankCard('Storage Tank 2',rec.tank2Level,rec.tank2Temp)}
+      ${renderTankCard('Work Tank 1',rec.workTank1Level,rec.workTank1Temp,false)}
+      ${renderTankCard('Work Tank 2',rec.workTank2Level,rec.workTank2Temp,false)}
+    </div><div class="stat inventory-stat-large"><div class="stat-l">Available Receiving Capacity</div><div class="stat-v ${cls==='danger'?'danger':cls==='warn'?'warn':'ok'}">${litres(cap)}</div><div class="stat-s">Storage tank spare capacity</div></div>`;
+    const el=document.getElementById('inventory-status-cards');if(el)el.innerHTML=html;
+  }
+  function renderIntelligence(){
+    const m=stockMetrics();
+    const suggested=TARGET_STOCK-m.stock;
+    const daysTxt=m.avg===null?'Insufficient data':`${m.days} day${m.days===1?'':'s'}`;
+    const daysCls=m.days===null?'':daysClass(m.days);
+    const html=`<div class="card"><div class="card-title"><i class="ti ti-chart-line"></i> Stock Intelligence</div>
+      <div class="inventory-intel-grid">
+        <div class="stat"><div class="stat-l">Average Daily Usage</div><div class="stat-v">${m.avg===null?'--':litres(m.avg)}</div><div class="stat-s">${m.avg===null?'Insufficient data':'Rolling 5 weekday records'}</div></div>
+        <div class="stat"><div class="stat-l">Estimated Days of Stock</div><div class="stat-v ${daysCls==='danger'?'danger':daysCls==='warn'?'warn':'ok'}">${daysTxt}</div><div class="stat-s">${m.days!==null&&m.days<7?'<span class="inventory-alert-badge">! REORDER REQUIRED</span>':'Total stock divided by usage'}</div></div>
+        <div class="stat"><div class="stat-l">Suggested Order Volume</div><div class="stat-v ${suggested>0?'warn':'ok'}">${suggested>0?litres(suggested):'Adequate'}</div><div class="stat-s">${suggested>0?'Target stock: 120,000 L':'Stock level adequate'}</div></div>
+      </div>
+      <div class="inventory-setting-row"><span>Alert when below</span><input type="number" min="1" max="60" value="${m.threshold}" onchange="CreoInventory.setThreshold(this.value)"><span>days of stock</span></div>
+    </div>`;
+    const el=document.getElementById('inventory-intelligence');if(el)el.innerHTML=html;
+  }
+  function updateReorderAlert(){
+    const el=document.getElementById('creo-reorder-pill');
+    if(!el)return;
+    const m=stockMetrics();
+    if(m.days===null||m.days>=m.threshold){el.style.display='none';return;}
+    el.textContent=`! Creo: ${m.days} days stock`;
+    el.className=`creo-reorder-pill${m.days<7?' danger':''}`;
+    el.style.display='block';
+  }
+  function setThreshold(v){
+    localStorage.setItem('creo_reorder_threshold_days',String(parseInt(v,10)||DEFAULT_THRESHOLD));
+    renderIntelligence();updateReorderAlert();
+  }
+  function deliveries(){
+    try{return JSON.parse(localStorage.getItem('creo_deliveries_scheduled')||'[]');}catch(e){return[];}
+  }
+  function saveDeliveries(rows){localStorage.setItem('creo_deliveries_scheduled',JSON.stringify(rows));}
+  async function addDelivery(){
+    const row={id:`del_${Date.now()}`,supplier:document.getElementById('del-supplier')?.value||SUPPLIERS[0],date:document.getElementById('del-date')?.value||todayIso(),volume:n(document.getElementById('del-volume')?.value),notes:document.getElementById('del-notes')?.value||'',status:'Scheduled',createdAt:new Date().toISOString()};
+    const rows=deliveries();rows.push(row);saveDeliveries(rows);
+    await bridgeSave({action:'saveDelivery',...row});
+    setBanner('inventory-delivery-banner','Delivery added to schedule.','ok');
+    renderDeliveries();
+  }
+  function renderDeliveryForm(){
+    const html=`<div class="inventory-grid">
+      <div class="inventory-field"><label>Supplier</label><select id="del-supplier">${SUPPLIERS.map(s=>`<option value="${s}">${s}</option>`).join('')}</select></div>
+      <div class="inventory-field"><label>Expected Date</label><input id="del-date" type="date" value="${todayIso()}"></div>
+      <div class="inventory-field"><label>Expected Volume (litres)</label><input id="del-volume" type="number" placeholder="0"></div>
+      <div class="inventory-field"><label>Notes</label><input id="del-notes" type="text" placeholder="Optional"></div>
+    </div><button type="button" class="acc" onclick="CreoInventory.addDelivery()">Add to Schedule</button>`;
+    const el=document.getElementById('inventory-delivery-form');if(el)el.innerHTML=html;
+  }
+  function renderScheduled(){
+    const rows=deliveries().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+    const body=rows.length?rows.map(row=>`<tr class="${row.status==='Cancelled'?'delivery-cancelled':''}"><td>${escHtml(row.date)}</td><td>${escHtml(row.supplier)}</td><td>${litres(row.volume)}</td><td><span class="badge ${row.status==='Received'?'ok':row.status==='Cancelled'?'danger':'warn'}">${row.status}</span></td><td>${escHtml(row.notes||'')}</td><td><div class="delivery-actions"><button onclick="CreoInventory.updateDelivery('${row.id}','Confirmed')">Confirm</button><button class="sm-green" onclick="CreoInventory.promptReceived('${row.id}')">Mark Received</button><button class="sm-red" onclick="CreoInventory.updateDelivery('${row.id}','Cancelled')">Cancel</button></div></td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);font-family:var(--mono);">No deliveries scheduled</td></tr>`;
+    const el=document.getElementById('inventory-scheduled-table');
+    if(el)el.innerHTML=`<div class="card" style="margin-bottom:12px;"><div class="card-title"><i class="ti ti-calendar-time"></i> Upcoming Deliveries</div><div class="twrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Volume</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+  }
+  function renderHistory(){
+    const rows=allRecords().filter(r=>r.deliveryReceived).slice(-20).reverse();
+    const body=rows.length?rows.map(r=>`<tr><td>${escHtml(r.date)}</td><td>${escHtml(r.deliverySupplier)}</td><td>${litres(r.deliveryVolume)}</td><td>${escHtml(r.deliveryBatch||'--')}</td><td>${r.deliveryFlashPoint?`${escHtml(r.deliveryFlashPoint)} deg C`:'--'}</td><td>${escHtml(r.notes||'')}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);font-family:var(--mono);">No received deliveries recorded</td></tr>`;
+    const el=document.getElementById('inventory-delivery-history');
+    if(el)el.innerHTML=`<div class="card"><div class="card-title"><i class="ti ti-history"></i> Delivery History</div><div class="twrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Volume</th><th>Batch Number</th><th>Flash Point</th><th>Notes</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+  }
+  function updateDelivery(id,status,actualVolume){
+    const rows=deliveries();
+    const row=rows.find(r=>r.id===id);
+    if(!row)return;
+    const action=status==='Cancelled'?'Cancel delivery?':status==='Confirmed'?'Confirm delivery?':'Mark delivery received?';
+    showModal(action,`Update ${escHtml(row.supplier)} delivery on ${escHtml(row.date)} to ${status}?`,[
+      ['No','',()=>{}],
+      ['Yes','acc',async()=>{row.status=status;if(actualVolume!==undefined)row.actualVolume=n(actualVolume);saveDeliveries(rows);await bridgeSave({action:'saveDelivery',...row});renderDeliveries();}]
+    ]);
+  }
+  function promptReceived(id){
+    const row=deliveries().find(r=>r.id===id);if(!row)return;
+    showModal('Actual delivery volume',`<div class="inventory-field"><label>Actual Volume Received</label><input id="modal-delivery-volume" type="number" value="${escHtml(row.volume||'')}"></div>`,[
+      ['Cancel','',()=>{}],
+      ['Mark Received','acc',()=>updateDelivery(id,'Received',document.getElementById('modal-delivery-volume')?.value)]
+    ],true);
+  }
+  function showModal(title,body,actions,html=false){
+    let modal=document.getElementById('creo-inventory-modal');
+    if(!modal){modal=document.createElement('div');modal.id='creo-inventory-modal';modal.className='modal-backdrop';document.body.appendChild(modal);}
+    modal.innerHTML=`<div class="modal-card"><div class="modal-title">${escHtml(title)}</div><div class="modal-sub">${html?body:escHtml(body)}</div><div class="modal-actions">${actions.map(([label,cls],i)=>`<button type="button" class="${cls}" data-modal-action="${i}">${escHtml(label)}</button>`).join('')}</div></div>`;
+    modal.classList.add('active');
+    actions.forEach(([, ,fn],i)=>modal.querySelector(`[data-modal-action="${i}"]`)?.addEventListener('click',()=>{modal.classList.remove('active');fn&&fn();}));
+  }
+  function renderTankLevels(){clearBanner('inventory-level-banner');buildLevelForm();renderStatus();renderIntelligence();updateReorderAlert();}
+  function renderDeliveries(){renderDeliveryForm();renderScheduled();renderHistory();}
+  async function init(){localStorage.setItem('creo_reorder_threshold_days',String(threshold()));renderTankLevels();renderDeliveries();updateReorderAlert();await fetchRecent();renderTankLevels();renderDeliveries();}
+  return {init,renderTankLevels,renderDeliveries,toggleDeliveryFields,validateEntry,saveToday,setThreshold,addDelivery,updateDelivery,promptReceived};
+})();
+
 // ═══════════════════════ INIT ═══════════════════════
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function updateClock(){const n=new Date();document.getElementById('live-time').textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
@@ -3380,8 +3715,14 @@ function applyAccessMode(){
     logDayTab=Math.min((new Date().getDay()+6)%7,6);
     const btn5=document.getElementById('btn5'),btn7=document.getElementById('btn7');
     if(btn5&&btn7){btn5.classList.remove('active');btn7.classList.add('active');}
-    document.querySelectorAll('.nav-item').forEach(item=>{if(!item.getAttribute('onclick')?.includes("live-log"))item.classList.add('operator-hidden');});
-    document.querySelectorAll('.sidebar-section').forEach((section,i)=>{if(i>0)section.classList.add('operator-hidden');});
+    document.querySelectorAll('.nav-item').forEach(item=>{
+      const call=item.getAttribute('onclick')||'';
+      item.classList.toggle('operator-hidden',!['live-log','tank-levels','deliveries'].some(panel=>call.includes(panel)));
+    });
+    document.querySelectorAll('.sidebar-section').forEach(section=>{
+      const label=(section.querySelector('.sidebar-label')?.textContent||'').trim().toLowerCase();
+      section.classList.toggle('operator-hidden',!['live','inventory'].includes(label));
+    });
     document.getElementById('mode-sub').textContent='Operator logging';
     showPanel('live-log');
   }else if(accessMode==='board'){
@@ -3400,6 +3741,7 @@ buildPersonPanel(operators,'op-person-grid','op-shifts-cfg','74,158,255');
 buildPersonPanel(cranes,'crane-person-grid','crane-shifts-cfg','232,147,71');
 buildPersonPanel(tippers,'tipper-person-grid','tipper-shifts-cfg','61,214,180');
 buildDayConfigTabs();
+CreoInventory.init();
 // Load persisted data then render
 loadData().then(()=>{go();buildLogPanel();applyAccessMode();pullLiveState(true).then(()=>{go();buildLogPanel();});});
 loadMasterCache();
