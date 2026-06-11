@@ -557,6 +557,128 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   .inv-rolling-avg { grid-template-columns:1fr 1fr; }
   .inv-cal-cell { min-height:38px; padding:4px 2px; }
 }
+
+/* ═══════════════════════════════════════════════════
+   INVENTORY & FORECAST — CSS
+   ═══════════════════════════════════════════════════ */
+
+/* KPI row */
+.inv-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+@media(max-width:700px){.inv-kpi-row{grid-template-columns:1fr 1fr}}
+
+/* Status banner */
+.inv-banner{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:var(--radius);margin-bottom:14px;font-size:12px;font-weight:600;border:1px solid}
+.inv-banner.ok{background:rgba(47,125,72,.08);border-color:rgba(47,125,72,.22);color:var(--green)}
+.inv-banner.warn{background:rgba(201,120,46,.08);border-color:rgba(201,120,46,.22);color:var(--amber);animation:invPulse 2s infinite}
+.inv-banner.danger{background:rgba(186,61,53,.08);border-color:rgba(186,61,53,.22);color:var(--red);animation:invPulse 1s infinite}
+@keyframes invPulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* Tank panel */
+.inv-tank-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
+.inv-tank-panel-hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:9px;margin-bottom:12px;font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.inv-tank-grid{display:flex;gap:12px;align-items:flex-start}
+.inv-tank-group{flex:1}
+.inv-tank-group-lbl{font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:8px}
+.inv-tank-group-row{display:flex;gap:8px;justify-content:center}
+.inv-tank-divider{width:1px;background:var(--border);align-self:stretch;margin:16px 4px 0;flex-shrink:0}
+.inv-tank-col{display:flex;flex-direction:column;align-items:center;gap:3px}
+.inv-tank-name{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);font-family:var(--mono);text-align:center;margin-top:2px}
+.inv-tank-kg{font-size:11px;color:var(--text2);font-family:var(--mono);text-align:center}
+.inv-tank-pct{font-size:10px;font-family:var(--mono);font-weight:700;text-align:center}
+.inv-type-bdg{font-size:8px;font-weight:600;padding:1px 6px;border-radius:99px;letter-spacing:.05em;text-transform:uppercase;font-family:var(--mono)}
+.inv-type-bdg.storage{background:rgba(47,125,72,.14);color:var(--green);border:1px solid rgba(47,125,72,.24)}
+.inv-type-bdg.process{background:rgba(47,116,167,.14);color:var(--blue);border:1px solid rgba(47,116,167,.24)}
+.inv-st-bdg{font-size:8px;font-weight:600;padding:1px 6px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.inv-st-bdg.normal{background:rgba(47,125,72,.1);color:var(--green)}
+.inv-st-bdg.high{background:rgba(201,120,46,.12);color:var(--amber);animation:invPulse 2s infinite}
+.inv-st-bdg.low{background:rgba(201,120,46,.12);color:var(--amber);animation:invPulse 2s infinite}
+.inv-st-bdg.critical{background:rgba(186,61,53,.12);color:var(--red);animation:invPulse .8s infinite}
+.inv-manifold{height:8px;background:#707070;border-radius:3px;margin:2px 4px 8px}
+@keyframes invWave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Chart cards */
+.inv-chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
+.inv-chart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono)}
+.inv-chart-pills{display:flex;gap:6px;flex-wrap:wrap}
+.inv-pill{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:99px;border:1px solid}
+.inv-pill.plan{border-color:rgba(183,131,47,.3);color:var(--accent);background:rgba(183,131,47,.07)}
+.inv-pill.actual{border-color:rgba(47,125,72,.3);color:var(--green);background:rgba(47,125,72,.07)}
+.inv-pill.neutral{border-color:var(--border2);color:var(--text2);background:var(--bg3)}
+.inv-chart-legend{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+.inv-chart-legend span{font-size:9px;color:var(--text3);display:flex;align-items:center;gap:4px;font-family:var(--mono)}
+
+/* Rolling avg */
+.inv-avg-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:700px){.inv-avg-row{grid-template-columns:1fr 1fr}}
+
+/* Forecast settings */
+.inv-fcast-settings{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.inv-field label{display:block;font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.inv-field input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:500;padding:5px 8px;outline:none}
+.inv-field input:focus{border-color:var(--accent)}
+
+/* Forecast suggest */
+.inv-suggest{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:var(--radius);margin-top:8px;font-size:11px;font-family:var(--mono)}
+.inv-suggest.warn{background:rgba(201,120,46,.07);border:1px solid rgba(201,120,46,.22);color:var(--text2)}
+.inv-suggest.danger{background:rgba(186,61,53,.07);border:1px solid rgba(186,61,53,.22);color:var(--text2)}
+.inv-suggest i{flex-shrink:0}
+
+/* Usage table */
+.inv-table-wrap{overflow-x:auto;margin-bottom:14px}
+.inv-table{width:100%;border-collapse:collapse;font-size:11px}
+.inv-table th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border2);text-align:left;background:var(--bg3)}
+.inv-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:11px}
+.inv-table tr:last-child td{border-bottom:none}
+.inv-table tfoot td{font-weight:700;color:var(--text);background:var(--bg3);border-top:1px solid var(--border2)}
+.inv-var-ok{color:var(--green)}.inv-var-warn{color:var(--amber)}.inv-var-bad{color:var(--red)}
+
+/* Delivery planner */
+.inv-del-settings{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.inv-del-settings label{display:block;font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.inv-del-settings input,.inv-del-settings select{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 8px;outline:none}
+.inv-del-settings input:focus,.inv-del-settings select:focus{border-color:var(--accent)}
+
+/* Calendar */
+.inv-cal-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
+.inv-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.inv-cal-title{font-size:13px;font-weight:700;color:var(--text)}
+.inv-cal-btn{background:none;border:1px solid var(--border2);border-radius:var(--radius);padding:4px 10px;cursor:pointer;color:var(--text2);font-size:13px;transition:all .15s}
+.inv-cal-btn:hover{background:var(--bg3)}
+.inv-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.inv-cal-dhdr{text-align:center;font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:3px 0}
+.inv-cal-cell{border-radius:var(--radius);padding:5px 3px;min-height:48px;text-align:center;font-size:10px;position:relative;transition:background .12s}
+.inv-cal-cell.wd{background:var(--bg3);border:1px solid var(--border);cursor:pointer}
+.inv-cal-cell.wd:hover{background:var(--bg4);border-color:var(--accent)}
+.inv-cal-cell.we{background:var(--bg);color:var(--text3);cursor:not-allowed;opacity:.45}
+.inv-cal-cell.today{border:2px solid var(--accent)!important}
+.inv-cal-cell.hasdel{background:rgba(183,131,47,.1);border-color:rgba(183,131,47,.32)!important}
+.inv-cal-dn{font-family:var(--mono);font-size:9px;color:var(--text2)}
+.inv-cal-dn.today{color:var(--accent);font-weight:700}
+.inv-cal-del-bdg{display:inline-block;margin-top:3px;background:var(--accent);color:#fffdf7;font-family:var(--mono);font-size:7px;padding:1px 5px;border-radius:99px;white-space:nowrap}
+
+/* Delivery list */
+.inv-del-list{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden}
+.inv-del-item{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--border);font-size:11px}
+.inv-del-item:last-child{border-bottom:none}
+.inv-del-date{font-family:var(--mono);font-weight:600;color:var(--text);width:140px;flex-shrink:0}
+.inv-del-sup{color:var(--text2);flex:1;font-family:var(--mono);font-size:10px}
+.inv-del-qty{font-family:var(--mono);color:var(--accent);font-weight:600;width:90px;text-align:right;flex-shrink:0}
+.inv-del-acts{display:flex;gap:4px}
+.inv-del-total{padding:8px 13px;background:var(--bg3);font-size:10px;font-family:var(--mono);color:var(--text2);border-top:1px solid var(--border2)}
+.inv-del-empty{padding:12px 13px;font-size:11px;color:var(--text3);font-family:var(--mono)}
+
+/* Email */
+.inv-email-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px}
+.inv-email-range{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.inv-email-range input[type=date]{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;outline:none}
+.inv-email-range input[type=date]:focus{border-color:var(--accent)}
+.inv-email-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:11px;padding:10px 12px;line-height:1.7;resize:vertical;min-height:210px;outline:none}
+.inv-email-textarea:focus{border-color:var(--accent)}
+.inv-email-actions{display:flex;gap:8px;margin-top:8px}
+.inv-hint{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:7px}
+/* ═══════════════════════════════════════════════════
+   END INVENTORY & FORECAST — CSS
+   ═══════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -582,7 +704,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <img class="brand-logo-main" src="assets/calders-grandidge-logo.png" alt="Calders & Grandidge">
     <div><div class="logo-text">Calders &amp; Grandidge</div><div class="logo-sub" id="mode-sub">Creosote treatment control</div></div>
     <div class="brand-divider"></div>
-    <div class="brand-partner"><img class="brand-logo-partner" src="assets/rundvirke-poles-logo.svg" alt="Rundvirke Poles"><span>wood protection Â· quality raw material</span></div>
+    <div class="brand-partner"><img class="brand-logo-partner" src="assets/rundvirke-poles-logo.svg" alt="Rundvirke Poles"><span>wood protection - quality raw material</span></div>
   </div>
   <div class="topbar-right">
     <div class="status-dot"></div>
@@ -611,12 +733,21 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="nav-item" onclick="showPanel('bottlenecks')"><i class="ti ti-alert-triangle"></i>Bottlenecks</div>
     <div class="nav-item" onclick="showPanel('table')"><i class="ti ti-table"></i>Full table</div>
   </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label">Inventory &amp; Forecast</div>
-    <div class="nav-item" onclick="showPanel('inv-dashboard')"><i class="ti ti-chart-bar"></i>Inventory</div>
-    <div class="nav-item" onclick="showPanel('usage-forecast')"><i class="ti ti-trending-up"></i>Usage &amp; Forecast</div>
-    <div class="nav-item" onclick="showPanel('delivery-planner')"><i class="ti ti-truck"></i>Deliveries</div>
-  </div>  <div class="sidebar-section">
+<!-- ═══ INVENTORY & FORECAST NAV ═══ -->
+<div class="sidebar-section">
+  <div class="sidebar-label">Inventory &amp; Forecast</div>
+  <div class="nav-item" onclick="showPanel('inv-dashboard')" id="nav-inv-dashboard">
+    <i class="ti ti-droplet"></i> Inventory
+  </div>
+  <div class="nav-item" onclick="showPanel('usage-forecast')" id="nav-usage-forecast">
+    <i class="ti ti-trending-up"></i> Usage &amp; Forecast
+  </div>
+  <div class="nav-item" onclick="showPanel('delivery-planner')" id="nav-delivery-planner">
+    <i class="ti ti-truck"></i> Deliveries
+  </div>
+</div>
+<!-- ═══ END INVENTORY & FORECAST NAV ═══ -->
+<div class="sidebar-section">
     <div class="sidebar-label">Configuration</div>
     <div class="nav-item" onclick="showPanel('days')"><i class="ti ti-calendar"></i>Day schedules</div>
     <div class="nav-item" onclick="showPanel('charge-types')"><i class="ti ti-adjustments"></i>Charge types</div>
@@ -632,7 +763,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 <!-- TIMELINE -->
 <div class="panel active" id="panel-week">
   <div class="sec-title">Week timeline</div>
-  <div class="sec-sub">Planned schedule + actual charge overlay Â· Drag to edit Â· Hover for details</div>
+  <div class="sec-sub">Planned schedule + actual charge overlay - Drag to edit - Hover for details</div>
   <div class="noise-bar" id="noise-bar">
     <div class="noise-toggle-wrap">
       <input type="checkbox" id="noise-on" onchange="go()">
@@ -642,14 +773,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="noise-times">
       <span>Quiet:</span>
       <input type="time" id="noise-start" value="22:00" onchange="go()">
-      <span>â€“</span>
+      <span>-</span>
       <input type="time" id="noise-end" value="06:00" onchange="go()">
     </div>
   </div>
   <div class="week-ctrl-bar">
     <div class="week-toggle">
-      <button class="wt-btn active" id="btn5" onclick="setWeekMode(5)">Monâ€“Fri</button>
-      <button class="wt-btn" id="btn7" onclick="setWeekMode(7)">Monâ€“Sun</button>
+      <button class="wt-btn active" id="btn5" onclick="setWeekMode(5)">Mon-Fri</button>
+      <button class="wt-btn" id="btn7" onclick="setWeekMode(7)">Mon-Sun</button>
     </div>
     <div class="view-toggle">
       <button class="vt-btn active plan" id="vt-plan" onclick="setViewMode('plan')">Plan</button>
@@ -662,7 +793,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
       <span id="zoom-label" style="font-family:var(--mono);min-width:38px;text-align:center;">56px</span>
       <button onclick="setZoom(8)">+</button>
     </div>
-    <button class="sm-blue" onclick="copyDay0ToAll()"><i class="ti ti-copy" style="font-size:11px;"></i> Monâ†’all</button>
+    <button class="sm-blue" onclick="copyDay0ToAll()"><i class="ti ti-copy" style="font-size:11px;"></i> Mon->all</button>
   </div>
   <div class="infobox" id="comp-note"></div>
   <div class="gAuto" id="week-stats"></div>
@@ -674,7 +805,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     </div>
   </div>
   <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:16px;">
-    <i class="ti ti-drag-drop" style="font-size:12px;margin-right:4px;"></i>Drag charge/shift bars to adjust Â· Hover for details Â· Log actuals in <span style="color:var(--green);cursor:pointer;" onclick="showPanel('live-log')">Log charges</span>
+    <i class="ti ti-drag-drop" style="font-size:12px;margin-right:4px;"></i>Drag charge/shift bars to adjust - Hover for details - Log actuals in <span style="color:var(--green);cursor:pointer;" onclick="showPanel('live-log')">Log charges</span>
   </div>
 </div>
 
@@ -695,7 +826,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="live-board-head">
     <div>
       <div class="sec-title">Live production timeline</div>
-      <div class="sec-sub">Running charges Â· expected finish times Â· refreshed automatically</div>
+      <div class="sec-sub">Running charges - expected finish times - refreshed automatically</div>
     </div>
     <div class="board-brand-strip">
       <img src="assets/calders-grandidge-logo.png" alt="Calders & Grandidge">
@@ -772,11 +903,11 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 <!-- CHARGE TYPES -->
 <div class="panel" id="panel-charge-types">
   <div class="sec-title">Charge type timing</div>
-  <div class="sec-sub">Process then vacuum â€” all in minutes</div>
-  <div style="font-size:10px;font-weight:600;color:var(--blue);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Fencing types â€” Plant 1</div>
+  <div class="sec-sub">Process then vacuum - all in minutes</div>
+  <div style="font-size:10px;font-weight:600;color:var(--blue);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Fencing types - Plant 1</div>
   <div class="g4" id="ct-fencing"></div>
   <div class="divider"></div>
-  <div style="font-size:10px;font-weight:600;color:var(--green);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Pole types â€” Plants 1 &amp; 2</div>
+  <div style="font-size:10px;font-weight:600;color:var(--green);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Pole types - Plants 1 &amp; 2</div>
   <div class="g4" id="ct-pole"></div>
 </div>
 
@@ -829,215 +960,188 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="help">FLT and crane ops restricted during quiet hours. Violations flagged as critical.</div>
   </div>
 </div>
-<!-- INVENTORY DASHBOARD                                        -->
-<div class="panel" id="panel-inv-dashboard">
+<!-- ════════════════════════════════════════════════ -->
+<!-- PANEL: INVENTORY DASHBOARD                      -->
+<!-- ════════════════════════════════════════════════ -->
+<div class="panel" id="inv-dashboard">
   <div class="sec-title">Inventory Dashboard</div>
-  <div class="sec-sub" id="invLastRefresh">Loading...</div>
+  <div class="sec-sub" id="invRefreshTs">Loading…</div>
 
   <!-- KPI row -->
   <div class="inv-kpi-row">
     <div class="stat">
       <div class="stat-l">Total Stock</div>
-      <div class="stat-v" id="invKpiTotal">-</div>
-      <div class="stat-s" id="invKpiTotalPct">-</div>
+      <div class="stat-v" id="invKpiTotal">—</div>
+      <div class="stat-s" id="invKpiTotalPct">— % of safe capacity</div>
     </div>
     <div class="stat">
-      <div class="stat-l">Available to Safe Max</div>
-      <div class="stat-v ok" id="invKpiAvail">-</div>
-      <div class="stat-s" id="invKpiDelivs">-</div>
+      <div class="stat-l">Available (to safe max)</div>
+      <div class="stat-v ok" id="invKpiAvail">—</div>
+      <div class="stat-s" id="invKpiDelivs">— deliveries</div>
     </div>
     <div class="stat">
       <div class="stat-l">Today Planned</div>
-      <div class="stat-v" id="invKpiPlanned">-</div>
+      <div class="stat-v" id="invKpiPlanned">—</div>
       <div class="stat-s">from production plan</div>
     </div>
     <div class="stat">
       <div class="stat-l">Today Actual</div>
-      <div class="stat-v" id="invKpiActual">-</div>
-      <div class="stat-s" id="invKpiActualVs">vs yesterday</div>
+      <div class="stat-v" id="invKpiActual">—</div>
+      <div class="stat-s" id="invKpiActualSub">vs yesterday</div>
     </div>
   </div>
 
   <!-- Status banner -->
-  <div class="inv-status-banner ok" id="invStatusBanner">
-    <i class="ti ti-circle-check"></i> Loading stock data...
+  <div class="inv-banner ok" id="invBanner">
+    <i class="ti ti-circle-check"></i>
+    <span id="invBannerText">Loading stock data…</span>
   </div>
 
-  <!-- Tank display -->
+  <!-- Tank visual panel -->
   <div class="inv-tank-panel">
     <div class="inv-tank-panel-hdr">
-      <span><i class="ti ti-droplet"></i> &nbsp;Bulk Tanks - Live Levels</span>
-      <span id="invTankReadingTime">-</span>
+      <span><i class="ti ti-droplet"></i> &nbsp;Bulk Tanks — Live Levels</span>
+      <span id="invTankTs">—</span>
     </div>
     <div class="inv-tank-grid" id="invTankGrid">
-      <!-- Populated by invRenderDashboard() -->
+      <!-- Populated by invRenderTanks() -->
     </div>
     <div class="inv-manifold"></div>
   </div>
 
-  <!-- Weekly chart -->
-  <div class="inv-week-chart-wrap" id="invWeekChart">
+  <!-- Weekly usage chart -->
+  <div class="inv-chart-card" id="invWeekCard">
     <!-- Populated by invRenderWeekChart() -->
   </div>
 </div>
-<!-- USAGE & FORECAST                                           -->
-<div class="panel" id="panel-usage-forecast">
-  <div class="sec-title">Usage & Forecast</div>
-  <div class="sec-sub">Planned vs actual consumption - Forward stock projection</div>
+<!-- ════════════════════════════════════════════════ -->
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- PANEL: USAGE & FORECAST                         -->
+<!-- ════════════════════════════════════════════════ -->
+<div class="panel" id="usage-forecast">
+  <div class="sec-title">Usage &amp; Forecast</div>
+  <div class="sec-sub">Planned vs actual consumption · Forward stock projection</div>
 
   <!-- Rolling averages -->
   <div class="card" style="margin-bottom:14px">
     <div class="card-title"><i class="ti ti-activity"></i> Rolling Average Daily Usage</div>
-    <div class="inv-rolling-avg">
-      <div class="stat">
-        <div class="stat-l">7-day avg</div>
-        <div class="stat-v" id="invAvg7">-</div>
-      </div>
-      <div class="stat">
-        <div class="stat-l">14-day avg</div>
-        <div class="stat-v" id="invAvg14">-</div>
-      </div>
-      <div class="stat">
-        <div class="stat-l">30-day avg</div>
-        <div class="stat-v" id="invAvg30">-</div>
-      </div>
-      <div class="stat">
-        <div class="stat-l">Uptake rate</div>
-        <div class="stat-v" id="invUptakeRate">115 kg/m3</div>
-        <div class="stat-s">target rate</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Planned vs Actual table -->
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-title"><i class="ti ti-table"></i> Planned vs Actual - Last 30 Days</div>
-    <div class="inv-table-wrap" id="invUsageTable">
-      <!-- Populated by invRenderUsageTable() -->
+    <div class="inv-avg-row">
+      <div class="stat"><div class="stat-l">7-day avg</div><div class="stat-v" id="invAvg7">—</div></div>
+      <div class="stat"><div class="stat-l">14-day avg</div><div class="stat-v" id="invAvg14">—</div></div>
+      <div class="stat"><div class="stat-l">30-day avg</div><div class="stat-v" id="invAvg30">—</div></div>
+      <div class="stat"><div class="stat-l">Uptake rate</div><div class="stat-v">115 kg/m³</div><div class="stat-s">target</div></div>
     </div>
   </div>
 
   <!-- Forecast settings -->
   <div class="card" style="margin-bottom:14px">
     <div class="card-title"><i class="ti ti-settings"></i> Forecast Settings</div>
-    <div class="inv-forecast-settings">
-      <div class="inv-forecast-field">
-        <label>Horizon (days)</label>
-        <input type="number" id="invForecastHorizon" value="14" min="7" max="42" step="1"
-               onchange="invForecastHorizon=parseInt(this.value)||14; invRenderForecastChart()">
-      </div>
-      <div class="inv-forecast-field">
-        <label>Daily usage (kg)</label>
-        <input type="number" id="invForecastDailyUse" value="45000" min="0" step="1000"
-               onchange="invForecastDailyUse=parseInt(this.value)||0; this.dataset.userSet=1; invRenderForecastChart()">
-      </div>
-      <div class="inv-forecast-field">
-        <label>Delivery size (kg)</label>
-        <input type="number" id="invForecastDelivSize" value="26000" min="1000" step="1000"
-               onchange="invDeliverySize=parseInt(this.value)||26000">
-      </div>
-      <div class="inv-forecast-field">
-        <label>Reorder point (total kg)</label>
-        <input type="number" id="invReorderPoint" value="80000" min="0" step="5000"
-               onchange="invReorderPoint=parseInt(this.value)||80000; invRenderForecastChart()">
-      </div>
+    <div class="inv-fcast-settings">
+      <div class="inv-field"><label>Horizon (days)</label><input type="number" id="invHorizon" value="14" min="7" max="42" step="1" oninput="invFcastHorizon=+this.value||14;invRenderForecast()"></div>
+      <div class="inv-field"><label>Daily usage (kg)</label><input type="number" id="invDailyUse" value="45000" min="0" step="1000" oninput="invDailyUsage=+this.value||0;this.dataset.user=1;invRenderForecast()"></div>
+      <div class="inv-field"><label>Delivery size (kg)</label><input type="number" id="invDelSize" value="26000" min="1000" step="1000" oninput="invDelKg=+this.value||26000"></div>
+      <div class="inv-field"><label>Reorder point (kg)</label><input type="number" id="invReorder" value="80000" min="0" step="5000" oninput="invReorderKg=+this.value||80000;invRenderForecast()"></div>
     </div>
   </div>
 
   <!-- Forecast chart -->
-  <div class="card">
+  <div class="inv-chart-card">
     <div class="card-title"><i class="ti ti-trending-up"></i> Stock Forecast</div>
-    <div id="invForecastChart" style="margin-top:8px">
-      <!-- Populated by invRenderForecastChart() -->
-    </div>
+    <div id="invFcastChart" style="margin-top:6px"><!-- Populated by invRenderForecast() --></div>
+  </div>
+
+  <!-- Planned vs actual table -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-title"><i class="ti ti-table"></i> Planned vs Actual — Last 30 Days</div>
+    <div class="inv-table-wrap" id="invUsageTable"><!-- Populated by invRenderUsageTable() --></div>
   </div>
 </div>
-<!-- DELIVERY PLANNER                                           -->
-<div class="panel" id="panel-delivery-planner">
-  <div class="sec-title">Delivery Planner</div>
-  <div class="sec-sub">Schedule deliveries - Generate order email - Mon-Fri only</div>
+<!-- ════════════════════════════════════════════════ -->
 
-  <!-- Planner settings -->
-  <div class="card inv-del-settings" style="margin-bottom:14px">
+<!-- ════════════════════════════════════════════════ -->
+<!-- PANEL: DELIVERY PLANNER                         -->
+<!-- ════════════════════════════════════════════════ -->
+<div class="panel" id="delivery-planner">
+  <div class="sec-title">Delivery Planner</div>
+  <div class="sec-sub">Schedule deliveries · Generate order email · Mon–Fri only</div>
+
+  <!-- Settings -->
+  <div class="inv-del-settings">
     <div>
       <label>Supplier</label>
-      <select id="invSupplierSelect" onchange="invSupplier=this.value; invUpdateEmailPreview()">
+      <select id="invSupplierSel" onchange="invSupplier=this.value;invUpdateEmail()">
         <option value="Koppers">Koppers</option>
         <option value="Rutgers">Rutgers</option>
       </select>
     </div>
     <div>
       <label>Default delivery (kg)</label>
-      <input type="number" id="invDeliverySizeInp" value="26000" min="1000" step="1000"
-             onchange="invDeliverySize=parseInt(this.value)||26000">
+      <input type="number" id="invDelSizeInp" value="26000" min="1000" step="1000"
+             oninput="invDelKg=+this.value||26000">
     </div>
     <div>
       <label>Supplier email</label>
       <input type="text" id="invSupplierEmail" placeholder="orders@supplier.com"
-             onchange="invSupplierEmail=this.value">
+             oninput="invSupplierEmailVal=this.value">
     </div>
     <div>
       <label>Sender name</label>
-      <input type="text" id="invSenderNameInp" placeholder="Your name"
-             onchange="invSenderName=this.value; invUpdateEmailPreview()">
+      <input type="text" id="invSenderName" placeholder="Your name"
+             oninput="invSenderNameVal=this.value;invUpdateEmail()">
     </div>
     <div>
       <label>Site address</label>
-      <input type="text" id="invSiteAddressInp" placeholder="Treatment plant address"
-             onchange="invSiteAddress=this.value; invUpdateEmailPreview()">
+      <input type="text" id="invSiteAddr" placeholder="Treatment plant address"
+             oninput="invSiteAddrVal=this.value;invUpdateEmail()">
     </div>
   </div>
 
   <!-- Calendar -->
   <div class="inv-cal-wrap">
     <div class="inv-cal-nav">
-      <button class="inv-cal-btn" onclick="invCalMonth--; if(invCalMonth<0){invCalMonth=11;invCalYear--;} invRenderCalendar()"><</button>
-      <div class="inv-cal-month" id="invCalTitle"></div>
-      <button class="inv-cal-btn" onclick="invCalMonth++; if(invCalMonth>11){invCalMonth=0;invCalYear++;} invRenderCalendar()">></button>
+      <button class="inv-cal-btn" onclick="invCalPrev()">&#8249;</button>
+      <div class="inv-cal-title" id="invCalTitle"></div>
+      <button class="inv-cal-btn" onclick="invCalNext()">&#8250;</button>
     </div>
-    <div class="inv-cal-grid" id="invCalGrid">
-      <!-- Populated by invRenderCalendar() -->
-    </div>
-    <div style="margin-top:8px;font-size:10px;color:var(--text3);font-family:var(--mono)">
-      Click a weekday to add a delivery. Click again to add a second. Click a third time to remove.
-    </div>
+    <div class="inv-cal-grid" id="invCalGrid"></div>
+    <div class="inv-hint">Click a weekday to add a delivery · click again to add a second · click a third time to remove all</div>
   </div>
 
   <!-- Delivery list -->
-  <div class="card-title" style="margin-bottom:6px"><i class="ti ti-list"></i> Scheduled Deliveries</div>
-  <div class="inv-del-list" id="invDeliveryList">
-    <!-- Populated by invRenderDeliveryList() -->
-  </div>
+  <div class="card-title" style="margin-bottom:7px"><i class="ti ti-list"></i> Scheduled Deliveries</div>
+  <div class="inv-del-list" id="invDelList"><!-- Populated by invRenderDelList() --></div>
 
   <!-- Email generator -->
-  <div class="inv-email-wrap card" style="margin-top:14px">
-    <div class="card-title"><i class="ti ti-mail"></i> Generate Order Email</div>
+  <div class="inv-email-section">
+    <div class="card-title" style="margin-bottom:10px"><i class="ti ti-mail"></i> Generate Order Email</div>
     <div class="inv-email-range">
-      <label>From</label>
-      <input type="date" id="invEmailFrom" onchange="invUpdateEmailPreview()">
-      <label>To</label>
-      <input type="date" id="invEmailTo" onchange="invUpdateEmailPreview()">
+      <span>From</span>
+      <input type="date" id="invEmailFrom" onchange="invUpdateEmail()">
+      <span>To</span>
+      <input type="date" id="invEmailTo" onchange="invUpdateEmail()">
     </div>
-    <textarea class="inv-email-textarea" id="invEmailTextarea" rows="12"></textarea>
+    <textarea class="inv-email-textarea" id="invEmailTa" rows="11"></textarea>
     <div class="inv-email-actions">
       <button id="invCopyBtn" onclick="invCopyEmail()"><i class="ti ti-copy"></i> Copy Email</button>
-      <button onclick="invOpenMailClient()"><i class="ti ti-mail-forward"></i> Open in Mail</button>
+      <button onclick="invOpenMail()"><i class="ti ti-mail-forward"></i> Open in Mail</button>
     </div>
   </div>
 </div>
+<!-- ════════════════════════════════════════════════ -->
 
 </div></div></div>
 
 <script src="assets/charge-history-2026.js"></script>
 <script>
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONSTANTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- CONSTANTS -----------------------
 const POSITIONS=['Charge 1','Charge 2','Charge 3','Charge 4'];
 const DAYS_5=['Monday','Tuesday','Wednesday','Thursday','Friday'];
 const DAYS_7=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const PLANT_FAMILIES={p1:['fencing','pole'],p2:['pole']};
 
 const GAP_REASONS={
-  '':                  'Select reasonâ€¦',
+  '':                  'Select reason...',
   maintenance:         'Maintenance / breakdown',
   flt_delay:           'FLT delay',
   crane_delay:         'Crane delay',
@@ -1076,13 +1180,13 @@ Object.values(CT).forEach(ct=>{
 const STAGE_AVG={raiseAir:20,fill:32,raiseHyd:9,empty:36,raiseVac:22,ventRecover:5};
 const STAGE_LOOK={
   preTreat:{name:'Pre-treat / hot bath',short:'Bath',group:'prep',col:'#8b6f47',bg:'rgba(139,111,71,.34)',bd:'rgba(139,111,71,.55)'},
-  raiseAir:{name:'Raise initial air pressure',short:'Airâ†‘',group:'air',col:'#2f7d48',bg:'rgba(47,125,72,.34)',bd:'rgba(47,125,72,.55)'},
+  raiseAir:{name:'Raise initial air pressure',short:'Air up',group:'air',col:'#2f7d48',bg:'rgba(47,125,72,.34)',bd:'rgba(47,125,72,.55)'},
   holdAir:{name:'Hold initial air pressure',short:'Air',group:'air',col:'#54a86b',bg:'rgba(84,168,107,.34)',bd:'rgba(84,168,107,.55)'},
   fill:{name:'Fill against air pressure',short:'Fill',group:'fill',col:'#4a9eff',bg:'rgba(74,158,255,.34)',bd:'rgba(74,158,255,.55)'},
-  raiseHyd:{name:'Raise hydraulic pressure',short:'Hydâ†‘',group:'pressure',col:'#e8c547',bg:'rgba(232,197,71,.38)',bd:'rgba(232,197,71,.6)'},
+  raiseHyd:{name:'Raise hydraulic pressure',short:'Hyd up',group:'pressure',col:'#e8c547',bg:'rgba(232,197,71,.38)',bd:'rgba(232,197,71,.6)'},
   holdHyd:{name:'Hold hydraulic pressure',short:'Hyd',group:'pressure',col:'#e89347',bg:'rgba(232,147,71,.34)',bd:'rgba(232,147,71,.58)'},
   empty:{name:'Empty',short:'Empty',group:'empty',col:'#7c8ca3',bg:'rgba(124,140,163,.34)',bd:'rgba(124,140,163,.58)'},
-  raiseVac:{name:'Raise final vacuum',short:'Vacâ†‘',group:'vacuum',col:'#9b7fe8',bg:'rgba(155,127,232,.34)',bd:'rgba(155,127,232,.58)'},
+  raiseVac:{name:'Raise final vacuum',short:'Vac up',group:'vacuum',col:'#9b7fe8',bg:'rgba(155,127,232,.34)',bd:'rgba(155,127,232,.58)'},
   holdVac:{name:'Hold final vacuum',short:'Vac',group:'vacuum',col:'#c4a8f8',bg:'rgba(196,168,248,.3)',bd:'rgba(196,168,248,.55)'},
   vent:{name:'Vent vacuum & recover',short:'Vent',group:'recover',col:'#3dd6b4',bg:'rgba(61,214,180,.28)',bd:'rgba(61,214,180,.5)'}
 };
@@ -1126,7 +1230,7 @@ function stageAtOffset(stages,mins){
   return stages[stages.length-1]||null;
 }
 function stageSummary(tk){
-  return chargeStagesFor(tk).map(s=>`${s.short} ${fmins(Math.round(s.mins))}`).join(' Â· ');
+  return chargeStagesFor(tk).map(s=>`${s.short} ${fmins(Math.round(s.mins))}`).join(' - ');
 }
 Object.keys(CT).forEach(k=>{const t=chargeStageTotals(k);CT[k].procMin=Math.round(t.proc);CT[k].vacMin=Math.round(t.vac);});
 function vesselStageId(stage){
@@ -1232,7 +1336,7 @@ let tippers=[mkPerson(0,'Tipper 1','day','07:30','16:30'),mkPerson(1,'Tipper 2',
 function mkDay(p1s='05:00',p2s='05:30'){return{p1Start:p1s,p2Start:p2s,p1Types:['fencing','fencing','fencing','fencing'],p2Types:['pole','pole','pole','pole']};}
 let dayConfigs=[mkDay(),mkDay(),mkDay(),mkDay(),mkDay(),mkDay(),mkDay()];
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• ACTUALS DATA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- ACTUALS DATA -----------------------
 // actuals[dayIdx][pid][slotIdx] = { chargeNum, cin, procEnd, vacEnd, out, logged }
 // gaps[dayIdx][pid][afterSlotIdx] = { reason, gapStart, gapEnd }
 let actuals={};
@@ -1339,7 +1443,7 @@ function gapReasonText(gap){
   return GAP_REASONS[gap.reason||'']||gap.reason||'No reason given';
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PERSISTENCE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- PERSISTENCE -----------------------
 async function saveData(){
   try{
     localStorage.setItem('creosote_actuals',JSON.stringify(actuals));
@@ -1384,31 +1488,35 @@ async function clearAllActuals(){
   go();buildLogPanel();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HELPERS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- HELPERS -----------------------
 function showPanel(t){
   if(accessMode==='operator'&&t!=='live-log')t='live-log';
   if(accessMode==='board'&&t!=='live-board')t='live-board';
   activePanel=t;
-  const all=['week','live-log','live-board','report','pole-forecast','green-treatment','bottlenecks','table','inv-dashboard','usage-forecast','delivery-planner','days','charge-types','equipment','operators','cranes','tippers','noise'];
-  all.forEach(p=>{const el=document.getElementById('panel-'+p);if(el)el.classList.toggle('active',p===t);});
+  document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===t||el.id==='panel-'+t));
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const map={week:5,bottlenecks:6,table:7,'live-log':0,'live-board':1,report:2,'pole-forecast':3,'green-treatment':4,'inv-dashboard':8,'usage-forecast':9,'delivery-planner':10,days:11,'charge-types':12,equipment:13,operators:14,cranes:15,tippers:16,noise:17};
-  const items=document.querySelectorAll('.nav-item');
-  if(items[map[t]])items[map[t]].classList.add('active');
+  const nav=document.getElementById('nav-'+t);
+  if(nav){
+    nav.classList.add('active');
+  }else{
+    const map={week:5,bottlenecks:6,table:7,'live-log':0,'live-board':1,report:2,'pole-forecast':3,'green-treatment':4,days:11,'charge-types':12,equipment:13,operators:14,cranes:15,tippers:16,noise:17};
+    const items=document.querySelectorAll('.nav-item');
+    if(items[map[t]])items[map[t]].classList.add('active');
+  }
   if(t==='live-log')buildLogPanel();
   if(t==='live-board')buildLiveBoard();
   if(t==='report')buildReport();
   if(t==='pole-forecast')buildPoleForecast();
   if(t==='green-treatment')buildGreenTreatment();
   if(t==='inv-dashboard')invRefreshAll();
-  if(t==='usage-forecast'){invUpdateRollingAvg();invRenderUsageTable();invRenderForecastChart();}
-  if(t==='delivery-planner'){invRenderCalendar();invRenderDeliveryList();invUpdateEmailPreview();}
+  if(t==='usage-forecast'){invUpdateAvgs();invRenderUsageTable();invRenderForecast();}
+  if(t==='delivery-planner'){invRenderCalendar();invRenderDelList();invUpdateEmail();}
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function ph2(v){if(!v)return null;const[h,m]=v.split(':').map(Number);return h+m/60;}
 function hToStr(h){if(h===null||h===undefined)return'';const w=((h%24)+24)%24,fl=Math.floor(w),mn=Math.round((w-fl)*60);const ah=mn===60?(fl+1)%24:fl,am=mn===60?0:mn;return`${String(ah).padStart(2,'0')}:${String(am).padStart(2,'0')}`;}
-function tfAbs(h){if(h===null||h===undefined)return'â€”';const w=((h%24)+24)%24,fl=Math.floor(w),mn=Math.round((w-fl)*60);const ah=mn===60?(fl+1)%24:fl,am=mn===60?0:mn;const d=ah%12===0?12:ah%12;return`${d}:${String(am).padStart(2,'0')}${ah<12?'am':'pm'}`;}
-function fmins(m){if(m===null||m===undefined)return'â€”';const h=Math.floor(Math.abs(m)/60),mn=Math.abs(m)%60;const s=m<0?'-':'';return mn===0?`${s}${h}h`:`${s}${h}h ${mn}m`;}
+function tfAbs(h){if(h===null||h===undefined)return'-';const w=((h%24)+24)%24,fl=Math.floor(w),mn=Math.round((w-fl)*60);const ah=mn===60?(fl+1)%24:fl,am=mn===60?0:mn;const d=ah%12===0?12:ah%12;return`${d}:${String(am).padStart(2,'0')}${ah<12?'am':'pm'}`;}
+function fmins(m){if(m===null||m===undefined)return'-';const h=Math.floor(Math.abs(m)/60),mn=Math.abs(m)%60;const s=m<0?'-':'';return mn===0?`${s}${h}h`:`${s}${h}h ${mn}m`;}
 function currentWeekAbs(){const n=new Date();const d=(n.getDay()+6)%7;return d*24+n.getHours()+n.getMinutes()/60+n.getSeconds()/3600;}
 function absForActual(d,h){if(h===null||h===undefined)return null;return h>=24?h:d*24+h;}
 function actualTypeKey(c,act){return act&&act.tk&&CT[act.tk]?act.tk:c.tk;}
@@ -1453,7 +1561,7 @@ function rowValueExcept(row,keys,blocked){
   return '';
 }
 function productDescription(row){
-  const blockedProductFields=['range','quantity','qty','pieces','pcs','m3','mÂ³','volume','charge','vessel','planned','date'];
+  const blockedProductFields=['range','quantity','qty','pieces','pcs','m3','m3','volume','charge','vessel','planned','date'];
   const direct=
     row._productDescription||
     row.ProductDescription||
@@ -1462,13 +1570,13 @@ function productDescription(row){
     rowValueExcept(row,['product name','item name','timber description','timber','material description'],blockedProductFields)||
     rowValueExcept(row,['product','item','material','size','species'],blockedProductFields);
   if(direct)return direct;
-  const excluded=['range','quantity','qty','pieces','pcs','m3','mÂ³','volume','charge','vessel','planned','date','customer','client','sales','order','reference','ref','po','row number'];
+  const excluded=['range','quantity','qty','pieces','pcs','m3','m3','volume','charge','vessel','planned','date','customer','client','sales','order','reference','ref','po','row number'];
   const fallbacks=Object.entries(row)
     .filter(([h,v])=>v && !String(h).startsWith('_'))
     .filter(([h])=>!excluded.some(key=>h.toLowerCase().includes(key)))
     .map(([,v])=>String(v).trim())
     .filter(v=>looksLikeProductText(v));
-  return fallbacks.slice(0,3).join(' Â· ')||productSummary(row);
+  return fallbacks.slice(0,3).join(' - ')||productSummary(row);
 }
 function looksLikeProductText(value){
   const s=String(value||'').trim();
@@ -1484,13 +1592,13 @@ function productBoardSummary(row){
   const customer=rowValue(row,['customer','client','account','sales']);
   const order=rowValue(row,['order','reference','ref','po','job']);
   const qty=row._quantity||rowValue(row,['quantity','qty','pieces','pcs','no. of','number of','pack quantity','pack qty'])||rowValue(row,['column 35']);
-  const top=[customer,order].filter(Boolean).join(' Â· ');
+  const top=[customer,order].filter(Boolean).join(' - ');
   const plannedBits=row&&row._plannedOnly?[
     row._scheduleOriginalQuantity?`Orig ${row._scheduleOriginalQuantity}`:(qty?`Orig ${qty}`:''),
     row._schedulePacks?`${row._schedulePacks} packs`:'',
     row._schedulePackSize?`Pack ${row._schedulePackSize}`:''
   ].filter(Boolean):null;
-  const bottom=plannedBits&&plannedBits.length?plannedBits.join(' Â· '):[qty?`Qty ${qty}`:'',row._volumeM3?`${row._volumeM3} m3`:'' ].filter(Boolean).join(' Â· ');
+  const bottom=plannedBits&&plannedBits.length?plannedBits.join(' - '):[qty?`Qty ${qty}`:'',row._volumeM3?`${row._volumeM3} m3`:'' ].filter(Boolean).join(' - ');
   return `<div class="product-pill product-board-row">${top?`<span class="product-top">${escHtml(top)}</span>`:''}<span class="product-main">${escHtml(description)}</span><span class="product-sub">${bottom?escHtml(bottom):'Qty not listed'}</span></div>`;
 }
 function productHtml(chargeNum,limit=4){
@@ -1601,7 +1709,7 @@ function plannedActualVarianceHtml(plannedRows,actualRows){
   const bits=[];
   if(plannedOnly.length)bits.push(`Planned not matched: ${plannedOnly.map(escHtml).join(', ')}`);
   if(actualOnly.length)bits.push(`Actual not on plan: ${actualOnly.map(escHtml).join(', ')}`);
-  return `<div class="plan-variance-note"><b>Plan changed</b><div class="plan-variance-list">${bits.join(' Â· ')||'Actual product list differs from the planned schedule.'}</div></div>`;
+  return `<div class="plan-variance-note"><b>Plan changed</b><div class="plan-variance-list">${bits.join(' - ')||'Actual product list differs from the planned schedule.'}</div></div>`;
 }
 function getMasterSlots(day){
   if(masterSlotsCache[day.dayIdx])return masterSlotsCache[day.dayIdx];
@@ -1726,7 +1834,7 @@ function buildPlantLiveColumns(day,dayItems){
     const products=rows.length?productRowsHtml(rows,Infinity):(actual&&actual.act.chargeNum?productHtml(actual.act.chargeNum,Infinity):'<div class="product-list"><div class="product-pill">No Treatment Master products in this slot yet</div></div>');
     return `<div class="charge-live-card ${state}">
       <div class="charge-live-head">
-        <div><div class="charge-live-name">Charge ${n}</div><div class="charge-live-meta">${meta.join(' Â· ')||'Awaiting Treatment Master plan'}</div></div>
+        <div><div class="charge-live-name">Charge ${n}</div><div class="charge-live-meta">${meta.join(' - ')||'Awaiting Treatment Master plan'}</div></div>
         <div class="charge-live-state ${state}">${stateLabel}</div>
       </div>
       ${variance}
@@ -1786,113 +1894,6 @@ function treatmentVesselSvg(stage,stageObj){
       @keyframes ${id}-drain{0%{opacity:.95;transform:translateY(-14px)}100%{opacity:.15;transform:translateY(18px)}}
       @keyframes ${id}-needle{0%{transform:rotate(${needleFrom}deg)}100%{transform:rotate(${needleTo}deg)}}
 
-/* Inventory Dashboard */
-.inv-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
-.inv-kpi-row .stat { background:var(--bg2); }
-
-.inv-status-banner {
-  display:flex; align-items:center; gap:10px; padding:9px 14px;
-  border-radius:var(--radius); margin-bottom:14px;
-  font-size:12px; font-weight:600; border:1px solid;
-}
-.inv-status-banner.ok     { background:rgba(47,125,72,.1);  border-color:rgba(47,125,72,.25);  color:var(--green); }
-.inv-status-banner.warn   { background:rgba(201,120,46,.1); border-color:rgba(201,120,46,.25); color:var(--amber); animation:invPulse 2s infinite; }
-.inv-status-banner.danger { background:rgba(186,61,53,.1);  border-color:rgba(186,61,53,.25);  color:var(--red);   animation:invPulse 1s infinite; }
-@keyframes invPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
-
-/* Tank display panel */
-.inv-tank-panel { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px; }
-.inv-tank-panel-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); font-size:10px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.08em; }
-.inv-tank-grid { display:flex; gap:12px; align-items:flex-start; }
-.inv-tank-group { flex:1; }
-.inv-tank-group-label { font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.1em; text-align:center; margin-bottom:8px; }
-.inv-tank-group-row { display:flex; gap:8px; justify-content:center; }
-.inv-tank-group-divider { width:1px; background:var(--border); align-self:stretch; margin:16px 4px 0; flex-shrink:0; }
-.inv-tank-col { display:flex; flex-direction:column; align-items:center; gap:3px; }
-.inv-tank-name { font-size:9px; text-transform:uppercase; letter-spacing:.07em; color:var(--text2); font-family:var(--mono); text-align:center; margin-top:3px; }
-.inv-tank-kg   { font-size:11px; color:var(--text2); font-family:var(--mono); text-align:center; }
-.inv-tank-pct  { font-size:10px; font-family:var(--mono); text-align:center; }
-.inv-type-badge { font-size:8px; font-weight:600; padding:1px 6px; border-radius:99px; letter-spacing:.05em; text-transform:uppercase; font-family:var(--mono); }
-.inv-type-badge.storage { background:rgba(47,125,72,.15); color:var(--green); border:1px solid rgba(47,125,72,.25); }
-.inv-type-badge.process  { background:rgba(47,116,167,.15); color:var(--blue);  border:1px solid rgba(47,116,167,.25); }
-.inv-status-badge { font-size:8px; font-weight:600; padding:1px 6px; border-radius:99px; text-transform:uppercase; letter-spacing:.04em; font-family:var(--mono); }
-.inv-status-badge.normal   { background:rgba(47,125,72,.12);  color:var(--green); }
-.inv-status-badge.high     { background:rgba(201,120,46,.15); color:var(--amber); animation:invPulse 2s infinite; }
-.inv-status-badge.low      { background:rgba(201,120,46,.15); color:var(--amber); animation:invPulse 2s infinite; }
-.inv-status-badge.critical { background:rgba(186,61,53,.15);  color:var(--red);   animation:invPulse .8s infinite; }
-.inv-manifold { height:8px; background:#707070; border-radius:3px; margin:2px 4px 10px; }
-@keyframes invWave { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-/* Weekly chart */
-.inv-week-chart-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px; }
-.inv-chart-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.inv-chart-badges { display:flex; gap:8px; }
-.inv-chart-badge { font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:99px; border:1px solid; }
-
-/* Usage & Forecast */
-.inv-section-title { font-size:10px; font-weight:600; color:var(--text3); letter-spacing:.08em; text-transform:uppercase; font-family:var(--mono); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
-.inv-table-wrap { overflow-x:auto; margin-bottom:14px; }
-.inv-table { width:100%; border-collapse:collapse; font-size:11px; }
-.inv-table th { font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.07em; color:var(--text3); padding:6px 10px; border-bottom:1px solid var(--border2); text-align:left; background:var(--bg3); }
-.inv-table td { padding:7px 10px; border-bottom:1px solid var(--border); color:var(--text2); font-family:var(--mono); font-size:11px; }
-.inv-table tr:last-child td { border-bottom:none; }
-.inv-table tr.no-prod td { color:var(--text3); font-style:italic; }
-.inv-table tr.totals td { font-weight:700; color:var(--text); background:var(--bg3); border-top:1px solid var(--border2); }
-.inv-var.ok   { color:var(--green); }
-.inv-var.warn { color:var(--amber); }
-.inv-var.bad  { color:var(--red);   }
-
-.inv-forecast-settings { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:12px; display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
-.inv-forecast-field label { display:block; font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
-.inv-forecast-field input { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); color:var(--text); font-family:var(--mono); font-size:12px; font-weight:500; padding:5px 8px; width:100%; outline:none; }
-.inv-forecast-field input:focus { border-color:var(--accent); }
-
-.inv-rolling-avg { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
-
-/* Delivery Planner */
-.inv-del-settings { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-lg); padding:12px 14px; margin-bottom:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
-.inv-del-settings label { display:block; font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
-
-.inv-cal-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px; }
-.inv-cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.inv-cal-month { font-size:13px; font-weight:700; color:var(--text); }
-.inv-cal-btn { background:none; border:1px solid var(--border2); border-radius:var(--radius); padding:4px 10px; cursor:pointer; color:var(--text2); font-size:12px; }
-.inv-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-.inv-cal-day-hdr { text-align:center; font-family:var(--mono); font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; padding:4px 0; }
-.inv-cal-cell { border-radius:var(--radius); padding:6px 4px; min-height:52px; text-align:center; font-size:11px; position:relative; transition:background .15s; }
-.inv-cal-cell.weekday { background:var(--bg3); border:1px solid var(--border); cursor:pointer; }
-.inv-cal-cell.weekday:hover { background:var(--bg4); border-color:var(--accent); }
-.inv-cal-cell.weekend { background:var(--bg); color:var(--text3); cursor:not-allowed; opacity:.5; }
-.inv-cal-cell.today { border-color:var(--accent) !important; border-width:2px !important; }
-.inv-cal-cell.has-delivery { background:rgba(183,131,47,.12); border-color:rgba(183,131,47,.35) !important; }
-.inv-cal-cell-date { font-family:var(--mono); font-size:10px; color:var(--text2); }
-.inv-cal-delivery-badge { display:inline-block; margin-top:3px; background:var(--accent); color:#fffdf7; font-family:var(--mono); font-size:8px; padding:1px 5px; border-radius:99px; white-space:nowrap; }
-
-.inv-del-list { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); margin-bottom:14px; overflow:hidden; }
-.inv-del-list-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid var(--border); font-size:11px; }
-.inv-del-list-item:last-child { border-bottom:none; }
-.inv-del-date { font-family:var(--mono); font-weight:600; color:var(--text); width:130px; flex-shrink:0; }
-.inv-del-supplier { color:var(--text2); flex:1; font-family:var(--mono); font-size:10px; }
-.inv-del-qty { font-family:var(--mono); color:var(--accent); font-weight:600; width:90px; text-align:right; flex-shrink:0; }
-.inv-del-actions { display:flex; gap:5px; }
-.inv-del-total-row { padding:8px 14px; background:var(--bg3); font-size:11px; font-family:var(--mono); color:var(--text2); border-top:1px solid var(--border2); }
-
-.inv-email-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; }
-.inv-email-preview { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:12px; font-family:var(--mono); font-size:11px; color:var(--text2); line-height:1.7; white-space:pre-wrap; margin:10px 0; max-height:280px; overflow-y:auto; }
-.inv-email-range { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-.inv-email-range label { font-size:9px; color:var(--text3); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; }
-.inv-email-range input[type=date] { background:var(--bg3); border:1px solid var(--border2); border-radius:var(--radius); color:var(--text); font-family:var(--mono); font-size:11px; padding:4px 8px; outline:none; }
-.inv-email-actions { display:flex; gap:8px; margin-top:8px; }
-.inv-email-textarea { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-family:var(--mono); font-size:11px; padding:10px 12px; line-height:1.65; resize:vertical; min-height:200px; outline:none; }
-.inv-email-textarea:focus { border-color:var(--accent); }
-
-@media (max-width:640px) {
-  .inv-kpi-row { grid-template-columns:1fr 1fr; }
-  .inv-tank-grid { flex-direction:column; }
-  .inv-tank-group-divider { width:100%; height:1px; margin:8px 0; }
-  .inv-rolling-avg { grid-template-columns:1fr 1fr; }
-  .inv-cal-cell { min-height:38px; padding:4px 2px; }
-}
 </style>
     <div class="vessel-label"><span class="vessel-stage">${escHtml(label)}</span><span class="vessel-progress">${progress}%</span></div>
     <svg id="${id}" viewBox="0 0 720 420" role="img" aria-label="${escHtml(label)}">
@@ -1951,7 +1952,7 @@ function updateMasterStatus(){
   const el=document.getElementById('master-sync-status');if(!el)return;
   el.className=`master-sync-status ${masterSync.state}`;
   const configured=!!liveBridgeUrl();
-  el.innerHTML=`${escHtml(masterSync.msg)} Â· <button class="sm-blue" type="button" data-master-connect>${configured?'Change':'Connect'}</button>`;
+  el.innerHTML=`${escHtml(masterSync.msg)} - <button class="sm-blue" type="button" data-master-connect>${configured?'Change':'Connect'}</button>`;
 }
 function openMasterConnect(){
   const modal=document.getElementById('master-connect-modal');
@@ -2036,8 +2037,8 @@ function loadMasterCache(options={}){
     const applied=applyMasterPayload(data,'cache');
     const age=Math.max(0,Math.round((Date.now()-(data.savedAt||Date.now()))/60000));
     if(!options.silent){
-      const descNote=masterHasProductDescriptions()?'':' Â· product text needs bridge refresh';
-      masterSync={state:'warn',msg:`Master cache loaded ${applied.count} charge${applied.count===1?'':'s'} Â· ${age} min old${descNote}`,last:data.savedAt||Date.now()};
+      const descNote=masterHasProductDescriptions()?'':' - product text needs bridge refresh';
+      masterSync={state:'warn',msg:`Master cache loaded ${applied.count} charge${applied.count===1?'':'s'} - ${age} min old${descNote}`,last:data.savedAt||Date.now()};
       updateMasterStatus();
     }
     return true;
@@ -2141,7 +2142,7 @@ function buildGreenTreatment(){
   const selectedDate=boardDateForDayIdx(greenTreatmentDayIdx);
   const dayTabs=computeWeek().map((d,idx)=>{
     const count=greenTreatmentDayRows(idx).length;
-    return `<button class="green-day-tab ${idx===greenTreatmentDayIdx?'active':''}" type="button" onclick="setGreenTreatmentDay(${idx})">${escHtml(poleForecastDayLabel(d,idx).slice(0,3))}${count?` Â· ${count}`:''}</button>`;
+    return `<button class="green-day-tab ${idx===greenTreatmentDayIdx?'active':''}" type="button" onclick="setGreenTreatmentDay(${idx})">${escHtml(poleForecastDayLabel(d,idx).slice(0,3))}${count?` - ${count}`:''}</button>`;
   }).join('');
   const totalPieces=dayRows.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
   const plantHtml=['WTT','Hickson'].map(plant=>{
@@ -2159,13 +2160,13 @@ function buildGreenTreatment(){
         const pcs=greenTreatmentPieces(row);
         const packs=row._greenPacks||row.packs||'';
         const per=row._greenPerPack||row.amountPerPack||'';
-        const meta=[pcs?`${pcs} pcs`:'',packs?`${packs} packs`:'',per?`${per}/pack`:'' ].filter(Boolean).join(' Â· ')||'Qty not listed';
+        const meta=[pcs?`${pcs} pcs`:'',packs?`${packs} packs`:'',per?`${per}/pack`:'' ].filter(Boolean).join(' - ')||'Qty not listed';
         return `<div class="green-product-row"><div class="green-product-name">${escHtml(product)}</div><div class="green-product-meta">${escHtml(meta)}</div></div>`;
       }).join('');
-      return `<div class="green-charge-card"><div class="green-charge-title"><span>${escHtml(charge)}</span><span class="green-charge-count">${items.length} line${items.length===1?'':'s'} Â· ${pieces.toLocaleString('en-GB')} pcs</span></div>${products}</div>`;
+      return `<div class="green-charge-card"><div class="green-charge-title"><span>${escHtml(charge)}</span><span class="green-charge-count">${items.length} line${items.length===1?'':'s'} - ${pieces.toLocaleString('en-GB')} pcs</span></div>${products}</div>`;
     }).join('');
     const plantPieces=rows.reduce((sum,row)=>sum+greenTreatmentPieces(row),0);
-    return `<div class="green-plant-col"><div class="green-plant-head"><div class="green-plant-title">${escHtml(plant)}</div><div class="green-plant-total">${rows.length} line${rows.length===1?'':'s'} Â· ${plantPieces.toLocaleString('en-GB')} pcs</div></div>${cards||'<div class="green-empty">No planned green treatment for this plant on the selected day.</div>'}</div>`;
+    return `<div class="green-plant-col"><div class="green-plant-head"><div class="green-plant-title">${escHtml(plant)}</div><div class="green-plant-total">${rows.length} line${rows.length===1?'':'s'} - ${plantPieces.toLocaleString('en-GB')} pcs</div></div>${cards||'<div class="green-empty">No planned green treatment for this plant on the selected day.</div>'}</div>`;
   }).join('');
   const bridgeNote=masterGreenTreatment.length?'':'No green treatment rows are loaded yet. Deploy the updated bridge script so Treatment Schedule Master columns D, G, H, I, J, K and L are returned.';
   host.innerHTML=`<div class="green-day-tabs">${dayTabs}</div>
@@ -2239,7 +2240,7 @@ function poleForecastChargeGrid(dayDashboardRows){
       </div>
       <div class="pole-charge-plant p2"><span class="pole-charge-plant-name">Plant 2</span><span class="pole-charge-plant-count">${p2}</span></div>
       <div class="pole-charge-plant p1"><span class="pole-charge-plant-name">Plant 1</span><span class="pole-charge-plant-count">${p1}</span></div>
-      <div class="pole-charge-meta">${Number(item.qty).toFixed(0)} poles Â· ${fmtM3(item.m3)} Â· ${item.charges.toFixed(2)} charge equivalent</div>
+      <div class="pole-charge-meta">${Number(item.qty).toFixed(0)} poles - ${fmtM3(item.m3)} - ${item.charges.toFixed(2)} charge equivalent</div>
     </div>`;
   }).join('');
   return `<div class="report-card"><div class="report-title"><i class="ti ti-layout-grid"></i>Daily charge allocation</div>
@@ -2400,10 +2401,10 @@ async function pullLiveState(force=false){
       refreshLiveSurfaces(false);
     }
     liveStateSync.lastPull=Date.now();
-    updateLiveSyncStatus('ok',`Live sync connected Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+    updateLiveSyncStatus('ok',`Live sync connected - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
     return true;
   }catch(err){
-    updateLiveSyncStatus('warn',`Live sync waiting Â· ${err&&err.message?err.message:'bridge unavailable'}`);
+    updateLiveSyncStatus('warn',`Live sync waiting - ${err&&err.message?err.message:'bridge unavailable'}`);
     return false;
   }finally{
     liveStateSync.loading=false;
@@ -2416,7 +2417,7 @@ async function pushLiveActual(key,val){
   try{
     const data=await loadJsonp(bridgeUrl,{action:'saveActual',key,value:JSON.stringify(val||{})});
     if(data&&data.ok!==false)liveStateSync.updatedAt=data.updatedAt||new Date().toISOString();
-    updateLiveSyncStatus('ok',`Live sync updated Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+    updateLiveSyncStatus('ok',`Live sync updated - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
   }catch(err){
     updateLiveSyncStatus('warn','Live sync queued locally');
   }
@@ -2428,7 +2429,7 @@ async function pushLiveGap(key,val){
   try{
     const data=await loadJsonp(bridgeUrl,{action:'saveGap',key,value:JSON.stringify(val||{})});
     if(data&&data.ok!==false)liveStateSync.updatedAt=data.updatedAt||new Date().toISOString();
-    updateLiveSyncStatus('ok',`Live sync updated Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+    updateLiveSyncStatus('ok',`Live sync updated - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
   }catch(err){
     updateLiveSyncStatus('warn','Live sync queued locally');
   }
@@ -2486,9 +2487,9 @@ async function refreshProductMaster(){
       const plannedCount=masterPlannedSchedule.length;
       const forecastDays=masterPoleForecast&&Array.isArray(masterPoleForecast.days)?masterPoleForecast.days.length:0;
       const volumeMsg=`${applied.volumeRowCount||0} m3 row${applied.volumeRowCount===1?'':'s'}`;
-      const scheduleMsg=plannedCount?` Â· ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
-      const forecastMsg=forecastDays?` Â· ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
-      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} Â· ${volumeMsg}${scheduleMsg}${forecastMsg} Â· ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
+      const scheduleMsg=plannedCount?` - ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
+      const forecastMsg=forecastDays?` - ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
+      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} - ${volumeMsg}${scheduleMsg}${forecastMsg} - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
       refreshMasterViews();
       return;
     }
@@ -2502,7 +2503,7 @@ async function refreshProductMaster(){
     let productIdx=headers.findIndex(h=>/product.*description|item.*description|stock.*description|sales.*description|material.*description|timber.*description|description|product|material|timber|item|size/i.test(h)&&!/range|quantity|qty|pieces|pcs|volume|m3|m\^3|cbm|cubic|charge|vessel|planned|date/i.test(h));
     if(productIdx<0&&headers.length>27)productIdx=27; // AB fallback
     const quantityIdx=headers.length>34?34:headers.findIndex(h=>/quantity|qty|pieces|pcs/i.test(h));
-    const volumeIdx=headers.length>36?36:headers.findIndex(h=>/volume|m3|m\^3|cbm|cubic/i.test(String(h||'').replace(/Â³/g,'3')));
+    const volumeIdx=headers.length>36?36:headers.findIndex(h=>/volume|m3|m\^3|cbm|cubic/i.test(String(h||'').replace(/3/g,'3')));
     const plannedIdx=headers.length>46?46:headers.findIndex(h=>/planned.*charge|charge.*date/i.test(h));
     const vesselIdx=headers.findIndex(h=>/vessel/i.test(h));
     const map={},unassigned=[],all=[];
@@ -2586,7 +2587,7 @@ function getNoiseParams(){const on=document.getElementById('noise-on').checked;c
 function noiseWindowOk(sH,eH,ns,ne){const steps=Math.ceil((eH-sH)*60);for(let i=0;i<steps;i++){const w=((sH+i/60)%24+24)%24;if(w>=ns||w<ne)return false;}return true;}
 function opShiftAt(absH){for(const op of operators){if(personOnAt(op,absH))return op.shift;}return'overtime';}
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• COMPUTE PLANNED â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- COMPUTE PLANNED -----------------------
 function computePlantDay(pid,dayIdx,absStart,turnMin,fltMin,craneMin,totalSets,delayMin,prevCraneEnd,noise){
   const cfg=dayConfigs[dayIdx],types=pid==='p1'?cfg.p1Types:cfg.p2Types;
   const charges=[];
@@ -2652,7 +2653,7 @@ function computeWeek(){
     if(compConflict){
       if(diffMin>0){p2Delay=compMin;compMsg=`P2 waits ${compMin}m for compressor.`;}
       else if(diffMin<0){p1Delay=compMin;compMsg=`P1 waits ${compMin}m for compressor.`;}
-      else{p2Delay=compMin;compMsg=`Same start â€” P2 waits ${compMin}m.`;}
+      else{p2Delay=compMin;compMsg=`Same start - P2 waits ${compMin}m.`;}
     }
     const r1=computePlantDay('p1',d,absP1,turnMin,fltMin,craneMin,totalSets,p1Delay,p1CE,noise);
     const r2=computePlantDay('p2',d,absP2,turnMin,fltMin,craneMin,totalSets,p2Delay,p2CE,noise);
@@ -2669,7 +2670,7 @@ function computeWeek(){
   return days;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOOLTIP â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- TOOLTIP -----------------------
 const ttEl=document.getElementById('tooltip');
 function showTT(e,data){
   document.getElementById('tt-title').textContent=data.title;
@@ -2694,31 +2695,31 @@ function chargeTT(c,day,act){
   const actCt=actualChargeType(c,act);
   const issues=[];
   if(c.outfeedBlocked)issues.push({sev:'warn',msg:'â–² Carry-over: outfeed occupied, start delayed'});
-  if(c.wrongFamily)issues.push({sev:'danger',msg:'âš  Wrong plant: incompatible charge type'});
-  if(c.fltConflict)issues.push({sev:'warn',msg:`âš  FLT prep window short: only ${fmins(c.fltWindowMin)} available`});
-  if(c.fltOperatorConflict)issues.push({sev:'danger',msg:'âš  FLT conflict: no tipper + operator in process'});
+  if(c.wrongFamily)issues.push({sev:'danger',msg:'Warning Wrong plant: incompatible charge type'});
+  if(c.fltConflict)issues.push({sev:'warn',msg:`Warning FLT prep window short: only ${fmins(c.fltWindowMin)} available`});
+  if(c.fltOperatorConflict)issues.push({sev:'danger',msg:'Warning FLT conflict: no tipper + operator in process'});
   else if(c.fltOperatorNeeded)issues.push({sev:'warn',msg:'â„¹ Operator covering FLT (no tipper on shift)'});
-  if(c.fltNoiseViolation)issues.push({sev:'danger',msg:'âš  FLT prep in quiet hours'});
-  if(c.craneNoiseViolation)issues.push({sev:'danger',msg:'âš  Crane unload in quiet hours'});
-  if(c.needsCrane&&!c.craneOk)issues.push({sev:'warn',msg:'âš  No crane available for outfeed unload'});
-  if(opShiftAt(c.cin)==='overtime')issues.push({sev:'warn',msg:'âš  Process starts outside operator shift'});
+  if(c.fltNoiseViolation)issues.push({sev:'danger',msg:'Warning FLT prep in quiet hours'});
+  if(c.craneNoiseViolation)issues.push({sev:'danger',msg:'Warning Crane unload in quiet hours'});
+  if(c.needsCrane&&!c.craneOk)issues.push({sev:'warn',msg:'Warning No crane available for outfeed unload'});
+  if(opShiftAt(c.cin)==='overtime')issues.push({sev:'warn',msg:'Warning Process starts outside operator shift'});
   if(act){
-    issues.push({sev:'info',msg:`âœ“ Actual charge #${act.chargeNum||'â€”'} logged`});
+    issues.push({sev:'info',msg:`Actual charge #${act.chargeNum||'-'} logged`});
     const varMin=act.cin!==null?Math.round((act.cin-c.cin)*60):null;
     if(varMin!==null)issues.push({sev:Math.abs(varMin)>30?'warn':'ok',msg:`Start variance: ${fmins(varMin)} vs plan`});
   } else {
-    issues.push({sev:'ok',msg:'No actuals logged yet â€” log in "Log charges"'});
+    issues.push({sev:'ok',msg:'No actuals logged yet - log in "Log charges"'});
   }
   if(!issues.filter(i=>i.sev!=='ok'&&i.sev!=='info').length&&!act)issues.push({sev:'ok',msg:'No plan issues detected'});
   const rows=[['Plan in',tfAbs(c.cin)],['Plan proc',tfAbs(c.procEnd)],['Plan vac',tfAbs(c.vacEnd)]];
   rows.push(['Treatment stages',stageSummary(actualTypeKey(c,act))]);
   const p=CHARGE_PARAMS[actualTypeKey(c,act)]||{};
-  rows.push(['Parameters',`${p.temp||'-'}Â°C Â· air ${p.airBar||'-'} bar Â· hyd ${p.hydBar||'-'} bar`]);
+  rows.push(['Parameters',`${p.temp||'-'}Â°C - air ${p.airBar||'-'} bar - hyd ${p.hydBar||'-'} bar`]);
   if(act&&act.cin!==null)rows.push(['Actual start',tfAbs(act.cin)],['Actual finish',tfAbs(act.out)]);
   return{title:`${c.position} - ${actCt.name}`,rows,issues};
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DRAG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- DRAG -----------------------
 let dragState=null;
 function startDrag(e,cfg){
   dragState={cfg,startX:e.clientX,origVal:origForDrag(cfg),moved:false};
@@ -2741,7 +2742,7 @@ function applyDrag(cfg,orig,dH){
 }
 function onDU(){dragState=null;document.removeEventListener('mousemove',onDM);document.removeEventListener('mouseup',onDU);}
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• GANTT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- GANTT -----------------------
 function renderLinearGantt(days,noise,opts={}){
   const isBoard=!!opts.board;
   const effectiveView=opts.viewMode||viewMode;
@@ -2850,7 +2851,7 @@ function renderLinearGantt(days,noise,opts={}){
       const ri=rowDefs.findIndex(r=>r.type===rowType&&r.person===person);if(ri<0)return;
       const rowY=tops[ri],shiftCol=SHIFT_DEFS[person.shift]?.col||'rgba(200,200,200,.2)';
       const segs=e<s?[[s,24],[0,e]]:[[s,e]];
-      const ttData={title:`${person.name} â€” ${role}`,rows:[['Shift',SHIFT_DEFS[person.shift]?.name||person.shift],['Hours',`${hToStr(s)} â€“ ${hToStr(e)}`]],issues:[]};
+      const ttData={title:`${person.name} - ${role}`,rows:[['Shift',SHIFT_DEFS[person.shift]?.name||person.shift],['Hours',`${hToStr(s)} - ${hToStr(e)}`]],issues:[]};
       for(let d=0;d<weekMode;d++){const base=d*24*hourPx;segs.forEach(([ss,se])=>addBar(base+ss*hourPx,rowY+2,(se-ss)*hourPx,CROW-4,`background:${shiftCol};color:rgba(255,255,255,.7);`,person.shift,ttData,{type:'person',person}));}
     });
   }
@@ -2874,7 +2875,7 @@ function renderLinearGantt(days,noise,opts={}){
       const ttData=chargeTT(c,day,act);
       const dragCfg=isBoard?null:{type:c.pid==='p1'?'charge_p1':'charge_p2',dayIdx:c.dayIdx};
 
-      // â”€â”€ PLANNED BARS (shown in plan or both mode) â”€â”€
+      // -- PLANNED BARS (shown in plan or both mode) --
       if(effectiveView==='plan'||effectiveView==='both'){
         const alpha=effectiveView==='both'&&act?'.35':'1';
         if(c.needsFlt&&c.fltStart!==null){
@@ -2884,13 +2885,13 @@ function renderLinearGantt(days,noise,opts={}){
         }
         addBar(px(c.cin),BT,wd(ct.procMin/60),BH,`background:${ct.bg};color:${ct.tx};border:1px solid ${ct.bd};z-index:7;opacity:${alpha};`,ct.name,ttData,dragCfg);
         addBar(px(c.cin+ct.procMin/60),BT,wd(ct.vacMin/60),BH,`background:${ct.vacbg};color:${ct.vactx};border:1px solid ${ct.vacbd};z-index:7;opacity:${alpha};`,'VAC',ttData,null);
-        const tEl=document.createElement('div');tEl.style.cssText=`position:absolute;left:${px(c.vacEnd)}px;top:${BT}px;width:${wd(turnH)}px;height:${BH}px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mono);z-index:7;pointer-events:none;opacity:${alpha};`;tEl.textContent='â†‘';cv.appendChild(tEl);
+        const tEl=document.createElement('div');tEl.style.cssText=`position:absolute;left:${px(c.vacEnd)}px;top:${BT}px;width:${wd(turnH)}px;height:${BH}px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mono);z-index:7;pointer-events:none;opacity:${alpha};`;tEl.textContent=' up';cv.appendChild(tEl);
         if(c.needsCrane&&c.craneStart!=null){const cf=!c.craneOk||c.craneNoiseViolation;addBar(px(c.craneStart),BT,wd(craneH),BH,`background:${cf?'rgba(224,92,92,.7)':'rgba(232,147,71,.7)'};color:${cf?'#fff':'#0e0f11'};border:${cf?'1.5px solid var(--red)':'none'};z-index:8;opacity:${alpha};`,'crane',ttData,null);}
         if(opShiftAt(c.cin)==='overtime'){const otEl=document.createElement('div');otEl.style.cssText=`position:absolute;left:${px(c.cin)}px;top:${BT}px;width:${wd(ct.procMin/60)}px;height:${BH}px;background:rgba(232,197,71,.13);border:1px solid rgba(232,197,71,.35);z-index:9;pointer-events:none;border-radius:3px;opacity:${alpha};`;cv.appendChild(otEl);}
         if(c.outfeedBlocked){const mk=document.createElement('div');mk.style.cssText=`position:absolute;left:${px(c.cin)-1}px;top:${BT-5}px;font-size:9px;color:var(--amber);z-index:10;font-family:var(--mono);pointer-events:none;`;mk.textContent='â–²';cv.appendChild(mk);}
       }
 
-      // â”€â”€ ACTUAL BARS (shown in live or both mode) â”€â”€
+      // -- ACTUAL BARS (shown in live or both mode) --
       if((effectiveView==='live'||effectiveView==='both')&&act&&act.cin!==null){
         const est=getActualEstimate(c,act);
         const actCt=actualChargeType(c,act);
@@ -2937,7 +2938,7 @@ function renderLinearGantt(days,noise,opts={}){
       }
     }
 
-      // â”€â”€ GAP BARS between actual charges â”€â”€
+      // -- GAP BARS between actual charges --
       if(effectiveView!=='plan'){
         const gap=getGap(c.dayIdx,c.pid,c.n);
         if(gap&&gap.gapStart!==null&&gap.gapEnd!==null){
@@ -2967,7 +2968,7 @@ function renderLinearGantt(days,noise,opts={}){
   }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN GO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- MAIN GO -----------------------
 function collectLiveItems(days){
   const items=[];
   days.forEach(day=>['p1','p2'].forEach(pid=>{
@@ -3020,7 +3021,7 @@ function buildBoardReport(day,dayItems){
     if(!drivers.length&&Math.abs(finishVar)>30){drivers.push(finishVar>0?'late finish':'early finish');addReason(finishVar>0?'late_finish':'early_finish',finishVar);}
     totalStartVariance+=startVar;totalFinishVariance+=finishVar;varianceCount++;
     const sev=Math.abs(startVar)>60||Math.abs(finishVar)>60?'danger':(Math.abs(startVar)>30||Math.abs(finishVar)>30?'warn':'');
-    varianceRows.push(`<div class="variance-row"><div class="variance-chip">P${c.pid==='p1'?1:2} C${c.n}</div><div><div style="font-weight:600;color:var(--text);">${c.position} Â· ${c.ct.name}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3);">plan ${tfAbs(c.cin)}-${tfAbs(c.actualOut)} Â· actual ${tfAbs(absForActual(c.dayIdx,act.cin))}-${tfAbs(absForActual(c.dayIdx,est.out))}</div></div><div class="variance-chip ${sev}">${startVar>=0?'+':''}${fmins(startVar)}</div><div class="variance-chip ${sev}">${finishVar>=0?'+':''}${fmins(finishVar)}</div></div>`);
+    varianceRows.push(`<div class="variance-row"><div class="variance-chip">P${c.pid==='p1'?1:2} C${c.n}</div><div><div style="font-weight:600;color:var(--text);">${c.position} - ${c.ct.name}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3);">plan ${tfAbs(c.cin)}-${tfAbs(c.actualOut)} - actual ${tfAbs(absForActual(c.dayIdx,act.cin))}-${tfAbs(absForActual(c.dayIdx,est.out))}</div></div><div class="variance-chip ${sev}">${startVar>=0?'+':''}${fmins(startVar)}</div><div class="variance-chip ${sev}">${finishVar>=0?'+':''}${fmins(finishVar)}</div></div>`);
   });
   const dayGaps=[];
   ['p1','p2'].forEach(pid=>{for(let n=1;n<=4;n++){const gap=getGap(day.dayIdx,pid,n);if(gap&&gap.gapStart!==null)dayGaps.push({...gap,pid,n});}});
@@ -3076,7 +3077,7 @@ function buildBoardStageCard(pid,dayItems){
     `started ${stage?tfAbs(stage.startAbs):tfAbs(running.startAbs)}`,
     stage?`${fmins(stage.remainingMin)} left`:`ETA ${tfAbs(running.outAbs)}`
   ];
-  return `<div class="board-card running"><div class="board-label">${label} stage</div><div class="board-value">${stage?stage.name:'Running'}</div><div class="board-sub">${subBits.join(' Â· ')}</div><div class="board-sub" style="margin-top:4px;color:${stage?stage.col:'var(--text2)'};">${type.name}</div></div>`;
+  return `<div class="board-card running"><div class="board-label">${label} stage</div><div class="board-value">${stage?stage.name:'Running'}</div><div class="board-sub">${subBits.join(' - ')}</div><div class="board-sub" style="margin-top:4px;color:${stage?stage.col:'var(--text2)'};">${type.name}</div></div>`;
 }
 function runningChargeLabel(item){
   return `P${item.pid==='p1'?1:2} C${item.charge.n}`;
@@ -3132,7 +3133,7 @@ function go(){
   buildDayConfigTabs(days);
   const compDays=days.filter(d=>d.compConflict);
   const cn=document.getElementById('comp-note');
-  if(compDays.length){cn.style.display='block';cn.innerHTML=`<strong>Compressor conflicts:</strong> `+compDays.map(d=>`${d.dayName} â€” ${d.compMsg}`).join(' | ');}
+  if(compDays.length){cn.style.display='block';cn.innerHTML=`<strong>Compressor conflicts:</strong> `+compDays.map(d=>`${d.dayName} - ${d.compMsg}`).join(' | ');}
   else cn.style.display='none';
   const wC=issues.filter(i=>i.sev!=='ok').length;
   const pill=document.getElementById('bneck-pill');
@@ -3141,7 +3142,7 @@ function go(){
   if(activePanel==='live-board')buildLiveBoard();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LOG PANEL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- LOG PANEL -----------------------
 function buildLogPanel(){
   const names=weekMode===5?DAYS_5:DAYS_7;
   const syncPill=document.getElementById('operator-sync-pill');
@@ -3203,7 +3204,7 @@ function buildLogDay(d){
           <div class="log-time-group"><span class="time-caption">Start</span><label class="log-time-field"><span>Start</span><input type="text" inputmode="numeric" pattern="[0-9:]*" placeholder="HH:MM" value="${act.cin!==null&&act.cin!==undefined?hToStr(act.cin):''}" onchange="updateActualTime(${d},'${pid}',${c.n},'cin',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'cin')">Now</button></div>
           <div class="log-time-group"><span class="time-caption">Finish</span><label class="log-time-field"><span>Finish</span><input type="text" inputmode="numeric" pattern="[0-9:]*" placeholder="HH:MM" value="${act.out!==null&&act.out!==undefined?hToStr(act.out):''}" onchange="updateActualTime(${d},'${pid}',${c.n},'out',this.value)" style="font-size:11px;padding:4px 5px;"></label><button class="quick-now" onclick="setActualNow(${d},'${pid}',${c.n},'out')">Now</button></div>
         </div>
-      </div><div class="charge-log-products"><div class="charge-log-master-note">${plannedMaster?`Master planned: ${escHtml(plannedMaster)}`:'No AU slot found for this charge'}${productCount?` Â· ${productCount} product${productCount===1?'':'s'}`:''}</div>${productDetail}</div>`;
+      </div><div class="charge-log-products"><div class="charge-log-master-note">${plannedMaster?`Master planned: ${escHtml(plannedMaster)}`:'No AU slot found for this charge'}${productCount?` - ${productCount} product${productCount===1?'':'s'}`:''}</div>${productDetail}</div>`;
     });
     html+=`</div>`;
   });
@@ -3211,7 +3212,7 @@ function buildLogDay(d){
 
   // Gap logging section
   html+=`<div style="margin-top:4px;"><div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Inter-charge gaps &amp; reasons</div>`;
-  html+=`<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">When there is a gap between charges, log the reason here. Gaps are auto-detected from actual times â€” add a reason code to explain why.</div>`;
+  html+=`<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">When there is a gap between charges, log the reason here. Gaps are auto-detected from actual times - add a reason code to explain why.</div>`;
 
   html+=`<div class="gap-log-grid">`;
   ['p1','p2'].forEach((pid,pi)=>{
@@ -3228,7 +3229,7 @@ function buildLogDay(d){
       const otherInput=gap.reason==='other'?`<input class="gap-other-input" type="text" value="${escHtml(gap.reasonDetail||'')}" placeholder="Type reason" oninput="updateGap(${d},'${pid}',${afterN},'reasonDetail',this.value,${act1.out},${act2.cin})">`:'';
       html+=`<div class="gap-card">
         <span class="gap-badge">GAP</span>
-        <div class="gap-times">After C${afterN}<br>${tfAbs(act1.out)} â€“ ${tfAbs(act2.cin)}</div>
+        <div class="gap-times">After C${afterN}<br>${tfAbs(act1.out)} - ${tfAbs(act2.cin)}</div>
         <div class="gap-duration">${fmins(gapMins)}</div>
         <div class="gap-reason"><select onchange="updateGap(${d},'${pid}',${afterN},'reason',this.value,${act1.out},${act2.cin})">${reasonOpts}</select>${otherInput}</div>
       </div>`;
@@ -3271,9 +3272,9 @@ function updateActualTime(d,pid,n,field,val){
     if(field==='procEnd'&&act.cin!==null&&t<(act.cin%24)-1)absT+=24;
     if(field==='out'&&act.procEnd!==null&&t<(act.procEnd%24)-1)absT+=24;
     act[field]=absT;
-    // auto-compute vacEnd as midpoint (procâ†’out) if both set and vacEnd not explicitly set
+    // auto-compute vacEnd as midpoint (proc->out) if both set and vacEnd not explicitly set
     if(field==='out'&&act.cin!==null&&act.vacEnd===null&&act.procEnd!==null){
-      // vacEnd not directly logged â€” leave null, just use out
+      // vacEnd not directly logged - leave null, just use out
     }
     act.vacEnd=act.procEnd; // simplified: vacEnd = procEnd for display (actual process ends = vac starts)
   } else {
@@ -3316,7 +3317,7 @@ function clearPlantActuals(d,pid){
   saveData();clearLivePlantRemote(d,pid);buildLogDay(d);go();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• WEEKLY REPORT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- WEEKLY REPORT -----------------------
 function buildReport(){
   const days=computeWeek();
   const dNames=weekMode===5?DAYS_5:DAYS_7;
@@ -3376,7 +3377,7 @@ function buildReport(){
     sorted.forEach(g=>{
       const mins=Math.round((g.gapEnd-g.gapStart)*60);
       const reason=gapReasonText(g);
-      html+=`<div class="gap-row"><div class="gr-day">${g.dayName.slice(0,3)}</div><div class="gr-plant">P${g.pid==='p1'?1:2}</div><div class="gr-window">${tfAbs(g.gapStart)} â€“ ${tfAbs(g.gapEnd)}</div><div class="gr-dur">${fmins(mins)}</div><div class="gr-reason">${reason}</div></div>`;
+      html+=`<div class="gap-row"><div class="gr-day">${g.dayName.slice(0,3)}</div><div class="gr-plant">P${g.pid==='p1'?1:2}</div><div class="gr-window">${tfAbs(g.gapStart)} - ${tfAbs(g.gapEnd)}</div><div class="gr-dur">${fmins(mins)}</div><div class="gr-reason">${reason}</div></div>`;
     });
     // Gap reason breakdown
     const reasonCounts={};allGaps.forEach(g=>{const r=g.reason==='other'?gapReasonText(g):(g.reason||'other');reasonCounts[r]=(reasonCounts[r]||0)+1;});
@@ -3386,7 +3387,7 @@ function buildReport(){
   }
 
   // Charge-by-charge table
-  html+=`<div class="report-section"><div class="report-title"><i class="ti ti-table" style="font-size:16px;"></i>Charge detail â€” plan vs actual</div>
+  html+=`<div class="report-section"><div class="report-title"><i class="ti ti-table" style="font-size:16px;"></i>Charge detail - plan vs actual</div>
   <div class="twrap"><table><thead><tr><th>Day</th><th>Plant</th><th>Pos.</th><th>Charge #</th><th>Type</th><th>Plan in</th><th>Act. in</th><th>Variance</th><th>Plan dur.</th><th>Act. dur.</th><th>Plan out</th><th>Act. out</th></tr></thead><tbody>`;
 
   for(let d=0;d<weekMode;d++){
@@ -3406,13 +3407,13 @@ function buildReport(){
           <td style="color:var(--text3);font-family:var(--mono);font-size:10px;">${dNames[d].slice(0,3)}</td>
           <td style="font-family:var(--mono);font-size:10px;">P${pid==='p1'?1:2}</td>
           <td><span class="pos-bdg">${c.position}</span></td>
-          <td style="font-family:var(--mono);font-size:11px;font-weight:600;">${act.chargeNum||'â€”'}</td>
+          <td style="font-family:var(--mono);font-size:11px;font-weight:600;">${act.chargeNum||'-'}</td>
           <td><span class="ct-bdg" style="background:${actualChargeType(c,act).colBg};color:${actualChargeType(c,act).tx};border:1px solid ${actualChargeType(c,act).colBd};">${actualChargeType(c,act).name}</span></td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.cin)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(act.cin)}</td>
           <td style="font-family:var(--mono);font-size:11px;font-weight:600;color:${varCol};">${varMins>=0?'+':''}${fmins(varMins)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${fmins(planDur)}</td>
-          <td style="font-family:var(--mono);font-size:10px;${actDur&&Math.abs(actDur-planDur)>30?'color:var(--amber);font-weight:600;':''}">${actDur?fmins(actDur):'â€”'}</td>
+          <td style="font-family:var(--mono);font-size:10px;${actDur&&Math.abs(actDur-planDur)>30?'color:var(--amber);font-weight:600;':''}">${actDur?fmins(actDur):'-'}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.actualOut)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(act.out)}</td>
         </tr>`;
@@ -3423,7 +3424,7 @@ function buildReport(){
   document.getElementById('report-content').innerHTML=html;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- STATS -----------------------
 function reportIsoDate(date){
   const d=new Date(date);
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -3504,11 +3505,11 @@ function parseReportNumber(value){
 }
 function rowVolumeM3(row){
   if(!row)return 0;
-  const direct=row._volumeM3||row.VolumeM3||row['Volume m3']||row['Volume mÂ³']||row['Column AK']||row['Column 37'];
+  const direct=row._volumeM3||row.VolumeM3||row['Volume m3']||row['Volume m3']||row['Column AK']||row['Column 37'];
   if(direct)return parseReportNumber(direct);
   const hit=Object.entries(row).find(([h,v])=>{
     if(!v)return false;
-    const key=String(h||'').toLowerCase().replace(/Â³/g,'3');
+    const key=String(h||'').toLowerCase().replace(/3/g,'3');
     return key.includes('volume')||key.includes('m3')||key.includes('m^3')||key.includes('cbm')||key.includes('cubic');
   });
   return hit?parseReportNumber(hit[1]):0;
@@ -3693,7 +3694,7 @@ function inventoryBarChart(agg,total,label='Qty'){
   if(!rows.length)return '<div class="report-email-note">No rows in this period.</div>';
   return rows.map(([name,qty])=>{
     const pct=total?qty/total*100:0;
-    return `<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;"><span>${escHtml(name)}</span><span style="font-family:var(--mono);color:var(--text2);">${qty.toLocaleString('en-GB')} ${escHtml(label)} Â· ${fmtPct2(pct)}</span></div><div style="height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:${Math.max(2,Math.min(100,pct))}%;background:var(--red);"></div></div></div>`;
+    return `<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;"><span>${escHtml(name)}</span><span style="font-family:var(--mono);color:var(--text2);">${qty.toLocaleString('en-GB')} ${escHtml(label)} - ${fmtPct2(pct)}</span></div><div style="height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:${Math.max(2,Math.min(100,pct))}%;background:var(--red);"></div></div></div>`;
   }).join('');
 }
 function collectInventoryMetrics(){
@@ -4084,37 +4085,37 @@ function renderStats(days,bogeys,noise){
   `;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• BOTTLENECKS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- BOTTLENECKS -----------------------
 function detectBottlenecks(days,bogeys,trolleys,fltMin,craneMin,noise){
   const issues=[],allVis=days.flatMap(d=>[...d.p1,...d.p2]).filter(c=>c.fitsIn24);
   const dN=weekMode===5?DAYS_5:DAYS_7;
   const tag=c=>`${dN[c.dayIdx].slice(0,3)} P${c.pid==='p1'?1:2}C${c.n}`;
   const wr=days.flatMap(d=>d.p2).filter(c=>c.wrongFamily);
-  wr.forEach(c=>issues.push({cat:'Wrong plant',sev:'danger',msg:`${dN[c.dayIdx]} P2 C${c.n}: "${c.ct.name}" is fencing â€” Plant 2 is poles only.`}));
+  wr.forEach(c=>issues.push({cat:'Wrong plant',sev:'danger',msg:`${dN[c.dayIdx]} P2 C${c.n}: "${c.ct.name}" is fencing - Plant 2 is poles only.`}));
   if(!wr.length)issues.push({cat:'Wrong plant',sev:'ok',msg:'All charges assigned to compatible vessels.'});
   const opC=allVis.filter(c=>c.needsFlt&&c.fltOperatorConflict);
   const opN=allVis.filter(c=>c.needsFlt&&c.fltOperatorNeeded&&!c.fltOperatorConflict);
-  opC.forEach(c=>issues.push({cat:'FLT â€” operator conflict',sev:'danger',msg:`${tag(c)}: no tipper + operator in process â€” trolley prep unattended.`}));
-  if(!opC.length&&opN.length)issues.push({cat:'FLT â€” operator conflict',sev:'warn',msg:`${opN.length} charge${opN.length>1?'s require':'requires'} operator to cover FLT prep.`});
-  if(!opC.length&&!opN.length)issues.push({cat:'FLT â€” operator conflict',sev:'ok',msg:'All fencing FLT prep windows covered by tippers.'});
-  if(noise.on){const fN=allVis.filter(c=>c.fltNoiseViolation),cN=allVis.filter(c=>c.craneNoiseViolation);fN.forEach(c=>issues.push({cat:'Noise â€” FLT',sev:'danger',msg:`${tag(c)}: FLT prep in quiet hours.`}));cN.forEach(c=>issues.push({cat:'Noise â€” crane',sev:'danger',msg:`${tag(c)}: crane unload in quiet hours.`}));if(!fN.length)issues.push({cat:'Noise â€” FLT',sev:'ok',msg:'No FLT in quiet hours.'});if(!cN.length)issues.push({cat:'Noise â€” crane',sev:'ok',msg:'No crane ops in quiet hours.'});}
-  else{issues.push({cat:'Noise â€” FLT',sev:'ok',msg:'Noise constraint off.'});issues.push({cat:'Noise â€” crane',sev:'ok',msg:'Noise constraint off.'});}
-  const crG=allVis.filter(c=>c.needsCrane&&!c.craneOk);crG.forEach(c=>issues.push({cat:'No crane',sev:'warn',msg:`${tag(c)}: outfeed unload ${tfAbs(c.craneStart)}â€“${tfAbs(c.craneEnd)} â€” no crane on shift.`}));const crAll=allVis.filter(c=>c.needsCrane);if(!crG.length&&crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'All pole outfeed windows have crane coverage.'});if(!crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'No pole charges â€” cranes not required.'});
-  const bl=allVis.filter(c=>c.outfeedBlocked);bl.forEach(c=>issues.push({cat:'Carry-over block',sev:'warn',msg:`${tag(c)}: outfeed occupied â€” start delayed to ${tfAbs(c.cin)}.`}));if(!bl.length)issues.push({cat:'Carry-over block',sev:'ok',msg:'No carry-over blocks this week.'});
+  opC.forEach(c=>issues.push({cat:'FLT - operator conflict',sev:'danger',msg:`${tag(c)}: no tipper + operator in process - trolley prep unattended.`}));
+  if(!opC.length&&opN.length)issues.push({cat:'FLT - operator conflict',sev:'warn',msg:`${opN.length} charge${opN.length>1?'s require':'requires'} operator to cover FLT prep.`});
+  if(!opC.length&&!opN.length)issues.push({cat:'FLT - operator conflict',sev:'ok',msg:'All fencing FLT prep windows covered by tippers.'});
+  if(noise.on){const fN=allVis.filter(c=>c.fltNoiseViolation),cN=allVis.filter(c=>c.craneNoiseViolation);fN.forEach(c=>issues.push({cat:'Noise - FLT',sev:'danger',msg:`${tag(c)}: FLT prep in quiet hours.`}));cN.forEach(c=>issues.push({cat:'Noise - crane',sev:'danger',msg:`${tag(c)}: crane unload in quiet hours.`}));if(!fN.length)issues.push({cat:'Noise - FLT',sev:'ok',msg:'No FLT in quiet hours.'});if(!cN.length)issues.push({cat:'Noise - crane',sev:'ok',msg:'No crane ops in quiet hours.'});}
+  else{issues.push({cat:'Noise - FLT',sev:'ok',msg:'Noise constraint off.'});issues.push({cat:'Noise - crane',sev:'ok',msg:'Noise constraint off.'});}
+  const crG=allVis.filter(c=>c.needsCrane&&!c.craneOk);crG.forEach(c=>issues.push({cat:'No crane',sev:'warn',msg:`${tag(c)}: outfeed unload ${tfAbs(c.craneStart)}-${tfAbs(c.craneEnd)} - no crane on shift.`}));const crAll=allVis.filter(c=>c.needsCrane);if(!crG.length&&crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'All pole outfeed windows have crane coverage.'});if(!crAll.length)issues.push({cat:'No crane',sev:'ok',msg:'No pole charges - cranes not required.'});
+  const bl=allVis.filter(c=>c.outfeedBlocked);bl.forEach(c=>issues.push({cat:'Carry-over block',sev:'warn',msg:`${tag(c)}: outfeed occupied - start delayed to ${tfAbs(c.cin)}.`}));if(!bl.length)issues.push({cat:'Carry-over block',sev:'ok',msg:'No carry-over blocks this week.'});
   days.forEach(d=>{const dp=[...d.p1,...d.p2].filter(c=>c.fitsIn24&&c.needsCrane).length;if(dp>bogeys)issues.push({cat:'Bogey shortage',sev:'warn',msg:`${d.dayName}: ${dp} pole charges exceed bogey pool of ${bogeys}.`});});if(!days.some(d=>[...d.p1,...d.p2].filter(c=>c.fitsIn24&&c.needsCrane).length>bogeys))issues.push({cat:'Bogey shortage',sev:'ok',msg:`Bogey pool of ${bogeys} sufficient.`});
   const fC=allVis.filter(c=>c.fltConflict);fC.forEach(c=>issues.push({cat:'Trolley prep window',sev:'warn',msg:`${tag(c)}: FLT prep only ${fmins(c.fltWindowMin)}, need ${fmins(fltMin)}.`}));if(!fC.length)issues.push({cat:'Trolley prep window',sev:'ok',msg:'FLT prep windows sufficient.'});
   const dr=days.flatMap(d=>[...d.p1,...d.p2]).filter(c=>!c.fitsIn24);dr.forEach(c=>issues.push({cat:'Exceeds 24 h',sev:'warn',msg:`${tag(c)} (${c.ct.name}): treatment exceeds 24 h.`}));if(!dr.length)issues.push({cat:'Exceeds 24 h',sev:'ok',msg:'All treatments complete within 24 h.'});
   const ot=allVis.filter(c=>opShiftAt(c.cin)==='overtime');if(ot.length)issues.push({cat:'Operator overtime',sev:'warn',msg:`${ot.length} charge${ot.length>1?'s':''} outside operator shift hours.`});else issues.push({cat:'Operator overtime',sev:'ok',msg:'All process phases within operator shift hours.'});
   // Actual data issues
   const totalGaps=Object.keys(gaps).filter(k=>gaps[k]&&gaps[k].gapStart!==null&&!gaps[k].reason).length;
-  if(totalGaps)issues.push({cat:'Gaps without reason',sev:'warn',msg:`${totalGaps} logged gap${totalGaps>1?'s':''} have no reason code â€” add in Log charges.`});
+  if(totalGaps)issues.push({cat:'Gaps without reason',sev:'warn',msg:`${totalGaps} logged gap${totalGaps>1?'s':''} have no reason code - add in Log charges.`});
   return issues;
 }
 
 function renderBottlenecks(issues){
-  const cats=['Wrong plant','FLT â€” operator conflict','Noise â€” FLT','Noise â€” crane','No crane','Carry-over block','Bogey shortage','Trolley prep window','Exceeds 24 h','Operator overtime','Gaps without reason'];
+  const cats=['Wrong plant','FLT - operator conflict','Noise - FLT','Noise - crane','No crane','Carry-over block','Bogey shortage','Trolley prep window','Exceeds 24 h','Operator overtime','Gaps without reason'];
   const map={};cats.forEach(c=>map[c]=[]);issues.forEach(i=>{if(map[i.cat])map[i.cat].push(i);});
-  let sH='';cats.forEach(cat=>{const arr=map[cat];if(!arr||!arr.length)return;const hD=arr.some(i=>i.sev==='danger'),hW=arr.some(i=>i.sev!=='ok');const sev=hD?'danger':hW?'warn':'ok';const icon=sev==='ok'?'ti-circle-check':sev==='danger'?'ti-circle-x':'ti-alert-triangle';const count=arr.filter(i=>i.sev!=='ok').length;const detail=hW?(count>1?`${count} issues`:(arr.find(i=>i.sev!=='ok')?.msg||'').slice(0,70)+'â€¦'):(arr[0]?.msg||'').slice(0,65);sH+=`<div class="bneck-row"><div class="bneck-ico ${sev}"><i class="ti ${icon}"></i></div><div class="bneck-cat">${cat}</div><div class="bneck-detail">${detail}</div><div style="flex-shrink:0;"><span class="badge ${sev}">${sev==='ok'?'Clear':hD?'Critical':'Warning'}</span></div></div>`;});
+  let sH='';cats.forEach(cat=>{const arr=map[cat];if(!arr||!arr.length)return;const hD=arr.some(i=>i.sev==='danger'),hW=arr.some(i=>i.sev!=='ok');const sev=hD?'danger':hW?'warn':'ok';const icon=sev==='ok'?'ti-circle-check':sev==='danger'?'ti-circle-x':'ti-alert-triangle';const count=arr.filter(i=>i.sev!=='ok').length;const detail=hW?(count>1?`${count} issues`:(arr.find(i=>i.sev!=='ok')?.msg||'').slice(0,70)+'...'):(arr[0]?.msg||'').slice(0,65);sH+=`<div class="bneck-row"><div class="bneck-ico ${sev}"><i class="ti ${icon}"></i></div><div class="bneck-cat">${cat}</div><div class="bneck-detail">${detail}</div><div style="flex-shrink:0;"><span class="badge ${sev}">${sev==='ok'?'Clear':hD?'Critical':'Warning'}</span></div></div>`;});
   document.getElementById('bsum-rows').innerHTML=sH;
   const warns=issues.filter(i=>i.sev!=='ok'),oks=issues.filter(i=>i.sev==='ok');
   let det='';if(warns.length){det+=`<div style="font-size:10px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;">Issues</div>`;det+=warns.map(i=>`<div class="alert ${i.sev}"><i class="ti ti-${i.sev==='danger'?'circle-x':'alert-triangle'}"></i><span>${i.msg}</span></div>`).join('');}
@@ -4122,7 +4123,7 @@ function renderBottlenecks(issues){
   document.getElementById('bneck-detail').innerHTML=det;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- TABLE -----------------------
 function renderTable(days){
   const dN=weekMode===5?DAYS_5:DAYS_7;let html='';
   days.forEach(d=>{
@@ -4147,11 +4148,11 @@ function renderTable(days){
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.procEnd)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.vacEnd)}</td>
           <td style="font-family:var(--mono);font-size:10px;">${tfAbs(c.actualOut)}</td>
-          <td style="font-family:var(--mono);font-size:10px;color:${act&&act.cin!==null?'var(--teal)':'var(--text3)'};">${act&&act.cin!==null?tfAbs(act.cin):'â€”'}</td>
-          <td style="font-family:var(--mono);font-size:10px;">${act&&act.procEnd!==null?tfAbs(act.procEnd):'â€”'}</td>
-          <td style="font-family:var(--mono);font-size:10px;">${act&&act.out!==null?tfAbs(act.out):'â€”'}</td>
-          <td style="font-family:var(--mono);font-size:11px;font-weight:600;color:${varMins===null?'var(--text3)':Math.abs(varMins)>30?'var(--amber)':'var(--green)'};">${varMins!==null?(varMins>=0?'+':'')+fmins(varMins):'â€”'}</td>
-          <td>${flags.join('')||'â€”'}</td>
+          <td style="font-family:var(--mono);font-size:10px;color:${act&&act.cin!==null?'var(--teal)':'var(--text3)'};">${act&&act.cin!==null?tfAbs(act.cin):'-'}</td>
+          <td style="font-family:var(--mono);font-size:10px;">${act&&act.procEnd!==null?tfAbs(act.procEnd):'-'}</td>
+          <td style="font-family:var(--mono);font-size:10px;">${act&&act.out!==null?tfAbs(act.out):'-'}</td>
+          <td style="font-family:var(--mono);font-size:11px;font-weight:600;color:${varMins===null?'var(--text3)':Math.abs(varMins)>30?'var(--amber)':'var(--green)'};">${varMins!==null?(varMins>=0?'+':'')+fmins(varMins):'-'}</td>
+          <td>${flags.join('')||'-'}</td>
         </tr>`;
       });
     });
@@ -4159,7 +4160,7 @@ function renderTable(days){
   document.getElementById('full-tbody').innerHTML=html;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DAY CONFIG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- DAY CONFIG -----------------------
 function buildDayConfigTabs(days){
   const names=weekMode===5?DAYS_5:DAYS_7;let html='';
   for(let i=0;i<weekMode;i++){const hB=days&&days[i]&&[...days[i].p1,...days[i].p2].some(c=>c.outfeedBlocked);html+=`<div class="day-tab${i===activeDayTab?' active':''}${hB?' has-co':''}" onclick="setDayTab(${i})">${names[i].slice(0,3)}${hB?' â–²':''}</div>`;}
@@ -4168,7 +4169,7 @@ function buildDayConfigTabs(days){
 function setDayTab(i){activeDayTab=i;const days=computeWeek();buildDayConfigTabs(days);buildDayConfigPanel();}
 function buildDayConfigPanel(){
   const d=activeDayTab,cfg=dayConfigs[d],names=weekMode===5?DAYS_5:DAYS_7;
-  let html=`<div class="card" style="margin-bottom:10px;"><div class="card-title">${names[d]} â€” plant start times</div><div class="g2"><div class="fg"><label class="fl">Plant 1 start</label><input type="time" value="${cfg.p1Start}" onchange="dayConfigs[${d}].p1Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p1Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p1Start='06:00';buildDayConfigPanel();go()">06:00</button><button onclick="dayConfigs[${d}].p1Start='07:00';buildDayConfigPanel();go()">07:00</button></div></div><div class="fg"><label class="fl">Plant 2 start</label><input type="time" value="${cfg.p2Start}" onchange="dayConfigs[${d}].p2Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p2Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p2Start='05:30';buildDayConfigPanel();go()">05:30</button><button onclick="dayConfigs[${d}].p2Start='06:00';buildDayConfigPanel();go()">06:00</button></div></div></div></div>
+  let html=`<div class="card" style="margin-bottom:10px;"><div class="card-title">${names[d]} - plant start times</div><div class="g2"><div class="fg"><label class="fl">Plant 1 start</label><input type="time" value="${cfg.p1Start}" onchange="dayConfigs[${d}].p1Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p1Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p1Start='06:00';buildDayConfigPanel();go()">06:00</button><button onclick="dayConfigs[${d}].p1Start='07:00';buildDayConfigPanel();go()">07:00</button></div></div><div class="fg"><label class="fl">Plant 2 start</label><input type="time" value="${cfg.p2Start}" onchange="dayConfigs[${d}].p2Start=this.value;go()"><div class="qb"><button onclick="dayConfigs[${d}].p2Start='05:00';buildDayConfigPanel();go()">05:00</button><button onclick="dayConfigs[${d}].p2Start='05:30';buildDayConfigPanel();go()">05:30</button><button onclick="dayConfigs[${d}].p2Start='06:00';buildDayConfigPanel();go()">06:00</button></div></div></div></div>
   <div class="g2"><div class="card"><div class="card-title"><div class="cdot" style="background:var(--blue)"></div>Plant 1 slots</div><div class="help" style="margin-bottom:8px;">All types. Drag to reorder.</div><ul class="slot-list" id="p1-slots-${d}"></ul></div><div class="card"><div class="card-title"><div class="cdot" style="background:var(--green)"></div>Plant 2 slots</div><div class="help" style="margin-bottom:8px;">Pole types only.</div><ul class="slot-list" id="p2-slots-${d}"></ul></div></div>`;
   document.getElementById('day-config-content').innerHTML=html;buildSlots(d);
 }
@@ -4191,7 +4192,7 @@ function buildSlots(d){
   });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PERSON PANELS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- PERSON PANELS -----------------------
 function buildPersonPanel(people,gridId,cfgId,accentRgb){
   const shiftOnlyCards=gridId==='op-person-grid';
   const shiftKeys=Object.keys(SHIFT_DEFS);let gh='';
@@ -4210,15 +4211,15 @@ function buildPersonPanel(people,gridId,cfgId,accentRgb){
   const el2=document.getElementById(cfgId);if(el2)el2.innerHTML=shiftOnlyCards?`<div class="shift-config-wrap" style="grid-column:1/-1;"><div class="shift-config-title">Shift time selections</div></div>${sc}`:sc;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CHARGE TYPES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- CHARGE TYPES -----------------------
 function buildCtPanel(){
-  function card(k,ct){const p=CHARGE_PARAMS[k]||{};return`<div class="card" style="background:var(--bg3);"><div class="card-title"><div class="cdot" style="background:${ct.col}"></div>${ct.name}</div><div class="fg"><label class="fl">Process (min)</label><div class="fv"><span id="cv-p-${k}">${ct.procMin}</span><span class="fu">min</span></div><input type="range" id="ct-p-${k}" min="15" max="480" step="15" value="${ct.procMin}" oninput="ctS('${k}','p');go()"></div><div class="fg"><label class="fl">Vacuum (min)</label><div class="fv"><span id="cv-v-${k}">${ct.vacMin}</span><span class="fu">min</span></div><input type="range" id="ct-v-${k}" min="15" max="360" step="15" value="${ct.vacMin}" oninput="ctS('${k}','v');go()"></div><div style="font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Total: <span id="cv-t-${k}" style="font-weight:600;color:var(--text2);">${fmins(ct.procMin+ct.vacMin)}</span></div><div style="font-size:9px;color:var(--text3);line-height:1.35;margin-top:6px;font-family:var(--mono);">QF112: ${p.temp||'-'}Â°C Â· Air ${p.airBar||'-'} bar Â· Hyd ${p.hydBar||'-'} bar</div><div style="font-size:9px;color:var(--text2);line-height:1.45;margin-top:5px;">${stageSummary(k)}</div></div>`;}
+  function card(k,ct){const p=CHARGE_PARAMS[k]||{};return`<div class="card" style="background:var(--bg3);"><div class="card-title"><div class="cdot" style="background:${ct.col}"></div>${ct.name}</div><div class="fg"><label class="fl">Process (min)</label><div class="fv"><span id="cv-p-${k}">${ct.procMin}</span><span class="fu">min</span></div><input type="range" id="ct-p-${k}" min="15" max="480" step="15" value="${ct.procMin}" oninput="ctS('${k}','p');go()"></div><div class="fg"><label class="fl">Vacuum (min)</label><div class="fv"><span id="cv-v-${k}">${ct.vacMin}</span><span class="fu">min</span></div><input type="range" id="ct-v-${k}" min="15" max="360" step="15" value="${ct.vacMin}" oninput="ctS('${k}','v');go()"></div><div style="font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Total: <span id="cv-t-${k}" style="font-weight:600;color:var(--text2);">${fmins(ct.procMin+ct.vacMin)}</span></div><div style="font-size:9px;color:var(--text3);line-height:1.35;margin-top:6px;font-family:var(--mono);">QF112: ${p.temp||'-'}Â°C - Air ${p.airBar||'-'} bar - Hyd ${p.hydBar||'-'} bar</div><div style="font-size:9px;color:var(--text2);line-height:1.45;margin-top:5px;">${stageSummary(k)}</div></div>`;}
   document.getElementById('ct-fencing').innerHTML=Object.entries(CT).filter(([k,v])=>v.family==='fencing').map(([k,ct])=>card(k,ct)).join('');
   document.getElementById('ct-pole').innerHTML=Object.entries(CT).filter(([k,v])=>v.family==='pole').map(([k,ct])=>card(k,ct)).join('');
 }
 function ctS(k,p){const ct=CT[k],v=parseInt(document.getElementById(`ct-${p}-${k}`).value);if(p==='p')ct.procMin=v;else ct.vacMin=v;document.getElementById(`cv-${p}-${k}`).textContent=v;document.getElementById(`cv-t-${k}`).textContent=fmins(ct.procMin+ct.vacMin);}
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LEGEND â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- LEGEND -----------------------
 function buildLegend(noise){
   let html='';
   ['raiseAir','fill','holdHyd','empty','holdVac','vent'].forEach(k=>{const s=STAGE_LOOK[k];html+=`<div class="leg-item"><div class="leg-sw" style="background:${s.bg};border:1px solid ${s.bd};"></div>${s.short}</div>`;});
@@ -4234,741 +4235,423 @@ function buildLegend(noise){
 }
 
 // ------------------------------------------------------------
-// CREOSOTE INVENTORY, USAGE & DELIVERY PLANNER
-// ------------------------------------------------------------
+/* ═══════════════════════════════════════════════════════════════
+   INVENTORY, USAGE & DELIVERY PLANNER
+   ═══════════════════════════════════════════════════════════════ */
 
-const INV_TANK_MAX_KG      = 100000;
-const INV_TANK_SAFE_KG     =  98000;
-const INV_UPTAKE_RATE      =    115;
-const INV_DEFAULT_DELIVERY =  26000;
-const INV_TOTAL_SAFE_KG    = 392000;
-const INV_LOW_ALERT_KG     =  80000;
-const INV_CRIT_ALERT_KG    =  50000;
+/* ── Constants ── */
+const INV_MAX      = 100000;
+const INV_SAFE     =  98000;
+const INV_UPTAKE   =    115;
+const INV_TOTAL_SAFE = 392000;
+const INV_LOW_KG   =  80000;
+const INV_CRIT_KG  =  50000;
 
-// ------------------------------------------------------------
-let invTankData   = { storageT1:{level:0}, storageT2:{level:0}, workT1:{level:0}, workT2:{level:0} };
-let invChargeHistory = [];   // from bridge
-let invDeliveryPlan  = [];   // persisted to localStorage
-let invCalYear  = new Date().getFullYear();
-let invCalMonth = new Date().getMonth();
-let invForecastHorizon  = 14;
-let invForecastDailyUse = 45000;
-let invDeliverySize     = INV_DEFAULT_DELIVERY;
-let invReorderPoint     = INV_LOW_ALERT_KG;
-let invSupplier         = 'Koppers';
-let invSupplierEmail    = '';
-let invSiteAddress      = '';
-let invSenderName       = '';
+/* ── Mutable state ── */
+let invFcastHorizon = 14;
+let invDailyUsage   = 45000;
+let invDelKg        = 26000;
+let invReorderKg    = INV_LOW_KG;
+let invSupplier     = 'Koppers';
+let invSupplierEmailVal = '';
+let invSenderNameVal    = '';
+let invSiteAddrVal      = '';
+let invTankData     = {storageT1:{level:0},storageT2:{level:0},workT1:{level:0},workT2:{level:0}};
+let invChargeHist   = [];
+let invDelPlan      = [];   // [{date:'YYYY-MM-DD', kg:number, supplier:string}]
+let invCalYear      = new Date().getFullYear();
+let invCalMonth     = new Date().getMonth();
 
-// ------------------------------------------------------------
-function invAddDays(d, n) {
-  const r = new Date(d); r.setDate(r.getDate() + n); return r;
-}
-function invIsSameDay(a, b) {
-  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-}
-function invIsWeekend(d) { return d.getDay()===0 || d.getDay()===6; }
-function invFmtDate(d) {
-  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-}
-function invFmtDateFull(d) {
-  return d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-}
-function invFmtKg(n) { return Math.round(n).toLocaleString('en-GB') + ' kg'; }
-function invPct(n, max) { return Math.round((n/max)*100); }
+/* ── Helpers ── */
+function invAddDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
+function invSameDay(a,b){return a.toDateString()===b.toDateString()}
+function invIsWe(d){return d.getDay()===0||d.getDay()===6}
+function invFmtKg(n){return Math.round(n).toLocaleString('en-GB')+' kg'}
+function invFmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
+function invFmtFull(d){return d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}
+function invTotal(){return(invTankData.storageT1?.level||0)+(invTankData.storageT2?.level||0)+(invTankData.workT1?.level||0)+(invTankData.workT2?.level||0)}
 
-function invTotalStock() {
-  return (invTankData.storageT1?.level||0) + (invTankData.storageT2?.level||0)
-       + (invTankData.workT1?.level||0)    + (invTankData.workT2?.level||0);
+/* ── Storage ── */
+function invLoadStorage(){
+  try{const r=localStorage.getItem('bulkTankReadings');if(r)invTankData=JSON.parse(r)}catch(e){}
+  try{const r=localStorage.getItem('invDeliveryPlan');if(r)invDelPlan=JSON.parse(r).map(d=>({...d,date:d.date}))}catch(e){}
 }
-
-// ------------------------------------------------------------
-function invLoadFromStorage() {
-  try {
-    const raw = localStorage.getItem('bulkTankReadings');
-    if (raw) invTankData = JSON.parse(raw);
-  } catch(e) {}
-  try {
-    const raw = localStorage.getItem('invDeliveryPlan');
-    if (raw) invDeliveryPlan = JSON.parse(raw).map(d => ({ ...d, date: new Date(d.date) }));
-  } catch(e) {}
-}
-
-async function invFetchBridge(action, payload = {}) {
-  const bridgeUrl = typeof liveBridgeUrl === 'function' ? liveBridgeUrl() : '';
-  if (!bridgeUrl) return null;
-  try {
-    const res = await fetch(bridgeUrl, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action, ...payload })
-    });
-    return await res.json();
-  } catch(e) {
-    console.warn('inv bridge', action, e.message);
-    return null;
+function invSaveDelPlan(){
+  localStorage.setItem('invDeliveryPlan',JSON.stringify(invDelPlan));
+  const bridgeUrl=typeof liveBridgeUrl==='function'?liveBridgeUrl():'';
+  if(bridgeUrl){
+    fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'saveDeliveryPlan',data:invDelPlan})}).catch(()=>{});
   }
 }
 
-async function invRefreshAll() {
-  invLoadFromStorage();
-  const history = await invFetchBridge('getChargeHistory', { days: 30 });
-  if (history?.charges) invChargeHistory = history.charges;
-
-  invRenderDashboard();
-  invRenderUsageTable();
-  invRenderForecastChart();
-  invUpdateRollingAvg();
+/* ── Bridge ── */
+async function invBridge(action,payload={}){
+  const bridgeUrl=typeof liveBridgeUrl==='function'?liveBridgeUrl():'';
+  if(!bridgeUrl)return null;
+  try{
+    const r=await fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action,...payload})});
+    return await r.json();
+  }catch(e){console.warn('inv bridge',action,e.message);return null}
 }
 
-// ------------------------------------------------------------
-// Exact SCADA-style cylindrical vessels matching the operator log design
-
-function invTankGeom(levelKg) {
-  const INNER_TOP = 17, INNER_H = 178;
-  const pct   = Math.min(Math.max(levelKg / INV_TANK_MAX_KG, 0), 1);
-  const fillH = Math.round(pct * INNER_H);
-  const fillY = INNER_TOP + (INNER_H - fillH);
-  return { fillY, fillH, gaugeH: fillH, gaugeY: 16 + (INNER_H - fillH), pct };
+/* ── SVG tank builder (SCADA cylindrical style) ── */
+function invTankGeom(kg){
+  const IT=17,IH=178;
+  const pct=Math.min(Math.max(kg/INV_MAX,0),1);
+  const fh=Math.round(pct*IH);
+  return{fillY:IT+(IH-fh),fillH:fh,gaugeY:16+(IH-fh),gaugeH:fh,pct};
+}
+function invWavePath(fy){const y=fy-1;return`M-20,${y} Q12,${y-5} 45,${y} Q78,${y+5} 111,${y} Q144,${y-5} 180,${y} L180,${y+10} L-20,${y+10}Z`}
+function invStCls(kg){
+  if(kg>INV_MAX)return{t:'Over',c:'critical'};
+  if(kg/INV_SAFE>=0.9)return{t:'High',c:'high'};
+  if(kg/INV_MAX<0.1)return{t:'Critical',c:'critical'};
+  if(kg/INV_MAX<0.2)return{t:'Low',c:'low'};
+  return{t:'Normal',c:'normal'};
+}
+function invTankSVG(key,label,type,kg){
+  const g=invTankGeom(kg);
+  const st=invStCls(kg);
+  const pct=Math.round(g.pct*100);
+  const pCol=pct>=90?'var(--amber)':pct<20?'var(--red)':'var(--green)';
+  const gid='ivg_'+key;
+  return`<div class="inv-tank-col">
+  <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:3px">
+    <span class="inv-type-bdg ${type}">${type==='storage'?'Storage':'Process'}</span>
+    <span class="inv-st-bdg ${st.c}">${st.t}</span>
+  </div>
+  <svg width="88" height="222" viewBox="0 0 88 222" overflow="visible" role="img" aria-label="${label} ${pct}%">
+    <defs>
+      <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#4A4A4A"/><stop offset="15%" stop-color="#8A8A8A"/>
+        <stop offset="50%" stop-color="#D0D0D0"/><stop offset="85%" stop-color="#8A8A8A"/>
+        <stop offset="100%" stop-color="#4A4A4A"/>
+      </linearGradient>
+      <clipPath id="ivcp_${key}"><rect x="12" y="16" width="64" height="180" rx="2"/></clipPath>
+    </defs>
+    <rect x="1" y="16" width="7" height="178" rx="2" fill="#1a1a1a" stroke="#3a3a3a" stroke-width=".5"/>
+    <rect x="2" y="${g.gaugeY}" width="5" height="${g.gaugeH}" rx="1" fill="#CC0000" style="transition:y .9s ease,height .9s ease"/>
+    <ellipse cx="44" cy="16" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
+    <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5"/>
+    <rect x="13" y="17" width="62" height="178" fill="#2a2a2a" clip-path="url(#ivcp_${key})"/>
+    <g clip-path="url(#ivcp_${key})">
+      <rect x="13" y="${g.fillY}" width="62" height="${g.fillH}" fill="#8B0000" style="transition:y .9s ease,height .9s ease"/>
+      <path d="${invWavePath(g.fillY)}" fill="#CC0000" opacity=".28" style="animation:invWave 3s linear infinite"/>
+      <rect x="13" y="${g.fillY-1}" width="62" height="2.5" fill="#FF3333" opacity=".65"/>
+      <line x1="13" x2="75" y1="20.6" y2="20.6" stroke="#c9782e" stroke-width="1" stroke-dasharray="3,3"/>
+    </g>
+    <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5" opacity=".34"/>
+    <text x="77" y="24" font-size="6.5" fill="#c9782e" font-family="'DM Mono',monospace">SAFE MAX</text>
+    <ellipse cx="44" cy="196" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
+    <rect x="40" y="203" width="8" height="13" fill="#707070"/>
+    <polygon points="36,209 44,215 36,215" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
+    <polygon points="52,209 44,215 52,215" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
+  </svg>
+  <div class="inv-tank-name">${label}</div>
+  <div class="inv-tank-kg">${invFmtKg(kg)}</div>
+  <div class="inv-tank-pct" style="color:${pCol}">${pct}%</div>
+</div>`;
 }
 
-function invWavePath(fillY) {
-  const y = fillY - 1;
-  return `M-20,${y} Q10,${y-5} 45,${y} Q80,${y+5} 115,${y} Q150,${y-5} 185,${y} L185,${y+10} L-20,${y+10}Z`;
-}
+/* ── Dashboard render ── */
+function invRenderDashboard(){
+  const total=invTotal();
+  const avail=Math.max(0,INV_TOTAL_SAFE-total);
+  const pct=Math.round(total/INV_TOTAL_SAFE*100);
 
-function invTankStatusCls(levelKg) {
-  const r = levelKg / INV_TANK_SAFE_KG;
-  const p = levelKg / INV_TANK_MAX_KG;
-  if (levelKg > INV_TANK_MAX_KG) return { text:'Over', cls:'critical' };
-  if (r >= 0.90) return { text:'High', cls:'high' };
-  if (p < 0.10)  return { text:'Critical', cls:'critical' };
-  if (p < 0.20)  return { text:'Low', cls:'low' };
-  return { text:'Normal', cls:'normal' };
-}
+  const s=id=>document.getElementById(id);
+  if(s('invKpiTotal')) s('invKpiTotal').textContent=invFmtKg(total);
+  if(s('invKpiTotalPct')) s('invKpiTotalPct').textContent=pct+'% of safe capacity';
+  if(s('invKpiAvail')){s('invKpiAvail').textContent=invFmtKg(avail);s('invKpiAvail').className='stat-v '+(avail>INV_LOW_KG?'ok':avail>INV_CRIT_KG?'warn':'danger')}
+  if(s('invKpiDelivs')) s('invKpiDelivs').textContent='room for '+Math.floor(avail/invDelKg)+' deliveries';
 
-function invBuildTankSVG(key, label, type, levelKg) {
-  const g   = invTankGeom(levelKg);
-  const st  = invTankStatusCls(levelKg);
-  const pct = Math.round(g.pct * 100);
-  const pctColour = pct >= 90 ? 'var(--amber)' : pct < 20 ? 'var(--red)' : 'var(--green)';
-  const gid = 'invG_' + key; // unique gradient id
+  const banner=s('invBanner');const bannerTxt=s('invBannerText');
+  if(banner&&bannerTxt){
+    if(total<=INV_CRIT_KG){banner.className='inv-banner danger';bannerTxt.textContent='Critical: stock below '+invFmtKg(INV_CRIT_KG)+' — order immediately'}
+    else if(total<=INV_LOW_KG){banner.className='inv-banner warn';bannerTxt.textContent='Low stock: '+invFmtKg(total)+' remaining — consider ordering'}
+    else{banner.className='inv-banner ok';bannerTxt.textContent='Stock healthy — '+invFmtKg(total)+' · '+pct+'% of safe capacity'}
+  }
 
-  return `
-  <div class="inv-tank-col">
-    <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:3px">
-      <span class="inv-type-badge ${type}">${type==='storage'?'Storage':'Process'}</span>
-      <span class="inv-status-badge ${st.cls}">${st.text}</span>
+  const tanks=[
+    {key:'storageT1',label:'Storage Tank 1',type:'storage',kg:invTankData.storageT1?.level||0},
+    {key:'storageT2',label:'Storage Tank 2',type:'storage',kg:invTankData.storageT2?.level||0},
+    {key:'workT1',   label:'Work Tank 1',   type:'process',kg:invTankData.workT1?.level||0},
+    {key:'workT2',   label:'Work Tank 2',   type:'process',kg:invTankData.workT2?.level||0},
+  ];
+  const grid=s('invTankGrid');
+  if(grid) grid.innerHTML=`
+    <div class="inv-tank-group">
+      <div class="inv-tank-group-lbl">Storage Tanks</div>
+      <div class="inv-tank-group-row">${invTankSVG('storageT1','Storage Tank 1','storage',tanks[0].kg)}${invTankSVG('storageT2','Storage Tank 2','storage',tanks[1].kg)}</div>
     </div>
-    <svg width="88" height="224" viewBox="0 0 88 224" style="overflow:visible" role="img" aria-label="${label} - ${pct}% full - ${invFmtKg(levelKg)}">
-      <defs>
-        <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#4A4A4A"/>
-          <stop offset="15%"  stop-color="#8A8A8A"/>
-          <stop offset="50%"  stop-color="#D0D0D0"/>
-          <stop offset="85%"  stop-color="#8A8A8A"/>
-          <stop offset="100%" stop-color="#4A4A4A"/>
-        </linearGradient>
-        <clipPath id="invClip_${key}"><rect x="12" y="16" width="64" height="180" rx="2"/></clipPath>
-      </defs>
-      <!-- Gauge track -->
-      <rect x="1" y="16" width="7" height="178" rx="2" fill="#1a1a1a" stroke="#3a3a3a" stroke-width=".5"/>
-      <!-- Gauge fill -->
-      <rect x="2" y="${g.gaugeY}" width="5" height="${g.gaugeH}" rx="1" fill="#CC0000"
-            style="transition:y .9s ease,height .9s ease"/>
-      <!-- Top cap -->
-      <ellipse cx="44" cy="16" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
-      <!-- Shell -->
-      <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5"/>
-      <!-- Interior -->
-      <rect x="13" y="17" width="62" height="178" fill="#2a2a2a" clip-path="url(#invClip_${key})"/>
-      <!-- Liquid -->
-      <g clip-path="url(#invClip_${key})">
-        <rect x="13" y="${g.fillY}" width="62" height="${g.fillH}" fill="#8B0000"
-              style="transition:y .9s ease,height .9s ease"/>
-        <path d="${invWavePath(g.fillY)}" fill="#CC0000" opacity=".28"
-              style="animation:invWave 3s linear infinite"/>
-        <rect x="13" y="${g.fillY-1}" width="62" height="2.5" fill="#FF3333" opacity=".65"/>
-        <!-- Safe max line -->
-        <line x1="13" x2="75" y1="20.6" y2="20.6" stroke="#c9782e" stroke-width="1" stroke-dasharray="3,3"/>
-      </g>
-      <!-- Shell sheen overlay -->
-      <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5" opacity=".34"/>
-      <text x="77" y="24" font-size="6.5" fill="#c9782e" font-family="'DM Mono',monospace">SAFE MAX</text>
-      <!-- Bottom cap -->
-      <ellipse cx="44" cy="196" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
-      <!-- Drop pipe -->
-      <rect x="40" y="203" width="8" height="14" fill="#707070"/>
-      <!-- Valve -->
-      <polygon points="36,210 44,216 36,216" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
-      <polygon points="52,210 44,216 52,216" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
-    </svg>
-    <div class="inv-tank-name">${label}</div>
-    <div class="inv-tank-kg">${invFmtKg(levelKg)}</div>
-    <div class="inv-tank-pct" style="color:${pctColour}">${pct}%</div>
-  </div>`;
-}
+    <div class="inv-tank-divider"></div>
+    <div class="inv-tank-group">
+      <div class="inv-tank-group-lbl">Work / Process Tanks</div>
+      <div class="inv-tank-group-row">${invTankSVG('workT1','Work Tank 1','process',tanks[2].kg)}${invTankSVG('workT2','Work Tank 2','process',tanks[3].kg)}</div>
+    </div>`;
 
-// ------------------------------------------------------------
-function invRenderDashboard() {
-  const total    = invTotalStock();
-  const avail    = Math.max(0, INV_TOTAL_SAFE_KG - total);
-  const totalPct = invPct(total, INV_TOTAL_SAFE_KG);
-  const today    = new Date().toDateString();
-
-  // KPIs
-  const kpiTotal   = document.getElementById('invKpiTotal');
-  const kpiAvail   = document.getElementById('invKpiAvail');
-  const kpiDelivs  = document.getElementById('invKpiDelivs');
-
-  if (kpiTotal)  kpiTotal.textContent  = invFmtKg(total);
-  if (kpiAvail)  kpiAvail.textContent  = invFmtKg(avail);
-  if (kpiDelivs) kpiDelivs.textContent = `${Math.floor(avail / INV_DEFAULT_DELIVERY)} deliveries`;
-
-  // Status banner
-  const banner = document.getElementById('invStatusBanner');
-  if (banner) {
-    if (total <= INV_CRIT_ALERT_KG) {
-      banner.className = 'inv-status-banner danger';
-      banner.innerHTML = '<i class="ti ti-alert-triangle"></i> Critical: Stock below ' + invFmtKg(INV_CRIT_ALERT_KG) + ' - order urgently';
-    } else if (total <= INV_LOW_ALERT_KG) {
-      banner.className = 'inv-status-banner warn';
-      banner.innerHTML = '<i class="ti ti-alert-circle"></i> Low stock: ' + invFmtKg(total) + ' remaining - consider ordering';
-    } else {
-      banner.className = 'inv-status-banner ok';
-      banner.innerHTML = '<i class="ti ti-circle-check"></i> Stock healthy - ' + invFmtKg(total) + ' - ' + totalPct + '% of safe capacity';
-    }
-  }
-
-  // Tanks
-  const tankGrid = document.getElementById('invTankGrid');
-  if (tankGrid) {
-    const tanks = [
-      { key:'storageT1', label:'Storage Tank 1', type:'storage', level: invTankData.storageT1?.level||0 },
-      { key:'storageT2', label:'Storage Tank 2', type:'storage', level: invTankData.storageT2?.level||0 },
-      { key:'workT1',    label:'Work Tank 1',    type:'process', level: invTankData.workT1?.level||0 },
-      { key:'workT2',    label:'Work Tank 2',    type:'process', level: invTankData.workT2?.level||0 },
-    ];
-    tankGrid.innerHTML = `
-      <div class="inv-tank-group">
-        <div class="inv-tank-group-label">Storage Tanks</div>
-        <div class="inv-tank-group-row">
-          ${invBuildTankSVG('storageT1','Storage Tank 1','storage', tanks[0].level)}
-          ${invBuildTankSVG('storageT2','Storage Tank 2','storage', tanks[1].level)}
-        </div>
-      </div>
-      <div class="inv-tank-group-divider"></div>
-      <div class="inv-tank-group">
-        <div class="inv-tank-group-label">Work / Process Tanks</div>
-        <div class="inv-tank-group-row">
-          ${invBuildTankSVG('workT1','Work Tank 1','process', tanks[2].level)}
-          ${invBuildTankSVG('workT2','Work Tank 2','process', tanks[3].level)}
-        </div>
-      </div>
-    `;
+  const ts=document.getElementById('invTankTs');
+  if(ts){
+    try{
+      const saved=JSON.parse(localStorage.getItem('bulkTankReadings')||'{}');
+      const latest=[saved.storageT1,saved.storageT2,saved.workT1,saved.workT2].map(t=>t?.savedAt).filter(Boolean).sort().pop();
+      if(latest){const d=new Date(latest);ts.textContent='Reading: '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}
+    }catch(e){}
   }
 
   invRenderWeekChart();
 }
 
-// ------------------------------------------------------------
-function invRenderWeekChart() {
-  const chartEl = document.getElementById('invWeekChart');
-  if (!chartEl) return;
-
-  const today   = new Date();
-  const dayOfWk = today.getDay() || 7; // Mon=1
-  const monDate = invAddDays(today, 1 - dayOfWk);
-  const days    = Array.from({length:5}, (_,i) => invAddDays(monDate, i));
-  const dayNames = ['Mon','Tue','Wed','Thu','Fri'];
-
-  // Mock data until bridge returns real data - replace with bridge response
-  const planned = days.map(d => {
-    const dayCharges = invChargeHistory.filter(c => invIsSameDay(new Date(c.date), d));
-    return dayCharges.reduce((s,c) => s + (c.plannedKg||0), 0) || (invIsWeekend(d) ? 0 : invForecastDailyUse * 0.8);
+/* ── Weekly chart (plain SVG) ── */
+function invRenderWeekChart(){
+  const card=document.getElementById('invWeekCard');
+  if(!card)return;
+  const today=new Date();
+  const dow=today.getDay()||7;
+  const mon=invAddDays(today,1-dow);
+  const days=Array.from({length:5},(_,i)=>invAddDays(mon,i));
+  const names=['Mon','Tue','Wed','Thu','Fri'];
+  const planned=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.plannedKg||0),0)||(!invIsWe(d)?invDailyUsage*0.9:0));
+  const actual=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.actualKg||0),0));
+  const maxV=Math.max(...planned,...actual,1);
+  const W=520,H=130,pl={l:46,r:10,t:10,b:28};
+  const pw=W-pl.l-pl.r,ph=H-pl.t-pl.b;
+  const bw=Math.floor(pw/5)-10;
+  let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="'DM Mono',monospace" font-size="9">`;
+  for(let i=0;i<=4;i++){const y=pl.t+ph*(1-i/4);svg+=`<line x1="${pl.l}" x2="${W-pl.r}" y1="${y}" y2="${y}" stroke="rgba(46,62,46,.08)" stroke-width="1"/><text x="${pl.l-4}" y="${y+3}" text-anchor="end" fill="#879080">${Math.round(i/4*maxV/1000)}k</text>`}
+  days.forEach((d,i)=>{
+    const x=pl.l+(i/5)*pw+2;
+    const pH=planned[i]/maxV*ph,aH=actual[i]/maxV*ph;
+    const pY=pl.t+ph-pH,aY=pl.t+ph-aH;
+    const isToday=invSameDay(d,today);
+    if(isToday)svg+=`<rect x="${x-1}" y="${pl.t}" width="${bw+6}" height="${ph}" fill="rgba(183,131,47,.06)" rx="3"/>`;
+    if(planned[i]>0)svg+=`<rect x="${x+2}" y="${pY}" width="${bw-4}" height="${pH}" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="2"/>`;
+    if(actual[i]>0){const v=planned[i]>0?Math.abs(actual[i]-planned[i])/planned[i]:0;const c=v<.15?'#2f7d48':v<.3?'#c9782e':'#ba3d35';svg+=`<rect x="${x+4}" y="${aY}" width="${bw-8}" height="${aH}" fill="${c}" rx="2" opacity=".85"/>`}
+    svg+=`<text x="${x+bw/2}" y="${H-6}" text-anchor="middle" fill="${isToday?'var(--accent)':'#879080'}" font-weight="${isToday?700:400}">${names[i]}</text>`;
   });
-  const actual = days.map(d => {
-    const dayCharges = invChargeHistory.filter(c => invIsSameDay(new Date(c.date), d));
-    return dayCharges.reduce((s,c) => s + (c.actualKg||0), 0);
-  });
-
-  const maxVal = Math.max(...planned, ...actual, 1);
-  const W = 540, H = 140, pad = {l:48, r:12, t:10, b:30};
-  const plotW = W - pad.l - pad.r;
-  const plotH = H - pad.t - pad.b;
-  const barW  = Math.floor(plotW / 5) - 8;
-
-  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="'DM Mono',monospace" font-size="9">`;
-
-  // Y axis ticks
-  for (let i=0; i<=4; i++) {
-    const y = pad.t + plotH - (i/4)*plotH;
-    const val = Math.round((i/4)*maxVal);
-    svg += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="rgba(46,62,46,.1)" stroke-width="1"/>`;
-    svg += `<text x="${pad.l-4}" y="${y+3}" text-anchor="end" fill="#879080">${(val/1000).toFixed(0)}k</text>`;
-  }
-
-  days.forEach((d, i) => {
-    const x  = pad.l + (i / 5) * plotW + 4;
-    const pH = (planned[i] / maxVal) * plotH;
-    const aH = (actual[i]  / maxVal) * plotH;
-    const pY = pad.t + plotH - pH;
-    const aY = pad.t + plotH - aH;
-    const isToday = invIsSameDay(d, today);
-
-    // Today background stripe
-    if (isToday) svg += `<rect x="${x-2}" y="${pad.t}" width="${barW+8}" height="${plotH}" fill="rgba(183,131,47,.07)" rx="3"/>`;
-
-    // Planned bar (outline)
-    if (planned[i] > 0) svg += `<rect x="${x+2}" y="${pY}" width="${barW-4}" height="${pH}" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="2"/>`;
-
-    // Actual bar (variance colour)
-    if (actual[i] > 0) {
-      const variance = planned[i] > 0 ? Math.abs(actual[i]-planned[i])/planned[i] : 0;
-      const aCol = variance < 0.15 ? '#2f7d48' : variance < 0.30 ? '#c9782e' : '#ba3d35';
-      svg += `<rect x="${x+4}" y="${aY}" width="${barW-8}" height="${aH}" fill="${aCol}" rx="2" opacity=".85"/>`;
-    }
-
-    // Day label
-    const labelCol = isToday ? 'var(--accent)' : '#879080';
-    svg += `<text x="${x + barW/2}" y="${H-8}" text-anchor="middle" fill="${labelCol}" font-weight="${isToday?'700':'400'}">${dayNames[i]}</text>`;
-  });
-
-  svg += '</svg>';
-
-  const weekPlan = planned.reduce((s,v)=>s+v,0);
-  const weekAct  = actual.reduce((s,v)=>s+v,0);
-  const weekVar  = weekPlan > 0 ? Math.round(((weekAct-weekPlan)/weekPlan)*100) : 0;
-
-  chartEl.innerHTML = `
-    <div class="inv-chart-hdr">
-      <div class="inv-section-title"><i class="ti ti-chart-bar"></i> This week</div>
-      <div class="inv-chart-badges">
-        <span class="inv-chart-badge" style="border-color:rgba(183,131,47,.3);color:var(--accent);background:rgba(183,131,47,.08)">Plan ${invFmtKg(weekPlan)}</span>
-        <span class="inv-chart-badge" style="border-color:rgba(47,125,72,.3);color:var(--green);background:rgba(47,125,72,.08)">Actual ${invFmtKg(weekAct)}</span>
-        <span class="inv-chart-badge" style="border-color:rgba(46,62,46,.15);color:var(--text2);background:var(--bg3)">${weekVar>0?'+':''}${weekVar}%</span>
-      </div>
-    </div>
-    ${svg}
-    <div style="display:flex;gap:16px;margin-top:8px;font-size:9px;font-family:var(--mono);color:var(--text3)">
-      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="1"/></svg> Planned</span>
-      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--green)" rx="1" opacity=".85"/></svg> Actual (+/-15%)</span>
-      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--amber)" rx="1" opacity=".85"/></svg> Variance 15-30%</span>
-      <span><svg width="12" height="8"><rect x="0" y="1" width="12" height="6" fill="var(--red)" rx="1" opacity=".85"/></svg> >30% variance</span>
-    </div>`;
+  svg+='</svg>';
+  const wPlan=planned.reduce((s,v)=>s+v,0),wAct=actual.reduce((s,v)=>s+v,0);
+  const wVar=wPlan>0?Math.round((wAct-wPlan)/wPlan*100):0;
+  card.innerHTML=`<div class="inv-chart-hdr"><span class="card-title" style="margin:0"><i class="ti ti-chart-bar"></i> This week — planned vs actual</span><div class="inv-chart-pills"><span class="inv-pill plan">Plan ${invFmtKg(wPlan)}</span><span class="inv-pill actual">Actual ${invFmtKg(wAct)}</span><span class="inv-pill neutral">${wVar>0?'+':''}${wVar}%</span></div></div>${svg}<div class="inv-chart-legend"><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="1"/></svg> Planned</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#2f7d48" rx="1" opacity=".85"/></svg> Actual ±15%</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#c9782e" rx="1" opacity=".85"/></svg> 15–30% var</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#ba3d35" rx="1" opacity=".85"/></svg> >30% var</span></div>`;
 }
 
-// ------------------------------------------------------------
-function invRenderUsageTable() {
-  const tableEl = document.getElementById('invUsageTable');
-  if (!tableEl) return;
-  if (!invChargeHistory.length) {
-    tableEl.innerHTML = '<p style="font-size:11px;color:var(--text3);padding:10px;font-family:var(--mono)">No charge history available. Check bridge connection.</p>';
-    return;
-  }
-  let totalPlan = 0, totalAct = 0;
-  const rows = invChargeHistory.map(c => {
-    const plan = c.plannedKg || Math.round((c.m3||0) * INV_UPTAKE_RATE);
-    const act  = c.actualKg  || 0;
-    const varKg = act - plan;
-    const varPct = plan > 0 ? Math.round((varKg/plan)*100) : 0;
-    const varCls = Math.abs(varPct)<10 ? 'ok' : Math.abs(varPct)<25 ? 'warn' : 'bad';
-    totalPlan += plan; totalAct += act;
-    return `<tr>
-      <td>${new Date(c.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
-      <td>${c.product||'-'}</td>
-      <td>${c.m3 ? c.m3.toLocaleString() : '-'}</td>
-      <td>${plan > 0 ? invFmtKg(plan) : '-'}</td>
-      <td>${act > 0 ? invFmtKg(act) : '-'}</td>
-      <td class="inv-var ${varCls}">${varKg>0?'+':''}${varKg.toLocaleString()} kg</td>
-      <td class="inv-var ${varCls}">${varPct>0?'+':''}${varPct}%</td>
-    </tr>`;
+/* ── Usage table ── */
+function invRenderUsageTable(){
+  const el=document.getElementById('invUsageTable');if(!el)return;
+  if(!invChargeHist.length){el.innerHTML='<p style="font-size:11px;color:var(--text3);padding:10px;font-family:var(--mono)">No charge history. Check bridge connection.</p>';return}
+  let tp=0,ta=0;
+  const rows=invChargeHist.map(c=>{
+    const plan=c.plannedKg||Math.round((c.m3||0)*INV_UPTAKE);
+    const act=c.actualKg||0;
+    const vkg=act-plan,vpct=plan>0?Math.round(vkg/plan*100):0;
+    const vc=Math.abs(vpct)<10?'inv-var-ok':Math.abs(vpct)<25?'inv-var-warn':'inv-var-bad';
+    tp+=plan;ta+=act;
+    return`<tr><td>${new Date(c.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td><td>${c.product||'—'}</td><td>${c.m3?c.m3.toLocaleString():'—'}</td><td>${plan>0?invFmtKg(plan):'—'}</td><td>${act>0?invFmtKg(act):'—'}</td><td class="${vc}">${vkg>0?'+':''}${vkg.toLocaleString()} kg</td><td class="${vc}">${vpct>0?'+':''}${vpct}%</td></tr>`;
   }).join('');
-
-  const totalVar    = totalAct - totalPlan;
-  const totalVarPct = totalPlan > 0 ? Math.round((totalVar/totalPlan)*100) : 0;
-
-  tableEl.innerHTML = `
-    <table class="inv-table">
-      <thead><tr>
-        <th>Date</th><th>Product</th><th>m3</th>
-        <th>Planned kg</th><th>Actual kg</th><th>Variance</th><th>Var %</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr class="totals">
-        <td colspan="3">30-day totals</td>
-        <td>${invFmtKg(totalPlan)}</td>
-        <td>${invFmtKg(totalAct)}</td>
-        <td class="inv-var ${Math.abs(totalVarPct)<10?'ok':Math.abs(totalVarPct)<25?'warn':'bad'}">${totalVar>0?'+':''}${totalVar.toLocaleString()} kg</td>
-        <td class="inv-var ${Math.abs(totalVarPct)<10?'ok':Math.abs(totalVarPct)<25?'warn':'bad'}">${totalVarPct>0?'+':''}${totalVarPct}%</td>
-      </tr></tfoot>
-    </table>`;
+  const tv=ta-tp,tvp=tp>0?Math.round(tv/tp*100):0;
+  const tvc=Math.abs(tvp)<10?'inv-var-ok':Math.abs(tvp)<25?'inv-var-warn':'inv-var-bad';
+  el.innerHTML=`<table class="inv-table"><thead><tr><th>Date</th><th>Product</th><th>m³</th><th>Planned kg</th><th>Actual kg</th><th>Variance</th><th>Var %</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">30-day totals</td><td>${invFmtKg(tp)}</td><td>${invFmtKg(ta)}</td><td class="${tvc}">${tv>0?'+':''}${tv.toLocaleString()} kg</td><td class="${tvc}">${tvp>0?'+':''}${tvp}%</td></tr></tfoot></table>`;
 }
 
-// ------------------------------------------------------------
-function invUpdateRollingAvg() {
-  const now = new Date();
-  function avgDays(n) {
-    const cutoff = invAddDays(now, -n);
-    const vals = invChargeHistory
-      .filter(c => new Date(c.date) >= cutoff && (c.actualKg||0) > 0)
-      .map(c => c.actualKg);
-    return vals.length ? Math.round(vals.reduce((s,v)=>s+v,0)/vals.length) : invForecastDailyUse;
-  }
-  const a7  = avgDays(7);
-  const a14 = avgDays(14);
-  const a30 = avgDays(30);
-
-  // Update display elements
-  ['7','14','30'].forEach((n,i) => {
-    const el = document.getElementById('invAvg'+n);
-    if (el) el.textContent = invFmtKg([a7,a14,a30][i]);
-  });
-
-  // Pre-populate forecast input with 14-day avg if user hasn't overridden
-  const forecastInp = document.getElementById('invForecastDailyUse');
-  if (forecastInp && !forecastInp.dataset.userSet) {
-    forecastInp.value = a14;
-    invForecastDailyUse = a14;
-  }
+/* ── Rolling averages ── */
+function invUpdateAvgs(){
+  const now=new Date();
+  function avg(n){const cut=invAddDays(now,-n);const v=invChargeHist.filter(c=>new Date(c.date)>=cut&&(c.actualKg||0)>0).map(c=>c.actualKg);return v.length?Math.round(v.reduce((s,x)=>s+x,0)/v.length):invDailyUsage}
+  const a7=avg(7),a14=avg(14),a30=avg(30);
+  const s=id=>document.getElementById(id);
+  if(s('invAvg7'))s('invAvg7').textContent=invFmtKg(a7);
+  if(s('invAvg14'))s('invAvg14').textContent=invFmtKg(a14);
+  if(s('invAvg30'))s('invAvg30').textContent=invFmtKg(a30);
+  const inp=s('invDailyUse');if(inp&&!inp.dataset.user){inp.value=a14;invDailyUsage=a14}
 }
 
-// ------------------------------------------------------------
-function invRenderForecastChart() {
-  const chartEl = document.getElementById('invForecastChart');
-  if (!chartEl) return;
-
-  const today = new Date();
-  const days  = Array.from({length: invForecastHorizon}, (_,i) => invAddDays(today, i));
-
-  let stock = invTotalStock();
-  const forecast = days.map(d => {
-    const isWeekend = invIsWeekend(d);
-    const usage = isWeekend ? 0 : invForecastDailyUse;
-    const delivKg = invDeliveryPlan
-      .filter(del => invIsSameDay(new Date(del.date), d))
-      .reduce((s,del) => s + del.kg, 0);
-    const stockAfter = Math.max(0, stock - usage + delivKg);
-    const alert = stockAfter < INV_CRIT_ALERT_KG ? 'danger'
-                : stockAfter < INV_LOW_ALERT_KG  ? 'warn' : 'ok';
-    const pt = { d, stockBefore: stock, usage, delivKg, stockAfter, alert, isWeekend };
-    stock = stockAfter;
-    return pt;
+/* ── Forecast chart ── */
+function invRenderForecast(){
+  const el=document.getElementById('invFcastChart');if(!el)return;
+  const today=new Date();let stock=invTotal();
+  const pts=Array.from({length:invFcastHorizon},(_,i)=>{
+    const d=invAddDays(today,i);
+    const isWe=invIsWe(d);
+    const use=isWe?0:invDailyUsage;
+    const delKg=invDelPlan.filter(x=>x.date===d.toISOString().split('T')[0]).reduce((s,x)=>s+x.kg,0);
+    const after=Math.max(0,stock-use+delKg);
+    const alert=after<INV_CRIT_KG?'danger':after<invReorderKg?'warn':'ok';
+    const pt={d,stockBefore:stock,use,delKg,after,alert,isWe};
+    stock=after;return pt;
   });
-
-  const maxStock = Math.max(INV_TOTAL_SAFE_KG, ...forecast.map(p=>p.stockBefore));
-  const W = 600, H = 160, pad = {l:52, r:12, t:12, b:28};
-  const plotW = W - pad.l - pad.r;
-  const plotH = H - pad.t - pad.b;
-  const barW  = Math.floor(plotW / invForecastHorizon) - 2;
-
-  const yScale = v => pad.t + plotH - (v/maxStock)*plotH;
-  const lowY   = yScale(INV_LOW_ALERT_KG);
-  const critY  = yScale(INV_CRIT_ALERT_KG);
-
-  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="'DM Mono',monospace" font-size="9">`;
-
-  // Grid lines
-  [0, 0.25, 0.5, 0.75, 1].forEach(f => {
-    const y = pad.t + plotH*(1-f);
-    const val = Math.round(f*maxStock/1000);
-    svg += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="rgba(46,62,46,.08)" stroke-width="1"/>`;
-    svg += `<text x="${pad.l-4}" y="${y+3}" text-anchor="end" fill="#879080">${val}k</text>`;
+  const maxS=Math.max(INV_TOTAL_SAFE,...pts.map(p=>p.stockBefore));
+  const W=600,H=150,pl={l:50,r:12,t:12,b:28};
+  const pw=W-pl.l-pl.r,ph=H-pl.t-pl.b;
+  const bw=Math.floor(pw/invFcastHorizon)-2;
+  const ysc=v=>pl.t+ph-(v/maxS)*ph;
+  const lowY=ysc(invReorderKg),critY=ysc(INV_CRIT_KG);
+  let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="'DM Mono',monospace" font-size="9">`;
+  [0,.25,.5,.75,1].forEach(f=>{const y=pl.t+ph*(1-f);svg+=`<line x1="${pl.l}" x2="${W-pl.r}" y1="${y}" y2="${y}" stroke="rgba(46,62,46,.07)" stroke-width="1"/><text x="${pl.l-4}" y="${y+3}" text-anchor="end" fill="#879080">${Math.round(f*maxS/1000)}k</text>`});
+  svg+=`<line x1="${pl.l}" x2="${W-pl.r}" y1="${lowY}" y2="${lowY}" stroke="#c9782e" stroke-width="1" stroke-dasharray="4,3" opacity=".75"/>`;
+  svg+=`<line x1="${pl.l}" x2="${W-pl.r}" y1="${critY}" y2="${critY}" stroke="#ba3d35" stroke-width="1" stroke-dasharray="4,3" opacity=".75"/>`;
+  svg+=`<text x="${W-pl.r-2}" y="${lowY-3}" text-anchor="end" fill="#c9782e" font-size="8">Reorder</text>`;
+  svg+=`<text x="${W-pl.r-2}" y="${critY-3}" text-anchor="end" fill="#ba3d35" font-size="8">Critical</text>`;
+  pts.forEach((pt,i)=>{
+    const x=pl.l+(i/invFcastHorizon)*pw;
+    const bh=(pt.after/maxS)*ph,by=ysc(pt.after);
+    const col=pt.alert==='danger'?'#ba3d35':pt.alert==='warn'?'#c9782e':'#2f7d48';
+    if(pt.isWe)svg+=`<rect x="${x}" y="${pl.t}" width="${bw}" height="${ph}" fill="rgba(46,62,46,.04)" rx="1"/>`;
+    svg+=`<rect x="${x+1}" y="${by}" width="${bw-2}" height="${bh}" fill="${col}" rx="2" opacity="${pt.isWe?.3:.8}"/>`;
+    if(pt.delKg>0){const dy=ysc(pt.stockBefore)-6;svg+=`<polygon points="${x+bw/2},${dy-7} ${x+bw/2+6},${dy} ${x+bw/2},${dy+7} ${x+bw/2-6},${dy}" fill="var(--accent)" opacity=".9"/>`}
+    if(i===0||pt.d.getDay()===1||i===invFcastHorizon-1){const lbl=pt.d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});svg+=`<text x="${x+bw/2}" y="${H-6}" text-anchor="middle" fill="#879080">${lbl}</text>`}
   });
-
-  // Threshold lines
-  svg += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${lowY}"  y2="${lowY}"  stroke="#c9782e" stroke-width="1" stroke-dasharray="4,3" opacity=".7"/>`;
-  svg += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${critY}" y2="${critY}" stroke="#ba3d35" stroke-width="1" stroke-dasharray="4,3" opacity=".7"/>`;
-  svg += `<text x="${W-pad.r-2}" y="${lowY-3}"  text-anchor="end" fill="#c9782e" font-size="8">Reorder</text>`;
-  svg += `<text x="${W-pad.r-2}" y="${critY-3}" text-anchor="end" fill="#ba3d35" font-size="8">Critical</text>`;
-
-  forecast.forEach((pt, i) => {
-    const x   = pad.l + (i/invForecastHorizon)*plotW;
-    const barH = (pt.stockAfter/maxStock)*plotH;
-    const barY = yScale(pt.stockAfter);
-    const col  = pt.alert==='danger' ? '#ba3d35' : pt.alert==='warn' ? '#c9782e' : '#2f7d48';
-
-    if (pt.isWeekend) svg += `<rect x="${x}" y="${pad.t}" width="${barW}" height="${plotH}" fill="rgba(46,62,46,.04)" rx="1"/>`;
-    svg += `<rect x="${x+1}" y="${barY}" width="${barW-2}" height="${barH}" fill="${col}" rx="2" opacity="${pt.isWeekend?'.35':'.8'}"/>`;
-
-    // Delivery diamond
-    if (pt.delivKg > 0) {
-      const dy = yScale(pt.stockBefore) - 6;
-      svg += `<polygon points="${x+barW/2},${dy-7} ${x+barW/2+6},${dy} ${x+barW/2},${dy+7} ${x+barW/2-6},${dy}" fill="var(--accent)" opacity=".9"/>`;
-    }
-
-    // Date label (every 3rd day or Mon)
-    if (i===0 || pt.d.getDay()===1 || i===invForecastHorizon-1) {
-      const lbl = pt.d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
-      svg += `<text x="${x+barW/2}" y="${H-6}" text-anchor="middle" fill="#879080">${lbl}</text>`;
+  svg+='</svg>';
+  const suggests=[];
+  pts.forEach((pt,i)=>{
+    if(pt.alert!=='ok'&&i>0&&pts[i-1].alert==='ok'){
+      let sd=invAddDays(pt.d,-1);while(invIsWe(sd))sd=invAddDays(sd,-1);
+      const ds=sd.toISOString().split('T')[0];
+      if(!invDelPlan.some(x=>x.date===ds))suggests.push({trig:pt.d,sd,ds,alert:pt.alert});
     }
   });
-
-  svg += '</svg>';
-
-  // Auto-suggest deliveries
-  const suggestions = [];
-  forecast.forEach((pt, i) => {
-    if (pt.alert !== 'ok' && i > 0 && forecast[i-1].alert === 'ok') {
-      // Find next available weekday before this point
-      let suggestDate = invAddDays(pt.d, -1);
-      while (invIsWeekend(suggestDate)) suggestDate = invAddDays(suggestDate, -1);
-      const alreadyPlanned = invDeliveryPlan.some(d => invIsSameDay(new Date(d.date), suggestDate));
-      if (!alreadyPlanned) suggestions.push({ triggerDate: pt.d, suggestDate, alert: pt.alert });
-    }
-  });
-
-  const suggestHTML = suggestions.slice(0,3).map(s => `
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:${s.alert==='danger'?'rgba(186,61,53,.08)':'rgba(201,120,46,.08)'};border:1px solid ${s.alert==='danger'?'rgba(186,61,53,.25)':'rgba(201,120,46,.25)'};border-radius:var(--radius);margin-top:8px;font-size:11px">
-      <i class="ti ti-alert-triangle" style="color:${s.alert==='danger'?'var(--red)':'var(--amber)'}"></i>
-      <span style="flex:1;font-family:var(--mono);color:var(--text2)">
-        Stock hits ${s.alert} threshold on <strong>${invFmtDate(s.triggerDate)}</strong> - suggest delivery <strong>${invFmtDate(s.suggestDate)}</strong>
-      </span>
-      <button class="sm-green" onclick="invAddDeliveryFromSuggest('${s.suggestDate.toISOString()}')">+ Add to Plan</button>
-    </div>`).join('');
-
-  chartEl.innerHTML = svg + suggestHTML;
+  const sugHtml=suggests.slice(0,3).map(s=>`<div class="inv-suggest ${s.alert}"><i class="ti ti-alert-${s.alert==='danger'?'triangle':'circle'}" style="color:${s.alert==='danger'?'var(--red)':'var(--amber)'}"></i><span style="flex:1">Stock hits <strong>${s.alert}</strong> on <strong>${invFmtDate(s.trig)}</strong> — suggest delivery <strong>${invFmtDate(s.sd)}</strong></span><button class="sm-green" onclick="invAddSuggest('${s.ds}')">+ Add</button></div>`).join('');
+  el.innerHTML=`${svg}<div class="inv-chart-legend"><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#2f7d48" rx="1" opacity=".8"/></svg> Healthy</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#c9782e" rx="1" opacity=".8"/></svg> Low</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#ba3d35" rx="1" opacity=".8"/></svg> Critical</span><span><svg width="10" height="7"><polygon points="5,1 9,4 5,8 1,4" fill="var(--accent)"/></svg> Delivery</span></div>${sugHtml}`;
 }
 
-function invAddDeliveryFromSuggest(isoDate) {
-  const d = new Date(isoDate);
-  const dateStr = d.toISOString().split('T')[0];
-  if (!invDeliveryPlan.some(x => x.date === dateStr && x.supplier === invSupplier)) {
-    invDeliveryPlan.push({ date: dateStr, kg: invDeliverySize, supplier: invSupplier });
-    invSaveDeliveryPlan();
-  }
-  showPanel('delivery-planner');
-  invRenderCalendar();
-  invRenderDeliveryList();
+function invAddSuggest(ds){
+  invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier});
+  invSaveDelPlan();invRenderCalendar();invRenderDelList();invRenderForecast();invUpdateEmail();
+  if(typeof showPanel==='function')showPanel('delivery-planner');
 }
 
-// ------------------------------------------------------------
-function invRenderCalendar() {
-  const calEl = document.getElementById('invCalGrid');
-  const titleEl = document.getElementById('invCalTitle');
-  if (!calEl) return;
-
-  const monthName = new Date(invCalYear, invCalMonth).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  if (titleEl) titleEl.textContent = monthName;
-
-  const firstDay = new Date(invCalYear, invCalMonth, 1);
-  const lastDay  = new Date(invCalYear, invCalMonth + 1, 0);
-  const today    = new Date();
-
-  // Start grid from Monday of the week containing 1st
-  let startDay = firstDay.getDay() || 7; // Mon=1
-  const gridStart = invAddDays(firstDay, 1 - startDay);
-
-  let html = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d =>
-    `<div class="inv-cal-day-hdr">${d}</div>`).join('');
-
-  for (let d = new Date(gridStart); d <= lastDay || html.split('inv-cal-cell').length % 8 !== 1; d = invAddDays(d,1)) {
-    if (d > invAddDays(lastDay, 6)) break;
-    const isThisMonth = d.getMonth() === invCalMonth;
-    const isWeekend   = invIsWeekend(d);
-    const isToday     = invIsSameDay(d, today);
-    const dateStr     = d.toISOString().split('T')[0];
-    const delivsOnDay = invDeliveryPlan.filter(x => x.date === dateStr);
-    const hasDeliv    = delivsOnDay.length > 0;
-
-    let cls = 'inv-cal-cell';
-    cls += isWeekend ? ' weekend' : ' weekday';
-    if (isToday) cls += ' today';
-    if (hasDeliv) cls += ' has-delivery';
-    if (!isThisMonth) cls += ' other-month';
-
-    const onclick = (!isWeekend && isThisMonth)
-      ? `onclick="invToggleDelivery('${dateStr}')"`
-      : '';
-
-    const badges = delivsOnDay.map(del =>
-      `<div class="inv-cal-delivery-badge">${(del.kg/1000).toFixed(0)}k kg</div>`
-    ).join('');
-
-    html += `<div class="${cls}" style="${!isThisMonth?'opacity:.35':''}" ${onclick}>
-      <div class="inv-cal-cell-date" style="${isToday?'color:var(--accent);font-weight:700':''}">${d.getDate()}</div>
-      ${badges}
-    </div>`;
+/* ── Calendar ── */
+function invCalPrev(){invCalMonth--;if(invCalMonth<0){invCalMonth=11;invCalYear--}invRenderCalendar()}
+function invCalNext(){invCalMonth++;if(invCalMonth>11){invCalMonth=0;invCalYear++}invRenderCalendar()}
+function invRenderCalendar(){
+  const title=document.getElementById('invCalTitle');
+  const grid=document.getElementById('invCalGrid');
+  if(!grid)return;
+  const mn=new Date(invCalYear,invCalMonth).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  if(title)title.textContent=mn;
+  const today=new Date();
+  const first=new Date(invCalYear,invCalMonth,1);
+  const last=new Date(invCalYear,invCalMonth+1,0);
+  let sd=first.getDay()||7;
+  const gstart=invAddDays(first,1-sd);
+  let html=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="inv-cal-dhdr">${d}</div>`).join('');
+  const cur=new Date(gstart);
+  for(let i=0;i<42;i++){
+    const d=new Date(cur);cur.setDate(cur.getDate()+1);
+    if(d>last&&i>=35)break;
+    const isWe=invIsWe(d),isToday=invSameDay(d,today);
+    const inM=d.getMonth()===invCalMonth;
+    const ds=d.toISOString().split('T')[0];
+    const dels=invDelPlan.filter(x=>x.date===ds);
+    let cls='inv-cal-cell '+(isWe?'we':'wd');
+    if(isToday)cls+=' today';
+    if(dels.length)cls+=' hasdel';
+    const oc=(!isWe&&inM)?`onclick="invToggleDel('${ds}')"`:'' ;
+    const badges=dels.map(del=>`<div class="inv-cal-del-bdg">${(del.kg/1000).toFixed(0)}k kg</div>`).join('');
+    html+=`<div class="${cls}" style="${!inM?'opacity:.3':''}" ${oc}><div class="inv-cal-dn${isToday?' today':''}">${d.getDate()}</div>${badges}</div>`;
   }
-
-  calEl.innerHTML = html;
+  grid.innerHTML=html;
+}
+function invToggleDel(ds){
+  const ex=invDelPlan.filter(x=>x.date===ds);
+  if(ex.length===0)invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier});
+  else if(ex.length===1)invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier});
+  else invDelPlan=invDelPlan.filter(x=>x.date!==ds);
+  invSaveDelPlan();invRenderCalendar();invRenderDelList();invRenderForecast();invUpdateEmail();
 }
 
-function invToggleDelivery(dateStr) {
-  const existing = invDeliveryPlan.filter(x => x.date === dateStr);
-  if (existing.length === 0) {
-    // Add delivery
-    invDeliveryPlan.push({ date: dateStr, kg: invDeliverySize, supplier: invSupplier });
-  } else if (existing.length === 1) {
-    // Second click: add second delivery (double-up is operationally valid)
-    invDeliveryPlan.push({ date: dateStr, kg: invDeliverySize, supplier: invSupplier });
-  } else {
-    // Third click: remove all deliveries on this day
-    invDeliveryPlan = invDeliveryPlan.filter(x => x.date !== dateStr);
-  }
-  invSaveDeliveryPlan();
-  invRenderCalendar();
-  invRenderDeliveryList();
-  invRenderForecastChart();
-  invUpdateEmailPreview();
-}
-
-function invRenderDeliveryList() {
-  const listEl = document.getElementById('invDeliveryList');
-  if (!listEl) return;
-
-  const sorted = [...invDeliveryPlan].sort((a,b) => new Date(a.date)-new Date(b.date));
-  if (!sorted.length) {
-    listEl.innerHTML = '<p style="padding:12px;font-size:11px;color:var(--text3);font-family:var(--mono)">No deliveries planned. Click a weekday on the calendar to add.</p>';
-    return;
-  }
-
-  const rows = sorted.map((del, idx) => {
-    const d = new Date(del.date);
-    return `<div class="inv-del-list-item">
-      <div class="inv-del-date">${d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</div>
-      <div class="inv-del-supplier">${del.supplier}</div>
-      <div class="inv-del-qty">${del.kg.toLocaleString()} kg</div>
-      <div class="inv-del-actions">
-        <button class="sm-blue" onclick="invEditDelivery(${idx})"><i class="ti ti-edit"></i></button>
-        <button class="sm-red"  onclick="invRemoveDelivery(${idx})"><i class="ti ti-trash"></i></button>
-      </div>
-    </div>`;
+/* ── Delivery list ── */
+function invRenderDelList(){
+  const el=document.getElementById('invDelList');if(!el)return;
+  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!sorted.length){el.innerHTML='<div class="inv-del-empty">No deliveries planned. Click a weekday on the calendar to add.</div>';return}
+  const rows=sorted.map((del,i)=>{
+    const d=new Date(del.date+'T12:00:00');
+    return`<div class="inv-del-item"><div class="inv-del-date">${d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</div><div class="inv-del-sup">${del.supplier}</div><div class="inv-del-qty">${del.kg.toLocaleString()} kg</div><div class="inv-del-acts"><button class="sm-blue" onclick="invEditDel(${i})" title="Edit"><i class="ti ti-edit"></i></button><button class="sm-red" onclick="invRemoveDel(${i})" title="Remove"><i class="ti ti-trash"></i></button></div></div>`;
   }).join('');
-
-  const totalKg     = sorted.reduce((s,d)=>s+d.kg,0);
-  const avgKg       = Math.round(totalKg/sorted.length);
-
-  listEl.innerHTML = rows + `<div class="inv-del-total-row">${sorted.length} deliveries - ${invFmtKg(totalKg)} total - avg ${invFmtKg(avgKg)}/delivery</div>`;
+  const tot=sorted.reduce((s,d)=>s+d.kg,0);
+  el.innerHTML=rows+`<div class="inv-del-total">${sorted.length} deliveries · ${invFmtKg(tot)} total · avg ${invFmtKg(Math.round(tot/sorted.length))}/delivery</div>`;
+}
+function invEditDel(i){
+  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date));
+  const del=sorted[i];
+  const nv=parseInt(prompt(`Delivery quantity (kg) for ${del.date}:`,del.kg),10);
+  if(nv&&nv>0){const ri=invDelPlan.findIndex(x=>x.date===del.date&&x.kg===del.kg&&x.supplier===del.supplier);if(ri>=0)invDelPlan[ri].kg=nv;invSaveDelPlan();invRenderDelList();invRenderCalendar();invRenderForecast();invUpdateEmail()}
+}
+function invRemoveDel(i){
+  const sorted=[...invDelPlan].sort((a,b)=>a.date.localeCompare(b.date));
+  const del=sorted[i];
+  const ri=invDelPlan.findIndex(x=>x.date===del.date&&x.kg===del.kg&&x.supplier===del.supplier);
+  if(ri>=0)invDelPlan.splice(ri,1);
+  invSaveDelPlan();invRenderDelList();invRenderCalendar();invRenderForecast();invUpdateEmail();
 }
 
-function invEditDelivery(idx) {
-  const sorted = [...invDeliveryPlan].sort((a,b) => new Date(a.date)-new Date(b.date));
-  const del    = sorted[idx];
-  const newKg  = parseInt(prompt(`Edit delivery quantity (kg) for ${del.date}:`, del.kg), 10);
-  if (newKg && newKg > 0) {
-    const realIdx = invDeliveryPlan.findIndex(x => x.date===del.date && x.kg===del.kg && x.supplier===del.supplier);
-    if (realIdx >= 0) { invDeliveryPlan[realIdx].kg = newKg; invSaveDeliveryPlan(); }
-    invRenderDeliveryList();
-    invRenderCalendar();
-    invRenderForecastChart();
-    invUpdateEmailPreview();
-  }
+/* ── Email ── */
+function invUpdateEmail(){
+  const ta=document.getElementById('invEmailTa');
+  const fe=document.getElementById('invEmailFrom');
+  const te=document.getElementById('invEmailTo');
+  if(!ta||!fe||!te)return;
+  const from=new Date(fe.value),to=new Date(te.value);
+  if(isNaN(from)||isNaN(to))return;
+  const inRange=invDelPlan.filter(d=>{const dt=new Date(d.date+'T12:00:00');return dt>=from&&dt<=to}).sort((a,b)=>a.date.localeCompare(b.date));
+  const lines=inRange.map(del=>{const d=new Date(del.date+'T12:00:00');return'  '+invFmtFull(d)+'    —    '+del.kg.toLocaleString()+' kg'}).join('\n');
+  const tot=inRange.reduce((s,d)=>s+d.kg,0);
+  const fStr=from.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const tStr=to.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const mStr=from.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  const subj=`Creosote Delivery Schedule — ${mStr}`;
+  const body=`Dear ${invSupplier} Team,\n\nPlease find below our delivery schedule for ${fStr} to ${tStr}.\n${invSiteAddrVal?'Delivery address: '+invSiteAddrVal+'\n':''}\nScheduled deliveries:\n\n${lines||'  No deliveries scheduled in this period'}\n\nTotal: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} · ${tot.toLocaleString()} kg\n\nPlease confirm receipt and advise of any scheduling conflicts.\nDeliveries accepted Monday to Friday between 07:00 and 16:00.\n\nKind regards,\n${invSenderNameVal||'[Sender name]'}\n${invSiteAddrVal||'[Site name]'}`;
+  ta.value=body;ta.dataset.subject=subj;
 }
-
-function invRemoveDelivery(idx) {
-  const sorted = [...invDeliveryPlan].sort((a,b) => new Date(a.date)-new Date(b.date));
-  const del    = sorted[idx];
-  const realIdx = invDeliveryPlan.findIndex(x => x.date===del.date && x.kg===del.kg && x.supplier===del.supplier);
-  if (realIdx >= 0) invDeliveryPlan.splice(realIdx, 1);
-  invSaveDeliveryPlan();
-  invRenderDeliveryList();
-  invRenderCalendar();
-  invRenderForecastChart();
-  invUpdateEmailPreview();
-}
-
-function invSaveDeliveryPlan() {
-  localStorage.setItem('invDeliveryPlan', JSON.stringify(invDeliveryPlan));
-  invFetchBridge('saveDeliveryPlan', { data: invDeliveryPlan });
-}
-
-// ------------------------------------------------------------
-function invUpdateEmailPreview() {
-  const fromEl   = document.getElementById('invEmailFrom');
-  const toEl     = document.getElementById('invEmailTo');
-  const textarea = document.getElementById('invEmailTextarea');
-  if (!fromEl || !toEl || !textarea) return;
-
-  const from = new Date(fromEl.value);
-  const to   = new Date(toEl.value);
-  if (isNaN(from) || isNaN(to)) return;
-
-  const inRange = invDeliveryPlan
-    .filter(d => { const dt=new Date(d.date); return dt>=from && dt<=to; })
-    .sort((a,b) => new Date(a.date)-new Date(b.date));
-
-  const deliveryLines = inRange.map(del => {
-    const d = new Date(del.date);
-    const dayStr = d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-    return `  ${dayStr}    -    ${del.kg.toLocaleString()} kg`;
-  }).join('\n');
-
-  const totalKg = inRange.reduce((s,d)=>s+d.kg,0);
-  const fromStr = from.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-  const toStr   = to.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-  const monthStr = from.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-
-  const subject = `Creosote Delivery Schedule - ${monthStr}`;
-  const body = `Dear ${invSupplier} Team,
-
-Please find below our delivery schedule for ${fromStr} to ${toStr}.
-${invSiteAddress ? 'Delivery address: ' + invSiteAddress + '\n' : ''}
-Scheduled deliveries:
-
-${deliveryLines || '  No deliveries scheduled in this period'}
-
-Total: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} - ${totalKg.toLocaleString()} kg
-
-Please confirm receipt and advise of any scheduling conflicts.
-Deliveries accepted Monday to Friday between 07:00 and 16:00.
-
-Kind regards,
-${invSenderName || '[Sender name]'}
-${invSiteAddress || '[Site name]'}`;
-
-  textarea.value = body;
-  textarea.dataset.subject = subject;
-}
-
-function invCopyEmail() {
-  const textarea = document.getElementById('invEmailTextarea');
-  if (!textarea) return;
-  navigator.clipboard.writeText(textarea.value).then(() => {
-    const btn = document.getElementById('invCopyBtn');
-    if (btn) {
-      btn.textContent = 'Copied';
-      btn.style.color = 'var(--green)';
-      setTimeout(() => { btn.textContent = 'Copy Email'; btn.style.color=''; }, 2000);
-    }
+function invCopyEmail(){
+  const ta=document.getElementById('invEmailTa');if(!ta)return;
+  navigator.clipboard.writeText(ta.value).then(()=>{
+    const btn=document.getElementById('invCopyBtn');if(!btn)return;
+    const orig=btn.innerHTML;btn.innerHTML='<i class="ti ti-check"></i> Copied';btn.style.color='var(--green)';
+    setTimeout(()=>{btn.innerHTML=orig;btn.style.color=''},2000);
   });
 }
-
-function invOpenMailClient() {
-  const textarea = document.getElementById('invEmailTextarea');
-  const emailInp = document.getElementById('invSupplierEmail');
-  if (!textarea) return;
-  const subject = textarea.dataset.subject || 'Creosote Delivery Schedule';
-  const email   = emailInp?.value || '';
-  window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(textarea.value)}`);
+function invOpenMail(){
+  const ta=document.getElementById('invEmailTa');
+  const em=document.getElementById('invSupplierEmail');
+  if(!ta)return;
+  window.open(`mailto:${em?.value||''}?subject=${encodeURIComponent(ta.dataset.subject||'Creosote Delivery Schedule')}&body=${encodeURIComponent(ta.value)}`);
 }
 
-// ------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-  invLoadFromStorage();
+/* ── Full refresh ── */
+async function invRefreshAll(){
+  invLoadStorage();
+  const hist=await invBridge('getChargeHistory',{days:30});
+  if(hist?.charges)invChargeHist=hist.charges;
+  invUpdateAvgs();
+  invRenderDashboard();
+  invRenderUsageTable();
+  invRenderForecast();
+  const ts=document.getElementById('invRefreshTs');
+  if(ts)ts.textContent='Refreshed: '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
 
-  // Set default email date range
-  const fromInp = document.getElementById('invEmailFrom');
-  const toInp   = document.getElementById('invEmailTo');
-  if (fromInp) fromInp.value = new Date().toISOString().split('T')[0];
-  if (toInp) {
-    const fourWeeks = invAddDays(new Date(), 28);
-    toInp.value = fourWeeks.toISOString().split('T')[0];
-  }
-
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  invLoadStorage();
+  // Default email date range
+  const fe=document.getElementById('invEmailFrom');
+  const te=document.getElementById('invEmailTo');
+  if(fe)fe.value=new Date().toISOString().split('T')[0];
+  if(te)te.value=invAddDays(new Date(),28).toISOString().split('T')[0];
   invRenderCalendar();
-  invRenderDeliveryList();
+  invRenderDelList();
   invRefreshAll();
-  invUpdateEmailPreview();
-
-  // Poll every 30s for fresh tank readings
-  setInterval(invRefreshAll, 30000);
+  invUpdateEmail();
+  setInterval(invRefreshAll,30000);
 });
+/* ═══════════════════════════════════════════════════════════════
+   END INVENTORY, USAGE & DELIVERY PLANNER
+   ═══════════════════════════════════════════════════════════════ */
 
-// ------------------------------------------------------------
-// END INVENTORY & FORECAST MODULE
-// ------------------------------------------------------------
-
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ----------------------- INIT -----------------------
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function updateClock(){const n=new Date();document.getElementById('live-time').textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 function applyAccessMode(){
