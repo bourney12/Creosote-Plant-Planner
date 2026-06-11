@@ -270,40 +270,49 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .report-table-mini td{padding:6px 4px;border-bottom:1px solid var(--border);vertical-align:top;}
 .report-email-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.45;margin-top:8px;}
 @media(max-width:900px){.report-split{grid-template-columns:1fr;}.report-dashboard-toolbar{align-items:stretch}.report-control{min-width:100%;}}
-/* CREOSOTE INVENTORY */
-.inventory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
-.inventory-field{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.inventory-field label{font-size:9px;color:var(--text3);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;}
-.inventory-field input,.inventory-field select,.inventory-field textarea{background:#fffef9;border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:12px;padding:6px 8px;border-radius:var(--radius);outline:none;width:100%;}
-.inventory-field input:focus,.inventory-field select:focus,.inventory-field textarea:focus{border-color:var(--accent);}
-.inventory-field textarea{resize:vertical;min-height:54px;}
-.inventory-field .field-warn{display:none;font-size:9px;color:var(--amber);font-family:var(--mono);}
-.inventory-field.warn input{border-color:rgba(201,120,46,.55);background:rgba(201,120,46,.06);}
-.inventory-field.warn .field-warn{display:block;}
-.inventory-section-title{font-size:10px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;margin:12px 0 8px;}
-.inventory-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);font-weight:700;margin:8px 0 10px;}
-.inventory-delivery-fields{display:none;}
-.inventory-delivery-fields.active{display:grid;}
-.inventory-banner{display:none;margin-bottom:10px;border-radius:var(--radius);padding:8px 11px;font-size:11px;line-height:1.45;border:1px solid transparent;}
-.inventory-banner.ok{display:block;color:var(--green);background:rgba(47,125,72,.08);border-color:rgba(47,125,72,.24);}
-.inventory-banner.warn{display:block;color:var(--amber);background:rgba(201,120,46,.08);border-color:rgba(201,120,46,.26);}
-.inventory-banner.danger{display:block;color:var(--red);background:rgba(186,61,53,.08);border-color:rgba(186,61,53,.24);}
-.inventory-status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
-.tank-bar{height:7px;background:var(--bg4);border-radius:999px;overflow:hidden;margin-top:8px;}
-.tank-bar-fill{height:100%;border-radius:999px;background:var(--green);transition:width .25s ease;}
-.tank-bar-fill.warn{background:var(--amber);}
-.tank-bar-fill.danger{background:var(--red);}
-.inventory-stat-large{margin:0 0 12px;}
-.inventory-intel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px;}
-.inventory-setting-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--text3);font-family:var(--mono);font-size:10px;}
-.inventory-setting-row input{width:64px;background:#fffef9;border:1px solid var(--border2);border-radius:var(--radius);padding:5px 7px;font-family:var(--mono);font-size:11px;color:var(--text);}
-.inventory-alert-badge{display:inline-flex;align-items:center;gap:5px;margin-top:6px;border-radius:999px;padding:3px 8px;font-family:var(--mono);font-size:9px;font-weight:800;color:var(--red);border:1px solid rgba(186,61,53,.3);background:rgba(186,61,53,.1);animation:pulse 1s infinite;}
-.creo-reorder-pill{display:none;font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:99px;border:1px solid rgba(201,120,46,.35);color:var(--amber);background:rgba(201,120,46,.1);animation:pulse 1.5s infinite;}
-.creo-reorder-pill.danger{color:var(--red);border-color:rgba(186,61,53,.35);background:rgba(186,61,53,.1);}
-.delivery-actions{display:flex;gap:5px;flex-wrap:wrap;}
-.delivery-actions button{border-radius:999px;font-size:9px;padding:2px 7px;}
-.delivery-cancelled td{text-decoration:line-through;color:var(--text3);opacity:.65;}
-@media(max-width:600px){.inventory-grid,.inventory-status-grid,.inventory-intel-grid{grid-template-columns:1fr;}.inventory-setting-row{align-items:flex-start;}}
+/* BULK TANK LEVEL ENTRY */
+.tank-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:16px;}
+.tank-panel-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.tank-panel-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);display:flex;align-items:center;gap:6px;}
+.tank-panel-title i{font-size:14px;color:var(--accent);}
+.tank-panel-saved{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;}
+.tank-entry-grid{display:flex;gap:12px;align-items:flex-start;}
+.tank-group{flex:1;min-width:0;}
+.tank-group-label{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-family:var(--mono);text-align:center;margin-bottom:8px;}
+.tank-group-row{display:flex;gap:8px;justify-content:center;}
+.tank-group-divider{width:1px;background:var(--border);align-self:stretch;margin:16px 4px 0;flex-shrink:0;}
+.tank-card{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;flex:1;max-width:150px;}
+.tank-card-top{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;min-height:17px;}
+.tank-type-badge,.tank-status-badge{font-family:var(--mono);font-size:8px;font-weight:600;padding:1px 6px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+.tank-type-badge.storage{background:rgba(47,125,72,.15);color:var(--green);border:1px solid rgba(47,125,72,.25);}
+.tank-type-badge.process{background:rgba(47,116,167,.15);color:var(--blue);border:1px solid rgba(47,116,167,.25);}
+.tank-status-badge.normal{background:rgba(47,125,72,.12);color:var(--green);}
+.tank-status-badge.high,.tank-status-badge.low{background:rgba(201,120,46,.15);color:var(--amber);animation:tankPulse 2s infinite;}
+.tank-status-badge.critical{background:rgba(186,61,53,.15);color:var(--red);animation:tankPulse .8s infinite;}
+.tank-status-badge.over{background:rgba(186,61,53,.2);color:var(--red);}
+@keyframes tankPulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+@keyframes tankWave{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.tank-svg{display:block;overflow:visible;width:90px;height:220px;}
+.tank-card-label{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);font-family:var(--font);text-align:center;margin-top:2px;}
+.tank-input-wrap{width:100%;max-width:120px;}
+.tank-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:500;padding:5px 8px;text-align:center;outline:none;transition:border-color .15s;-moz-appearance:textfield;}
+.tank-input::-webkit-inner-spin-button,.tank-input::-webkit-outer-spin-button{-webkit-appearance:none;}
+.tank-input:focus{border-color:var(--accent);background:var(--bg2);}
+.tank-input-wrap.warn .tank-input{border-color:var(--amber);}
+.tank-input-wrap.error .tank-input{border-color:var(--red);}
+.tank-display-kg{font-family:var(--mono);font-size:11px;color:var(--text2);text-align:center;}
+.tank-display-free{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;min-height:14px;}
+.tank-display-free.warn{color:var(--amber);}
+.tank-display-free.error{color:var(--red);}
+.tank-manifold{height:8px;background:#707070;border-radius:3px;margin:2px 4px 10px;}
+.tank-save-row{display:flex;justify-content:flex-end;padding-top:10px;border-top:1px solid var(--border);}
+.tank-save-btn{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;padding:8px 18px;cursor:pointer;transition:all .15s;}
+.tank-save-btn:hover{background:var(--bg4);border-color:var(--accent);}
+.tank-save-btn:active{transform:scale(.98);}
+.tank-save-btn:disabled{opacity:.45;cursor:not-allowed;}
+.tank-save-btn.saving{color:var(--text3);}
+.tank-save-btn.saved{border-color:var(--green);color:var(--green);}
+@media(max-width:640px){.tank-entry-grid{flex-direction:column;}.tank-group-divider{width:100%;height:1px;margin:8px 0;align-self:unset;}.tank-group-row{justify-content:space-around;}.tank-card{max-width:46%;}}
 .report-section{margin-bottom:24px;}
 .report-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .gap-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius-lg);margin-bottom:6px;border-left:3px solid var(--gap-col);}
@@ -321,8 +330,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .kpi-sub{font-size:10px;color:var(--text3);font-family:var(--mono);}
 .kpi-val.ok{color:var(--green);}.kpi-val.warn{color:var(--amber);}.kpi-val.danger{color:var(--red);}
 .access-operator .topbar .mode-badge,.access-operator .topbar .bneck-pill,.access-operator #op-shortcuts{display:none!important;}
-.access-operator .sidebar{display:block!important;width:170px;top:50px;height:calc(100vh - 50px);}
-.access-operator .main{display:flex;}
+.access-operator .sidebar{display:none!important;}
+.access-operator .main{display:block;}
 .access-operator .content{padding:10px 12px;overflow-y:auto;}
 .access-operator .sec-title{font-size:16px;}
 .access-operator .sec-sub{display:none;}
@@ -566,7 +575,6 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   <div class="topbar-right">
     <div class="status-dot"></div>
     <div class="live-time" id="live-time"></div>
-    <div class="creo-reorder-pill" id="creo-reorder-pill"></div>
     <div id="op-shortcuts" style="display:flex;gap:6px;align-items:center;">
       <a class="access-link" href="creosote-operator-charge-log.html">Operator app</a>
       <a class="access-link" href="creosote-live-board.html">Live board</a>
@@ -588,11 +596,6 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="nav-item active" onclick="showPanel('week')"><i class="ti ti-timeline"></i>Timeline</div>
     <div class="nav-item" onclick="showPanel('bottlenecks')"><i class="ti ti-alert-triangle"></i>Bottlenecks</div>
     <div class="nav-item" onclick="showPanel('table')"><i class="ti ti-table"></i>Full table</div>
-  </div>
-  <div class="sidebar-section inventory-menu-section">
-    <div class="sidebar-label">Inventory</div>
-    <div class="nav-item" onclick="showPanel('tank-levels')"><i class="ti ti-droplet"></i>Tank Levels</div>
-    <div class="nav-item" onclick="showPanel('deliveries')"><i class="ti ti-truck"></i>Deliveries</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Configuration</div>
@@ -666,33 +669,6 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="operator-sync-pill" id="operator-sync-pill"><i class="ti ti-cloud"></i><span>Master sheet not loaded</span></div>
   </div>
   <div id="log-content"></div>
-</div>
-
-<!-- TANK LEVELS -->
-<div class="panel" id="panel-tank-levels">
-  <div class="sec-title">Tank Levels</div>
-  <div class="sec-sub">Daily creosote stock entry, receiving capacity and reorder intelligence</div>
-  <div id="inventory-level-banner" class="inventory-banner"></div>
-  <div class="card" style="margin-bottom:12px;">
-    <div class="card-title"><i class="ti ti-droplet"></i> Daily Tank Level Entry</div>
-    <div class="help" id="inventory-today-subtitle" style="margin:0 0 10px;"></div>
-    <div id="inventory-level-form"></div>
-  </div>
-  <div id="inventory-status-cards"></div>
-  <div id="inventory-intelligence"></div>
-</div>
-
-<!-- DELIVERIES -->
-<div class="panel" id="panel-deliveries">
-  <div class="sec-title">Deliveries</div>
-  <div class="sec-sub">Schedule incoming creosote deliveries and review received loads</div>
-  <div id="inventory-delivery-banner" class="inventory-banner"></div>
-  <div class="card" style="margin-bottom:12px;">
-    <div class="card-title"><i class="ti ti-truck-delivery"></i> Schedule Delivery</div>
-    <div id="inventory-delivery-form"></div>
-  </div>
-  <div id="inventory-scheduled-table"></div>
-  <div id="inventory-delivery-history"></div>
 </div>
 
 <!-- LIVE BOARD -->
@@ -1173,20 +1149,18 @@ async function clearAllActuals(){
 
 // ═══════════════════════ HELPERS ═══════════════════════
 function showPanel(t){
-  if(accessMode==='operator'&&!['live-log','tank-levels','deliveries'].includes(t))t='live-log';
+  if(accessMode==='operator'&&t!=='live-log')t='live-log';
   if(accessMode==='board'&&t!=='live-board')t='live-board';
   activePanel=t;
-  const all=['week','live-log','live-board','report','bottlenecks','table','tank-levels','deliveries','days','charge-types','equipment','operators','cranes','tippers','noise'];
+  const all=['week','live-log','live-board','report','bottlenecks','table','days','charge-types','equipment','operators','cranes','tippers','noise'];
   all.forEach(p=>{const el=document.getElementById('panel-'+p);if(el)el.classList.toggle('active',p===t);});
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const map={week:3,bottlenecks:4,table:5,'live-log':0,'live-board':1,report:2,'tank-levels':6,deliveries:7,days:8,'charge-types':9,equipment:10,operators:11,cranes:12,tippers:13,noise:14};
+  const map={week:3,bottlenecks:4,table:5,'live-log':0,'live-board':1,report:2,days:6,'charge-types':7,equipment:8,operators:9,cranes:10,tippers:11,noise:12};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[t]])items[map[t]].classList.add('active');
   if(t==='live-log')buildLogPanel();
   if(t==='live-board')buildLiveBoard();
   if(t==='report')buildReport();
-  if(t==='tank-levels')CreoInventory.renderTankLevels();
-  if(t==='deliveries')CreoInventory.renderDeliveries();
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function ph2(v){if(!v)return null;const[h,m]=v.split(':').map(Number);return h+m/60;}
@@ -2551,6 +2525,7 @@ function buildLogDay(d){
   const cfg=dayConfigs[d];
 
   let html=`<div class="operator-sync-card"><div class="sync-kicker">Production Master link</div><div class="sync-main">${escHtml(masterSync.msg)}</div><div class="sync-help">Vessel and planned charge details are pulled from Treatment Master. <span id="live-sync-note">${escHtml(liveStateSync.msg)}</span></div></div>`;
+  html+=bulkTankPanelHtml();
 
   const masterSlots=getMasterSlots(day);
   const chargeGroups=[
@@ -2623,7 +2598,7 @@ function buildLogDay(d){
   html+=`<div style="margin-top:16px;display:flex;gap:8px;"><button class="sm-red" onclick="clearAllActuals()"><i class="ti ti-trash" style="font-size:11px;"></i> Clear all actuals</button><button class="acc" onclick="go();showPanel('week')"><i class="ti ti-timeline" style="font-size:11px;"></i> View on timeline</button></div>`;
 
   const existing=document.getElementById('log-content');
-  if(existing)existing.innerHTML=html;
+  if(existing){existing.innerHTML=html;initBulkTankReadings();}
 }
 
 function updateActual(d,pid,n,field,val){
@@ -3433,272 +3408,126 @@ function buildLegend(noise){
   document.getElementById('legend').innerHTML=html;
 }
 
-const CreoInventory=(()=>{
-  const MAX_TANK=100000,TARGET_STOCK=120000,DEFAULT_THRESHOLD=10;
-  const SUPPLIERS=['Koppers B','Koppers C','Rutgers'];
-  const fieldDefs=[
-    ['tank1Level','Storage Tank 1 Level','number','0','Storage Tanks (litres)'],
-    ['tank1Temp','Storage Tank 1 Temp (deg C)','number','0'],
-    ['tank2Level','Storage Tank 2 Level','number','0'],
-    ['tank2Temp','Storage Tank 2 Temp (deg C)','number','0'],
-    ['workTank1Level','Work Tank 1 Level','number','0','Work Tanks (litres)'],
-    ['workTank1Temp','Work Tank 1 Temp (deg C)','number','0'],
-    ['workTank2Level','Work Tank 2 Level','number','0'],
-    ['workTank2Temp','Work Tank 2 Temp (deg C)','number','0']
-  ];
-  const todayIso=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
-  const fmtDate=iso=>{const d=new Date(`${iso}T00:00:00`);return Number.isNaN(d.getTime())?iso:d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});};
-  const n=v=>Number(v)||0;
-  const litres=v=>`${Math.round(n(v)).toLocaleString('en-GB')} L`;
-  const totalStock=r=>n(r?.tank1Level)+n(r?.tank2Level)+n(r?.workTank1Level)+n(r?.workTank2Level);
-  const storageCapacity=r=>(MAX_TANK-n(r?.tank1Level))+(MAX_TANK-n(r?.tank2Level));
-  const levelClass=p=>p>90?'danger':p>=70?'warn':'ok';
-  const capacityClass=v=>v<40000?'danger':v<=80000?'warn':'ok';
-  const daysClass=v=>v<7?'danger':v<=14?'warn':'ok';
-  const keyForDate=date=>`creo_levels_${date}`;
-  const threshold=()=>parseInt(localStorage.getItem('creo_reorder_threshold_days')||DEFAULT_THRESHOLD,10)||DEFAULT_THRESHOLD;
-  const setBanner=(id,msg,type='ok')=>{const el=document.getElementById(id);if(el){el.className=`inventory-banner ${type}`;el.textContent=msg;}};
-  const clearBanner=id=>{const el=document.getElementById(id);if(el){el.className='inventory-banner';el.textContent='';}};
-  function allRecords(){
-    const out=[];
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i);
-      if(!key||!key.startsWith('creo_levels_'))continue;
-      try{const rec=JSON.parse(localStorage.getItem(key));if(rec&&rec.date)out.push(rec);}catch(e){}
-    }
-    return out.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+// Bulk Tank Level Entry
+const TANK_MAX_KG=100000;
+const TANK_SAFE_MAX_KG=98000;
+const TANK_HIGH_PCT=.90;
+const TANK_LOW_PCT=.20;
+const TANK_CRIT_PCT=.10;
+const TANK_INNER_TOP=17;
+const TANK_INNER_H=178;
+const TANK_KEYS=['storageT1','storageT2','workT1','workT2'];
+const TANK_CONFIG={
+  storageT1:{label:'Storage Tank 1',type:'Storage',cls:'storage'},
+  storageT2:{label:'Storage Tank 2',type:'Storage',cls:'storage'},
+  workT1:{label:'Work Tank 1',type:'Process',cls:'process'},
+  workT2:{label:'Work Tank 2',type:'Process',cls:'process'}
+};
+function tankGeometry(levelKg){
+  const pct=Math.min(Math.max((Number(levelKg)||0)/TANK_MAX_KG,0),1);
+  const fillH=Math.round(pct*TANK_INNER_H);
+  const fillY=TANK_INNER_TOP+(TANK_INNER_H-fillH);
+  const gaugeH=Math.round(pct*178);
+  const gaugeY=16+(178-gaugeH);
+  return {fillY,fillH,gaugeY,gaugeH,pct};
+}
+function tankWavePath(fillY){const y=fillY-1;return `M-20,${y} Q10,${y-5} 45,${y} Q80,${y+5} 115,${y} Q150,${y-5} 180,${y} L180,${y+10} L-20,${y+10}Z`;}
+function tankStatus(levelKg){
+  const safeRatio=(Number(levelKg)||0)/TANK_SAFE_MAX_KG;
+  const maxRatio=(Number(levelKg)||0)/TANK_MAX_KG;
+  if(levelKg>TANK_MAX_KG)return {text:'Over Limit',cls:'over'};
+  if(safeRatio>=TANK_HIGH_PCT)return {text:'High',cls:'high'};
+  if(maxRatio<TANK_CRIT_PCT)return {text:'Critical',cls:'critical'};
+  if(maxRatio<TANK_LOW_PCT)return {text:'Low',cls:'low'};
+  return {text:'Normal',cls:'normal'};
+}
+function tankSvgHtml(key){
+  return `<svg class="tank-svg" id="svg-${key}" viewBox="0 0 90 220" aria-hidden="true">
+    <defs>
+      <linearGradient id="shellGrad-${key}" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4A4A4A"/><stop offset="15%" stop-color="#8A8A8A"/><stop offset="50%" stop-color="#D0D0D0"/><stop offset="85%" stop-color="#8A8A8A"/><stop offset="100%" stop-color="#4A4A4A"/></linearGradient>
+      <clipPath id="clip-${key}"><rect x="12" y="16" width="66" height="180" rx="2"/></clipPath>
+    </defs>
+    <rect x="1" y="16" width="7" height="178" rx="2" fill="#1a1a1a" stroke="#3a3a3a" stroke-width="0.5"/>
+    <rect class="tank-gauge-fill" id="gauge-${key}" x="2" y="194" width="5" height="0" rx="1" fill="#CC0000"/>
+    <ellipse cx="45" cy="16" rx="33" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
+    <rect x="12" y="16" width="66" height="180" fill="url(#shellGrad-${key})" stroke="#555" stroke-width="1.5"/>
+    <rect x="13" y="17" width="64" height="178" fill="#2a2a2a" clip-path="url(#clip-${key})"/>
+    <rect class="tank-fill" id="fill-${key}" x="13" y="195" width="64" height="0" fill="#8B0000" clip-path="url(#clip-${key})" style="transition:y .5s ease,height .5s ease;"/>
+    <path class="tank-wave" id="wave-${key}" fill="#CC0000" opacity="0.3" clip-path="url(#clip-${key})" style="animation:tankWave 3s linear infinite;"/>
+    <rect id="surface-${key}" x="13" y="194" width="64" height="2.5" fill="#FF3333" opacity="0.7" clip-path="url(#clip-${key})"/>
+    <line x1="13" x2="78" y1="21" y2="21" stroke="#c9782e" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="80" y="24" font-size="6.5" fill="#c9782e" font-family="'DM Mono',monospace">SAFE MAX</text>
+    <rect x="12" y="16" width="66" height="180" fill="url(#shellGrad-${key})" stroke="#555" stroke-width="1.5" opacity="0.35"/>
+    <ellipse cx="45" cy="196" rx="33" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
+    <rect x="41" y="203" width="8" height="14" fill="#707070"/>
+    <polygon points="37,210 45,216 37,216" fill="#2f7d48" stroke="#1a5c33" stroke-width="0.5"/>
+    <polygon points="53,210 45,216 53,216" fill="#2f7d48" stroke="#1a5c33" stroke-width="0.5"/>
+  </svg>`;
+}
+function tankCardHtml(key){
+  const cfg=TANK_CONFIG[key];
+  return `<div class="tank-card" data-key="${key}"><div class="tank-card-top"><span class="tank-type-badge ${cfg.cls}">${cfg.type}</span><span class="tank-status-badge normal" id="status-${key}">Normal</span></div>${tankSvgHtml(key)}<div class="tank-card-label">${cfg.label}</div><div class="tank-input-wrap" id="wrap-${key}"><input type="number" class="tank-input" id="inp-${key}" min="0" max="100000" step="100" placeholder="0" oninput="onTankInput('${key}',this.value)"></div><div class="tank-display-kg" id="kg-${key}">- kg</div><div class="tank-display-free" id="free-${key}">- free</div></div>`;
+}
+function bulkTankPanelHtml(){
+  return `<!-- =========================================== -->
+<!-- BULK TANK LEVEL ENTRY - added below          -->
+<!-- =========================================== -->
+<div class="tank-panel" id="bulkTankPanel"><div class="tank-panel-header"><span class="tank-panel-title"><i class="ti ti-droplet"></i>Bulk Tank Levels</span><span class="tank-panel-saved" id="tankLastSaved">-</span></div><div class="tank-entry-grid"><div class="tank-group"><div class="tank-group-label">Storage Tanks</div><div class="tank-group-row">${tankCardHtml('storageT1')}${tankCardHtml('storageT2')}</div></div><div class="tank-group-divider"></div><div class="tank-group"><div class="tank-group-label">Work / Process Tanks</div><div class="tank-group-row">${tankCardHtml('workT1')}${tankCardHtml('workT2')}</div></div></div><div class="tank-manifold"></div><div class="tank-save-row"><button class="tank-save-btn" id="tankSaveBtn" onclick="saveTankReadings()"><i class="ti ti-device-floppy"></i>Save Tank Levels</button></div></div>`;
+}
+function renderTank(key,levelKg){
+  const level=Number(levelKg)||0;
+  const g=tankGeometry(level);
+  const fillEl=document.getElementById('fill-'+key),gaugeEl=document.getElementById('gauge-'+key),waveEl=document.getElementById('wave-'+key),surfaceEl=document.getElementById('surface-'+key),statusEl=document.getElementById('status-'+key),wrapEl=document.getElementById('wrap-'+key),kgEl=document.getElementById('kg-'+key),freeEl=document.getElementById('free-'+key);
+  if(fillEl){fillEl.setAttribute('y',g.fillY);fillEl.setAttribute('height',g.fillH);}
+  if(gaugeEl){gaugeEl.setAttribute('y',g.gaugeY);gaugeEl.setAttribute('height',g.gaugeH);}
+  if(waveEl)waveEl.setAttribute('d',tankWavePath(g.fillY));
+  if(surfaceEl)surfaceEl.setAttribute('y',g.fillY-1);
+  const st=tankStatus(level);
+  if(statusEl){statusEl.textContent=st.text;statusEl.className='tank-status-badge '+st.cls;}
+  if(wrapEl)wrapEl.className='tank-input-wrap'+(level>TANK_MAX_KG?' error':level>=TANK_SAFE_MAX_KG?' warn':'');
+  if(kgEl)kgEl.textContent=level>0?level.toLocaleString('en-GB')+' kg':'- kg';
+  if(freeEl){
+    const free=TANK_SAFE_MAX_KG-level;
+    if(level>TANK_MAX_KG){freeEl.textContent='Exceeds maximum';freeEl.className='tank-display-free error';}
+    else if(level>=TANK_SAFE_MAX_KG){freeEl.textContent='At safe limit';freeEl.className='tank-display-free warn';}
+    else if(level>0){freeEl.textContent=free.toLocaleString('en-GB')+' kg free';freeEl.className='tank-display-free';}
+    else{freeEl.textContent='- free';freeEl.className='tank-display-free';}
   }
-  function latestRecord(){return allRecords().at(-1)||null;}
-  function avgUsage(){
-    const recs=allRecords();
-    const usage=[];
-    for(let i=1;i<recs.length;i++){
-      const cur=recs[i],prev=recs[i-1];
-      const day=new Date(`${cur.date}T00:00:00`).getDay();
-      if(day===0||day===6)continue;
-      const used=totalStock(prev)+n(cur.deliveryVolume)-totalStock(cur);
-      if(Number.isFinite(used)&&used>=0)usage.push(used);
-    }
-    const last=usage.slice(-5);
-    if(last.length<3)return null;
-    return Math.round(last.reduce((a,b)=>a+b,0)/last.length);
+}
+function onTankInput(key,rawValue){renderTank(key,parseInt(rawValue,10)||0);}
+function loadTankReadings(){try{return JSON.parse(localStorage.getItem('bulkTankReadings')||'{}')||{};}catch(e){return {};}}
+function updateTankLastSaved(saved){
+  const latest=TANK_KEYS.map(k=>saved[k]?.savedAt).filter(Boolean).sort().pop();
+  const el=document.getElementById('tankLastSaved');
+  if(!el)return;
+  if(!latest){el.textContent='-';return;}
+  const d=new Date(latest);
+  el.textContent='Last saved: '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function initBulkTankReadings(){
+  if(!document.getElementById('bulkTankPanel'))return;
+  const saved=loadTankReadings();
+  TANK_KEYS.forEach(key=>{const inp=document.getElementById('inp-'+key);const level=Number(saved[key]?.level)||0;if(inp&&level>0)inp.value=level;renderTank(key,0);});
+  updateTankLastSaved(saved);
+  setTimeout(()=>{TANK_KEYS.forEach(key=>{const inp=document.getElementById('inp-'+key);renderTank(key,parseInt(inp?.value,10)||0);});},150);
+}
+async function saveTankReadings(){
+  const btn=document.getElementById('tankSaveBtn');
+  const savedAt=new Date().toISOString();
+  const readings={};
+  let valid=true;
+  TANK_KEYS.forEach(key=>{const inp=document.getElementById('inp-'+key);const raw=inp?.value||'0';const level=parseInt(raw,10)||0;if(level<0||level>TANK_MAX_KG)valid=false;readings[key]={level,savedAt};renderTank(key,level);});
+  if(!valid){if(btn){btn.className='tank-save-btn';btn.innerHTML='<i class="ti ti-alert-triangle"></i> Check readings';setTimeout(()=>{btn.innerHTML='<i class="ti ti-device-floppy"></i> Save Tank Levels';},1800);}return;}
+  if(btn){btn.disabled=true;btn.className='tank-save-btn saving';btn.innerHTML='<i class="ti ti-loader-2"></i> Saving...';}
+  localStorage.setItem('bulkTankReadings',JSON.stringify(readings));
+  const bridgeUrl=typeof BRIDGE_URL!=='undefined'?BRIDGE_URL:(typeof liveBridgeUrl==='function'?liveBridgeUrl():'');
+  if(bridgeUrl){
+    fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveTankLevels',data:{...readings,savedAt}})}).catch(()=>{});
   }
-  function stockMetrics(){
-    const rec=latestRecord();
-    const avg=avgUsage();
-    const stock=totalStock(rec);
-    const days=avg&&avg>0?Math.floor(stock/avg):null;
-    return {rec,avg,stock,days,threshold:threshold()};
-  }
-  function maybeNumber(v){return v===''||v===null||v===undefined?'':Number(v);}
-  function fieldValue(rec,key){return rec&&rec[key]!==undefined&&rec[key]!==null?rec[key]:'';}
-  function renderInput(key,label,type,placeholder,rec){
-    const warn=key.toLowerCase().includes('temp')?'Temperature outside 60-140 deg C operating range':'Must be 0-100,000 litres';
-    return `<div class="inventory-field" data-inventory-field="${key}"><label for="inv-${key}">${label}</label><input id="inv-${key}" type="${type}" placeholder="${placeholder}" value="${escHtml(fieldValue(rec,key))}" oninput="CreoInventory.validateEntry()"><span class="field-warn">${warn}</span></div>`;
-  }
-  function buildLevelForm(){
-    const today=todayIso();
-    const rec=JSON.parse(localStorage.getItem(keyForDate(today))||'null')||latestRecord()||{};
-    const subtitle=document.getElementById('inventory-today-subtitle');
-    if(subtitle)subtitle.textContent=`Today: ${fmtDate(today)}`;
-    let html='<div class="inventory-grid">';
-    fieldDefs.forEach(([key,label,type,placeholder,section])=>{
-      if(section)html+=`</div><div class="inventory-section-title">${section}</div><div class="inventory-grid">`;
-      html+=renderInput(key,label,type,placeholder,rec);
-    });
-    html+='</div>';
-    html+=`<label class="inventory-toggle"><input type="checkbox" id="inv-deliveryReceived" ${rec.deliveryReceived?'checked':''} onchange="CreoInventory.toggleDeliveryFields()"> Delivery Received Today</label>`;
-    html+=`<div class="inventory-grid inventory-delivery-fields${rec.deliveryReceived?' active':''}" id="inventory-delivery-fields">
-      <div class="inventory-field"><label>Supplier</label><select id="inv-deliverySupplier">${SUPPLIERS.map(s=>`<option value="${s}"${rec.deliverySupplier===s?' selected':''}>${s}</option>`).join('')}</select></div>
-      <div class="inventory-field"><label>Volume Delivered (litres)</label><input id="inv-deliveryVolume" type="number" placeholder="0" value="${escHtml(fieldValue(rec,'deliveryVolume'))}"></div>
-      <div class="inventory-field"><label>Batch / Certificate Number</label><input id="inv-deliveryBatch" type="text" value="${escHtml(fieldValue(rec,'deliveryBatch'))}"></div>
-      <div class="inventory-field" data-inventory-field="deliveryFlashPoint"><label>Flash Point (deg C)</label><input id="inv-deliveryFlashPoint" type="number" placeholder="0" value="${escHtml(fieldValue(rec,'deliveryFlashPoint'))}" oninput="CreoInventory.validateEntry()"><span class="field-warn">Temperature outside 60-140 deg C operating range</span></div>
-    </div>`;
-    html+=`<div class="inventory-field"><label>Operator Notes</label><textarea id="inv-notes" rows="2" placeholder="Optional notes for handover...">${escHtml(rec.notes||'')}</textarea></div>`;
-    html+=`<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;"><button type="button" class="acc" onclick="CreoInventory.saveToday(false)">Save Today's Levels</button><span class="help" id="inventory-save-state"></span></div>`;
-    const form=document.getElementById('inventory-level-form');
-    if(form)form.innerHTML=html;
-    validateEntry();
-  }
-  function toggleDeliveryFields(){
-    const on=document.getElementById('inv-deliveryReceived')?.checked;
-    document.getElementById('inventory-delivery-fields')?.classList.toggle('active',!!on);
-  }
-  function collectRecord(){
-    const today=todayIso();
-    const rec={action:'saveTankLevels',date:today};
-    fieldDefs.forEach(([key])=>rec[key]=maybeNumber(document.getElementById(`inv-${key}`)?.value));
-    rec.deliveryReceived=!!document.getElementById('inv-deliveryReceived')?.checked;
-    rec.deliverySupplier=rec.deliveryReceived?(document.getElementById('inv-deliverySupplier')?.value||''):'';
-    rec.deliveryVolume=rec.deliveryReceived?maybeNumber(document.getElementById('inv-deliveryVolume')?.value):0;
-    rec.deliveryBatch=rec.deliveryReceived?(document.getElementById('inv-deliveryBatch')?.value||''):'';
-    rec.deliveryFlashPoint=rec.deliveryReceived?maybeNumber(document.getElementById('inv-deliveryFlashPoint')?.value):0;
-    rec.notes=document.getElementById('inv-notes')?.value||'';
-    rec.savedAt=new Date().toISOString();
-    return rec;
-  }
-  function validateEntry(){
-    let ok=true;
-    const rec=collectRecord();
-    const checks=[
-      ['tank1Level',rec.tank1Level>=0&&rec.tank1Level<=MAX_TANK],
-      ['tank2Level',rec.tank2Level>=0&&rec.tank2Level<=MAX_TANK],
-      ['workTank1Level',rec.workTank1Level>=0&&rec.workTank1Level<=MAX_TANK],
-      ['workTank2Level',rec.workTank2Level>=0&&rec.workTank2Level<=MAX_TANK],
-      ['tank1Temp',rec.tank1Temp===''||(rec.tank1Temp>=0&&rec.tank1Temp<=200&&rec.tank1Temp>=60&&rec.tank1Temp<=140)],
-      ['tank2Temp',rec.tank2Temp===''||(rec.tank2Temp>=0&&rec.tank2Temp<=200&&rec.tank2Temp>=60&&rec.tank2Temp<=140)],
-      ['workTank1Temp',rec.workTank1Temp===''||(rec.workTank1Temp>=0&&rec.workTank1Temp<=200&&rec.workTank1Temp>=60&&rec.workTank1Temp<=140)],
-      ['workTank2Temp',rec.workTank2Temp===''||(rec.workTank2Temp>=0&&rec.workTank2Temp<=200&&rec.workTank2Temp>=60&&rec.workTank2Temp<=140)],
-      ['deliveryFlashPoint',!rec.deliveryReceived||rec.deliveryFlashPoint===''||(rec.deliveryFlashPoint>=0&&rec.deliveryFlashPoint<=200&&rec.deliveryFlashPoint>=60&&rec.deliveryFlashPoint<=140)]
-    ];
-    checks.forEach(([key,pass])=>{document.querySelector(`[data-inventory-field="${key}"]`)?.classList.toggle('warn',!pass);if(!pass)ok=false;});
-    return ok;
-  }
-  async function saveToday(force=false){
-    const rec=collectRecord();
-    if(!validateEntry()){setBanner('inventory-level-banner','Check tank levels and temperatures before saving.','danger');return;}
-    const key=keyForDate(rec.date);
-    if(localStorage.getItem(key)&&!force){
-      setBanner('inventory-level-banner',`Tank levels have already been saved for ${fmtDate(rec.date)}. You can overwrite them if these are the latest readings.`,'warn');
-      showModal('Overwrite tank levels?',`Levels already exist for ${fmtDate(rec.date)}. Save these readings over the existing record?`,[
-        ['Cancel','',()=>{}],
-        ['Overwrite','acc',()=>saveToday(true)]
-      ]);
-      return;
-    }
-    localStorage.setItem(key,JSON.stringify(rec));
-    localStorage.setItem('creo_last_sync',new Date().toISOString());
-    const synced=await bridgeSave(rec);
-    setBanner('inventory-level-banner',synced?`Tank levels saved for ${fmtDate(rec.date)}`:'Saved locally - will sync when online',synced?'ok':'warn');
-    buildLevelForm();renderStatus();renderIntelligence();updateReorderAlert();
-  }
-  async function bridgeSave(payload){
-    const url=liveBridgeUrl();
-    if(!url)return false;
-    try{
-      const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
-      if(res&&res.ok!==false)return true;
-    }catch(e){}
-    try{
-      const data=await loadJsonp(url,{action:payload.action||'saveTankLevels',payload:JSON.stringify(payload)});
-      return !!data&&data.ok!==false;
-    }catch(e){return false;}
-  }
-  async function fetchRecent(){
-    try{
-      const data=await loadJsonp(liveBridgeUrl(),{action:'getTankLevels',days:30});
-      const records=Array.isArray(data?.records)?data.records:(Array.isArray(data?.levels)?data.levels:[]);
-      records.forEach(rec=>{if(rec&&rec.date&&!localStorage.getItem(keyForDate(rec.date)))localStorage.setItem(keyForDate(rec.date),JSON.stringify(rec));});
-      if(records.length)localStorage.setItem('creo_last_sync',new Date().toISOString());
-    }catch(e){}
-  }
-  function renderTankCard(title,level,temp,withPercent=true){
-    const pct=Math.max(0,Math.min(100,(n(level)/MAX_TANK)*100));
-    const cls=levelClass(pct);
-    return `<div class="stat" style="animation:fadeIn .18s ease;"><div class="stat-l">${title}</div><div class="stat-v ${cls==='danger'?'danger':cls==='warn'?'warn':'ok'}">${litres(level)}</div><div class="stat-s">${withPercent?`${Math.round(pct)}% full · `:''}${temp===''||temp===undefined?'Temp not recorded':`${temp} deg C`}</div>${withPercent?`<div class="tank-bar"><div class="tank-bar-fill ${cls==='ok'?'':cls}" style="width:${pct}%"></div></div>`:''}</div>`;
-  }
-  function renderStatus(){
-    const rec=latestRecord()||{};
-    const cap=storageCapacity(rec);
-    const cls=capacityClass(cap);
-    const html=`<div class="inventory-status-grid">
-      ${renderTankCard('Storage Tank 1',rec.tank1Level,rec.tank1Temp)}
-      ${renderTankCard('Storage Tank 2',rec.tank2Level,rec.tank2Temp)}
-      ${renderTankCard('Work Tank 1',rec.workTank1Level,rec.workTank1Temp,false)}
-      ${renderTankCard('Work Tank 2',rec.workTank2Level,rec.workTank2Temp,false)}
-    </div><div class="stat inventory-stat-large"><div class="stat-l">Available Receiving Capacity</div><div class="stat-v ${cls==='danger'?'danger':cls==='warn'?'warn':'ok'}">${litres(cap)}</div><div class="stat-s">Storage tank spare capacity</div></div>`;
-    const el=document.getElementById('inventory-status-cards');if(el)el.innerHTML=html;
-  }
-  function renderIntelligence(){
-    const m=stockMetrics();
-    const suggested=TARGET_STOCK-m.stock;
-    const daysTxt=m.avg===null?'Insufficient data':`${m.days} day${m.days===1?'':'s'}`;
-    const daysCls=m.days===null?'':daysClass(m.days);
-    const html=`<div class="card"><div class="card-title"><i class="ti ti-chart-line"></i> Stock Intelligence</div>
-      <div class="inventory-intel-grid">
-        <div class="stat"><div class="stat-l">Average Daily Usage</div><div class="stat-v">${m.avg===null?'--':litres(m.avg)}</div><div class="stat-s">${m.avg===null?'Insufficient data':'Rolling 5 weekday records'}</div></div>
-        <div class="stat"><div class="stat-l">Estimated Days of Stock</div><div class="stat-v ${daysCls==='danger'?'danger':daysCls==='warn'?'warn':'ok'}">${daysTxt}</div><div class="stat-s">${m.days!==null&&m.days<7?'<span class="inventory-alert-badge">! REORDER REQUIRED</span>':'Total stock divided by usage'}</div></div>
-        <div class="stat"><div class="stat-l">Suggested Order Volume</div><div class="stat-v ${suggested>0?'warn':'ok'}">${suggested>0?litres(suggested):'Adequate'}</div><div class="stat-s">${suggested>0?'Target stock: 120,000 L':'Stock level adequate'}</div></div>
-      </div>
-      <div class="inventory-setting-row"><span>Alert when below</span><input type="number" min="1" max="60" value="${m.threshold}" onchange="CreoInventory.setThreshold(this.value)"><span>days of stock</span></div>
-    </div>`;
-    const el=document.getElementById('inventory-intelligence');if(el)el.innerHTML=html;
-  }
-  function updateReorderAlert(){
-    const el=document.getElementById('creo-reorder-pill');
-    if(!el)return;
-    const m=stockMetrics();
-    if(m.days===null||m.days>=m.threshold){el.style.display='none';return;}
-    el.textContent=`! Creo: ${m.days} days stock`;
-    el.className=`creo-reorder-pill${m.days<7?' danger':''}`;
-    el.style.display='block';
-  }
-  function setThreshold(v){
-    localStorage.setItem('creo_reorder_threshold_days',String(parseInt(v,10)||DEFAULT_THRESHOLD));
-    renderIntelligence();updateReorderAlert();
-  }
-  function deliveries(){
-    try{return JSON.parse(localStorage.getItem('creo_deliveries_scheduled')||'[]');}catch(e){return[];}
-  }
-  function saveDeliveries(rows){localStorage.setItem('creo_deliveries_scheduled',JSON.stringify(rows));}
-  async function addDelivery(){
-    const row={id:`del_${Date.now()}`,supplier:document.getElementById('del-supplier')?.value||SUPPLIERS[0],date:document.getElementById('del-date')?.value||todayIso(),volume:n(document.getElementById('del-volume')?.value),notes:document.getElementById('del-notes')?.value||'',status:'Scheduled',createdAt:new Date().toISOString()};
-    const rows=deliveries();rows.push(row);saveDeliveries(rows);
-    await bridgeSave({action:'saveDelivery',...row});
-    setBanner('inventory-delivery-banner','Delivery added to schedule.','ok');
-    renderDeliveries();
-  }
-  function renderDeliveryForm(){
-    const html=`<div class="inventory-grid">
-      <div class="inventory-field"><label>Supplier</label><select id="del-supplier">${SUPPLIERS.map(s=>`<option value="${s}">${s}</option>`).join('')}</select></div>
-      <div class="inventory-field"><label>Expected Date</label><input id="del-date" type="date" value="${todayIso()}"></div>
-      <div class="inventory-field"><label>Expected Volume (litres)</label><input id="del-volume" type="number" placeholder="0"></div>
-      <div class="inventory-field"><label>Notes</label><input id="del-notes" type="text" placeholder="Optional"></div>
-    </div><button type="button" class="acc" onclick="CreoInventory.addDelivery()">Add to Schedule</button>`;
-    const el=document.getElementById('inventory-delivery-form');if(el)el.innerHTML=html;
-  }
-  function renderScheduled(){
-    const rows=deliveries().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-    const body=rows.length?rows.map(row=>`<tr class="${row.status==='Cancelled'?'delivery-cancelled':''}"><td>${escHtml(row.date)}</td><td>${escHtml(row.supplier)}</td><td>${litres(row.volume)}</td><td><span class="badge ${row.status==='Received'?'ok':row.status==='Cancelled'?'danger':'warn'}">${row.status}</span></td><td>${escHtml(row.notes||'')}</td><td><div class="delivery-actions"><button onclick="CreoInventory.updateDelivery('${row.id}','Confirmed')">Confirm</button><button class="sm-green" onclick="CreoInventory.promptReceived('${row.id}')">Mark Received</button><button class="sm-red" onclick="CreoInventory.updateDelivery('${row.id}','Cancelled')">Cancel</button></div></td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);font-family:var(--mono);">No deliveries scheduled</td></tr>`;
-    const el=document.getElementById('inventory-scheduled-table');
-    if(el)el.innerHTML=`<div class="card" style="margin-bottom:12px;"><div class="card-title"><i class="ti ti-calendar-time"></i> Upcoming Deliveries</div><div class="twrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Volume</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
-  }
-  function renderHistory(){
-    const rows=allRecords().filter(r=>r.deliveryReceived).slice(-20).reverse();
-    const body=rows.length?rows.map(r=>`<tr><td>${escHtml(r.date)}</td><td>${escHtml(r.deliverySupplier)}</td><td>${litres(r.deliveryVolume)}</td><td>${escHtml(r.deliveryBatch||'--')}</td><td>${r.deliveryFlashPoint?`${escHtml(r.deliveryFlashPoint)} deg C`:'--'}</td><td>${escHtml(r.notes||'')}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);font-family:var(--mono);">No received deliveries recorded</td></tr>`;
-    const el=document.getElementById('inventory-delivery-history');
-    if(el)el.innerHTML=`<div class="card"><div class="card-title"><i class="ti ti-history"></i> Delivery History</div><div class="twrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Volume</th><th>Batch Number</th><th>Flash Point</th><th>Notes</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
-  }
-  function updateDelivery(id,status,actualVolume){
-    const rows=deliveries();
-    const row=rows.find(r=>r.id===id);
-    if(!row)return;
-    const action=status==='Cancelled'?'Cancel delivery?':status==='Confirmed'?'Confirm delivery?':'Mark delivery received?';
-    showModal(action,`Update ${escHtml(row.supplier)} delivery on ${escHtml(row.date)} to ${status}?`,[
-      ['No','',()=>{}],
-      ['Yes','acc',async()=>{row.status=status;if(actualVolume!==undefined)row.actualVolume=n(actualVolume);saveDeliveries(rows);await bridgeSave({action:'saveDelivery',...row});renderDeliveries();}]
-    ]);
-  }
-  function promptReceived(id){
-    const row=deliveries().find(r=>r.id===id);if(!row)return;
-    showModal('Actual delivery volume',`<div class="inventory-field"><label>Actual Volume Received</label><input id="modal-delivery-volume" type="number" value="${escHtml(row.volume||'')}"></div>`,[
-      ['Cancel','',()=>{}],
-      ['Mark Received','acc',()=>updateDelivery(id,'Received',document.getElementById('modal-delivery-volume')?.value)]
-    ],true);
-  }
-  function showModal(title,body,actions,html=false){
-    let modal=document.getElementById('creo-inventory-modal');
-    if(!modal){modal=document.createElement('div');modal.id='creo-inventory-modal';modal.className='modal-backdrop';document.body.appendChild(modal);}
-    modal.innerHTML=`<div class="modal-card"><div class="modal-title">${escHtml(title)}</div><div class="modal-sub">${html?body:escHtml(body)}</div><div class="modal-actions">${actions.map(([label,cls],i)=>`<button type="button" class="${cls}" data-modal-action="${i}">${escHtml(label)}</button>`).join('')}</div></div>`;
-    modal.classList.add('active');
-    actions.forEach(([, ,fn],i)=>modal.querySelector(`[data-modal-action="${i}"]`)?.addEventListener('click',()=>{modal.classList.remove('active');fn&&fn();}));
-  }
-  function renderTankLevels(){clearBanner('inventory-level-banner');buildLevelForm();renderStatus();renderIntelligence();updateReorderAlert();}
-  function renderDeliveries(){renderDeliveryForm();renderScheduled();renderHistory();}
-  async function init(){localStorage.setItem('creo_reorder_threshold_days',String(threshold()));renderTankLevels();renderDeliveries();updateReorderAlert();await fetchRecent();renderTankLevels();renderDeliveries();}
-  return {init,renderTankLevels,renderDeliveries,toggleDeliveryFields,validateEntry,saveToday,setThreshold,addDelivery,updateDelivery,promptReceived};
-})();
-
+  updateTankLastSaved(readings);
+  setTimeout(()=>{if(!btn)return;btn.className='tank-save-btn saved';btn.innerHTML='<i class="ti ti-check"></i> Saved';setTimeout(()=>{btn.className='tank-save-btn';btn.innerHTML='<i class="ti ti-device-floppy"></i> Save Tank Levels';btn.disabled=false;},2000);},500);
+}
+document.addEventListener('DOMContentLoaded',initBulkTankReadings);
 // ═══════════════════════ INIT ═══════════════════════
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
 function updateClock(){const n=new Date();document.getElementById('live-time').textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
@@ -3717,11 +3546,11 @@ function applyAccessMode(){
     if(btn5&&btn7){btn5.classList.remove('active');btn7.classList.add('active');}
     document.querySelectorAll('.nav-item').forEach(item=>{
       const call=item.getAttribute('onclick')||'';
-      item.classList.toggle('operator-hidden',!['live-log','tank-levels','deliveries'].some(panel=>call.includes(panel)));
+      item.classList.toggle('operator-hidden',!call.includes('live-log'));
     });
     document.querySelectorAll('.sidebar-section').forEach(section=>{
-      const label=(section.querySelector('.sidebar-label')?.textContent||'').trim().toLowerCase();
-      section.classList.toggle('operator-hidden',!['live','inventory'].includes(label));
+      const sections=[...document.querySelectorAll('.sidebar-section')];
+      section.classList.toggle('operator-hidden',sections.indexOf(section)>0);
     });
     document.getElementById('mode-sub').textContent='Operator logging';
     showPanel('live-log');
@@ -3741,7 +3570,6 @@ buildPersonPanel(operators,'op-person-grid','op-shifts-cfg','74,158,255');
 buildPersonPanel(cranes,'crane-person-grid','crane-shifts-cfg','232,147,71');
 buildPersonPanel(tippers,'tipper-person-grid','tipper-shifts-cfg','61,214,180');
 buildDayConfigTabs();
-CreoInventory.init();
 // Load persisted data then render
 loadData().then(()=>{go();buildLogPanel();applyAccessMode();pullLiveState(true).then(()=>{go();buildLogPanel();});});
 loadMasterCache();
