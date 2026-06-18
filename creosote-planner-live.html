@@ -563,8 +563,9 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
    ═══════════════════════════════════════════════════ */
 
 /* KPI row */
-.inv-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
-@media(max-width:700px){.inv-kpi-row{grid-template-columns:1fr 1fr}}
+.inv-kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+@media(max-width:900px){.inv-kpi-row{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:600px){.inv-kpi-row{grid-template-columns:1fr 1fr}}
 
 /* Status banner */
 .inv-banner{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:var(--radius);margin-bottom:14px;font-size:12px;font-weight:600;border:1px solid}
@@ -1014,9 +1015,14 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
       <div class="stat-s" id="invKpiTotalPct">— % of safe capacity</div>
     </div>
     <div class="stat">
-      <div class="stat-l">Available (to safe max)</div>
+      <div class="stat-l">Storage capacity free</div>
       <div class="stat-v ok" id="invKpiAvail">—</div>
-      <div class="stat-s" id="invKpiDelivs">— deliveries</div>
+      <div class="stat-s" id="invKpiDelivs">— deliveries · storage tanks only</div>
+    </div>
+    <div class="stat">
+      <div class="stat-l">Days of stock</div>
+      <div class="stat-v ok" id="invKpiDaysStock">—</div>
+      <div class="stat-s" id="invKpiDaysStockSub">with planned deliveries</div>
     </div>
     <div class="stat">
       <div class="stat-l">Today Planned</div>
@@ -1078,7 +1084,19 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <div class="card-title"><i class="ti ti-settings"></i> Forecast Settings</div>
     <div class="inv-fcast-settings">
       <div class="inv-field"><label>Horizon (days)</label><input type="number" id="invHorizon" value="14" min="7" max="42" step="1" oninput="invFcastHorizon=+this.value||14;invSaveSettings();invRenderForecast()"></div>
-      <div class="inv-field"><label>Daily usage (kg)</label><input type="number" id="invDailyUse" value="45000" min="0" step="1000" oninput="invDailyUsage=+this.value||0;this.dataset.user=1;invSaveSettings();invRenderForecast()"></div>
+      <div class="inv-field">
+        <label>Daily usage (kg)</label>
+        <input type="number" id="invDailyUse" value="21400" min="0" step="1000"
+               oninput="invDailyUsage=+this.value||0;this.dataset.user=1;invSaveSettings();invRenderForecast()">
+        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:3px;">
+          Source: <span id="invDemandSource">Manual entry</span>
+          &nbsp;-&nbsp;
+          <span style="cursor:pointer;color:var(--blue);"
+                onclick="delete document.getElementById('invDailyUse').dataset.user;invRefreshAll()">
+            Reset to auto
+          </span>
+        </div>
+      </div>
       <div class="inv-field"><label>Delivery size (kg)</label><input type="number" id="invDelSize" value="26000" min="1000" step="1000" oninput="invDelKg=+this.value||26000;invSaveSettings();invRenderForecast();invUpdateEmail()"></div>
       <div class="inv-field"><label>Reorder point (kg)</label><input type="number" id="invReorder" value="80000" min="0" step="5000" oninput="invReorderKg=+this.value||80000;invSaveSettings();invRenderDashboard();invRenderForecast()"></div>
     </div>
@@ -4350,15 +4368,17 @@ function buildLegend(noise){
 const INV_MAX      = 100000;
 const INV_SAFE     =  98000;
 const INV_UPTAKE   =    115;
-const INV_TOTAL_SAFE = 392000;
+const INV_TOTAL_SAFE = 392000;          // 4 x 98,000 kg absolute safe max
+const INV_STORAGE_SAFE = 196000;        // 2 x 98,000 kg - storage tanks only (accept deliveries)
+const INV_PROCESS_SAFE = 196000;        // 2 x 98,000 kg - work/process tanks
 const INV_LOW_KG   =  80000;
 const INV_CRIT_KG  =  50000;
 
 /* ── Mutable state ── */
 const INV_SETTINGS_KEY = 'creosoteInvSettings';
-const INV_DEL_PLAN_KEY = 'invDeliveryPlan';
+const INV_DEL_PLAN_KEY = 'creosoteInvDeliveryPlan';
 let invFcastHorizon = 14;
-let invDailyUsage   = 45000;
+let invDailyUsage   = 21400;
 let invDelKg        = 26000;
 let invReorderKg    = INV_LOW_KG;
 let invSupplier     = 'Koppers';
@@ -4414,11 +4434,51 @@ function invAfterChange(){
 }
 
 /* ── Storage ── */
+/**
+ * Calculates expected daily creosote demand from the current week's planned charges.
+ * Uses the 115 kg/m3 uptake rate applied to planned timber volume from masterPoleForecast,
+ * falling back to a rolling average from charge history, then to the user-set daily usage.
+ *
+ * Returns: { kgPerDay: number, source: string }
+ */
+function invCalcDemandFromPlan() {
+  const pf = window.masterPoleForecast || {};
+  if (pf.ok && Array.isArray(pf.days) && pf.days.length) {
+    const weekKeys = computeWeek().map((d, idx) => isoDateKeyForDayIdx(idx));
+    const weekDays = pf.days.filter(d => weekKeys.includes(d.dayKey));
+    const weekdays = weekDays.filter(d => {
+      const dt = new Date(d.dayKey + 'T12:00:00');
+      return dt.getDay() !== 0 && dt.getDay() !== 6;
+    });
+    if (weekdays.length) {
+      const totalM3 = weekdays.reduce((sum, d) => sum + (Number(d.totalM3) || 0), 0);
+      if (totalM3 > 0) {
+        const kgPerDay = Math.round((totalM3 * 115) / weekdays.length);
+        return { kgPerDay, source: 'plan' };
+      }
+    }
+  }
+
+  const now = new Date();
+  const cut = new Date(now); cut.setDate(cut.getDate() - 14);
+  const recent = (invChargeHist || []).filter(c => {
+    const d = new Date(c.date);
+    return d >= cut && (c.actualKg || 0) > 0;
+  });
+  if (recent.length >= 3) {
+    const avg = Math.round(recent.reduce((s, c) => s + c.actualKg, 0) / recent.length);
+    return { kgPerDay: avg, source: 'history' };
+  }
+
+  return { kgPerDay: invDailyUsage, source: 'manual' };
+}
+
 function invSaveSettings(){
   try{
     localStorage.setItem(INV_SETTINGS_KEY,JSON.stringify({
       horizon:invFcastHorizon,
       dailyUsage:invDailyUsage,
+      dailyUsageManual:!!document.getElementById('invDailyUse')?.dataset.user,
       delKg:invDelKg,
       reorderKg:invReorderKg,
       supplier:invSupplier,
@@ -4432,7 +4492,7 @@ function invLoadSettings(){
   try{
     const s=JSON.parse(localStorage.getItem(INV_SETTINGS_KEY)||'{}');
     if(s.horizon){invFcastHorizon=+s.horizon;const el=document.getElementById('invHorizon');if(el)el.value=invFcastHorizon}
-    if(s.dailyUsage){invDailyUsage=+s.dailyUsage;const el=document.getElementById('invDailyUse');if(el){el.value=invDailyUsage;el.dataset.user=1}}
+    if(s.dailyUsage){invDailyUsage=+s.dailyUsage;const el=document.getElementById('invDailyUse');if(el){el.value=invDailyUsage;if(s.dailyUsageManual)el.dataset.user=1;else delete el.dataset.user}}
     if(s.delKg){invDelKg=+s.delKg;['invDelSize','invDelSizeInp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=invDelKg})}
     if(s.reorderKg){invReorderKg=+s.reorderKg;const el=document.getElementById('invReorder');if(el)el.value=invReorderKg}
     if(s.supplier){invSupplier=s.supplier;const el=document.getElementById('invSupplierSel');if(el&&['Koppers','Rutgers'].includes(invSupplier))el.value=invSupplier}
@@ -4444,7 +4504,7 @@ function invLoadSettings(){
 function invLoadStorage(){
   try{const r=localStorage.getItem('bulkTankReadings');if(r)invTankData=JSON.parse(r)}catch(e){}
   try{
-    const r=localStorage.getItem(INV_DEL_PLAN_KEY);
+    const r=localStorage.getItem(INV_DEL_PLAN_KEY)||localStorage.getItem('invDeliveryPlan');
     if(r){
       invDelPlan=JSON.parse(r).map(invNormaliseDel);
       localStorage.setItem(INV_DEL_PLAN_KEY,JSON.stringify(invDelPlan));
@@ -4539,20 +4599,49 @@ function invTankSVG(key,label,type,kg){
 /* ── Dashboard render ── */
 function invRenderDashboard(){
   const total=invTotal();
-  const avail=Math.max(0,INV_TOTAL_SAFE-total);
+  const s1 = invTankData.storageT1?.level || 0;
+  const s2 = invTankData.storageT2?.level || 0;
+  const w1 = invTankData.workT1?.level || 0;
+  const w2 = invTankData.workT2?.level || 0;
+  const storageTotal = s1 + s2;
+  const processTotal = w1 + w2;
+  const avail = Math.max(0, INV_STORAGE_SAFE - storageTotal);
   const pct=Math.round(total/INV_TOTAL_SAFE*100);
 
   const s=id=>document.getElementById(id);
   if(s('invKpiTotal')) s('invKpiTotal').textContent=invFmtKg(total);
   if(s('invKpiTotalPct')) s('invKpiTotalPct').textContent=pct+'% of safe capacity';
-  if(s('invKpiAvail')){s('invKpiAvail').textContent=invFmtKg(avail);s('invKpiAvail').className='stat-v '+(avail>INV_LOW_KG?'ok':avail>INV_CRIT_KG?'warn':'danger')}
-  if(s('invKpiDelivs')) s('invKpiDelivs').textContent='room for '+Math.floor(avail/invDelKg)+' deliveries';
+  if (s('invKpiAvail')) {
+    s('invKpiAvail').textContent = invFmtKg(avail);
+    s('invKpiAvail').className = 'stat-v ' + (avail > 50000 ? 'ok' : avail > 20000 ? 'warn' : 'danger');
+  }
+  if (s('invKpiDelivs')) {
+    s('invKpiDelivs').textContent = Math.floor(avail / invDelKg) + ' deliveries - storage tanks only';
+  }
 
-  const banner=s('invBanner');const bannerTxt=s('invBannerText');
-  if(banner&&bannerTxt){
-    if(total<=INV_CRIT_KG){banner.className='inv-banner danger';bannerTxt.textContent='Critical: stock below '+invFmtKg(INV_CRIT_KG)+' - order immediately'}
-    else if(total<=invReorderKg){banner.className='inv-banner warn';bannerTxt.textContent='Below reorder point ('+invFmtKg(invReorderKg)+'): '+invFmtKg(total)+' remaining'}
-    else{banner.className='inv-banner ok';bannerTxt.textContent='Stock healthy - '+invFmtKg(total)+'; reorder point '+invFmtKg(invReorderKg)}
+  const banner = s('invBanner'); const bannerTxt = s('invBannerText');
+  if (banner && bannerTxt) {
+    const dos = invDaysOfStock();
+    const nextDel = invDelPlan
+      .filter(d => d.date >= invDateKey(new Date()))
+      .sort((a, b) => a.date.localeCompare(b.date))[0];
+    const nextDelStr = nextDel
+      ? ` Next delivery: ${invFmtDate(new Date(nextDel.date + 'T12:00:00'))} (${invFmtKg(nextDel.kg)})`
+      : ' No deliveries scheduled.';
+
+    if (dos.days <= 3) {
+      banner.className = 'inv-banner danger';
+      bannerTxt.textContent = `Critical: ${dos.days} day${dos.days === 1 ? '' : 's'} of stock remaining.${nextDelStr}`;
+    } else if (dos.days <= 7) {
+      banner.className = 'inv-banner warn';
+      bannerTxt.textContent = `Low: ${dos.days} days of stock remaining at current usage.${nextDelStr}`;
+    } else if (dos.days <= 14) {
+      banner.className = 'inv-banner warn';
+      bannerTxt.textContent = `${dos.days} days of stock - reorder soon.${nextDelStr}`;
+    } else {
+      banner.className = 'inv-banner ok';
+      bannerTxt.textContent = `Stock healthy - ${dos.days}+ days remaining at ${invFmtKg(invDailyUsage)}/day.${nextDelStr}`;
+    }
   }
 
   const tanks=[
@@ -4582,22 +4671,47 @@ function invRenderDashboard(){
     }catch(e){}
   }
 
+  const dos = invDaysOfStock();
+  const dosEl = s('invKpiDaysStock');
+  if (dosEl) {
+    dosEl.textContent = dos.days >= 90 ? '90+ days' : dos.days + ' days';
+    dosEl.className = 'stat-v ' + (dos.days > 14 ? 'ok' : dos.days > 7 ? 'warn' : 'danger');
+  }
+  const dosSubEl = s('invKpiDaysStockSub');
+  if (dosSubEl) {
+    dosSubEl.textContent = dos.runoutDate
+      ? 'runs out ' + invFmtDate(dos.runoutDate)
+      : 'with planned deliveries';
+  }
+
   invRenderWeekChart();
   invUpdateNavBadges();
 }
 
 function invUpdateNavBadges(){
-  const total=invTotal();
-  const navInv=document.getElementById('nav-inv-dashboard');
-  const navDel=document.getElementById('nav-delivery-planner');
-  [navInv,navDel].forEach(n=>n&&n.querySelectorAll('.nav-badge').forEach(b=>b.remove()));
-  if(navInv){
-    if(total<INV_CRIT_KG)navInv.insertAdjacentHTML('beforeend','<span class="nav-badge danger">CRITICAL</span>');
-    else if(total<invReorderKg)navInv.insertAdjacentHTML('beforeend','<span class="nav-badge warn">LOW</span>');
+  const navInv = document.getElementById('nav-inv-dashboard');
+  const navDel = document.getElementById('nav-delivery-planner');
+  [navInv, navDel].forEach(n => n && n.querySelectorAll('.nav-badge').forEach(b => b.remove()));
+
+  if (navInv) {
+    const dos = invDaysOfStock();
+    if (dos.days <= 3) {
+      navInv.insertAdjacentHTML('beforeend', '<span class="nav-badge danger">CRITICAL</span>');
+    } else if (dos.days <= 7) {
+      navInv.insertAdjacentHTML('beforeend', `<span class="nav-badge danger">${dos.days}d</span>`);
+    } else if (dos.days <= 14) {
+      navInv.insertAdjacentHTML('beforeend', `<span class="nav-badge warn">${dos.days}d</span>`);
+    }
   }
-  const today=invDateKey(new Date());
-  const upcomingDels=invDelPlan.filter(d=>d.date>=today).length;
-  if(navDel&&upcomingDels===0&&total<invReorderKg)navDel.insertAdjacentHTML('beforeend','<span class="nav-badge danger">!</span>');
+
+  if (navDel) {
+    const today = invDateKey(new Date());
+    const upcomingDels = invDelPlan.filter(d => d.date >= today).length;
+    const dos = invDaysOfStock();
+    if (upcomingDels === 0 && dos.days <= 14) {
+      navDel.insertAdjacentHTML('beforeend', '<span class="nav-badge danger">!</span>');
+    }
+  }
 }
 
 /* ── Weekly chart (plain SVG) ── */
@@ -4633,11 +4747,49 @@ function invRenderWeekChart(){
   card.innerHTML=`<div class="inv-chart-hdr"><span class="card-title" style="margin:0"><i class="ti ti-chart-bar"></i> This week — planned vs actual</span><div class="inv-chart-pills"><span class="inv-pill plan">Plan ${invFmtKg(wPlan)}</span><span class="inv-pill actual">Actual ${invFmtKg(wAct)}</span><span class="inv-pill neutral">${wVar>0?'+':''}${wVar}%</span></div></div>${svg}<div class="inv-chart-legend"><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="1"/></svg> Planned</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#2f7d48" rx="1" opacity=".85"/></svg> Actual ±15%</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#c9782e" rx="1" opacity=".85"/></svg> 15–30% var</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#ba3d35" rx="1" opacity=".85"/></svg> >30% var</span></div>`;
 }
 
+/**
+ * Compares planned vs actual daily usage over the last 7 days.
+ * Returns { avgPlan, avgActual, variancePct, status }
+ * status: 'ok' | 'warn' | 'danger'
+ */
+function invCalcVariance() {
+  const now = new Date();
+  const cut = new Date(now); cut.setDate(cut.getDate() - 7);
+  const recent = (invChargeHist || []).filter(c => {
+    const d = new Date(c.date);
+    return d >= cut && !invIsWe(d);
+  });
+  if (!recent.length) return null;
+  const avgPlan = recent.reduce((s, c) => s + (c.plannedKg || invDailyUsage), 0) / recent.length;
+  const actuals = recent.filter(c => c.actualKg > 0);
+  const avgActual = actuals.length
+    ? actuals.reduce((s, c) => s + c.actualKg, 0) / actuals.length
+    : 0;
+  if (!avgActual) return null;
+  const variancePct = Math.round(((avgActual - avgPlan) / avgPlan) * 100);
+  const status = Math.abs(variancePct) > 30 ? 'danger' : Math.abs(variancePct) > 15 ? 'warn' : 'ok';
+  return { avgPlan: Math.round(avgPlan), avgActual: Math.round(avgActual), variancePct, status };
+}
+
 /* ── Usage table ── */
 function invRenderUsageTable(){
   const el=document.getElementById('invUsageTable');if(!el)return;
   if(invDataLoading){el.innerHTML='<div class="inv-loading" id="invLoadingState"><i class="ti ti-loader-2 spinning"></i> Loading inventory data...</div>';return}
   if(!invChargeHist.length){el.innerHTML='<div class="inv-empty"><i class="ti ti-database-off"></i><p>No usage data available. Connect the Google Apps Script bridge to see planned vs actual data.</p></div>';return}
+  const v = invCalcVariance();
+  const varHtml = v ? `
+    <div class="inv-suggest ${v.status === 'ok' ? 'warn' : v.status}" style="margin-bottom:10px;">
+      <i class="ti ti-trending-${v.variancePct > 0 ? 'up' : 'down'}" style="font-size:14px;"></i>
+      <span>
+        7-day avg: plan <strong>${invFmtKg(v.avgPlan)}/day</strong>
+        vs actual <strong>${invFmtKg(v.avgActual)}/day</strong>
+        &nbsp;-&nbsp;
+        <strong style="color:${v.status === 'ok' ? 'var(--green)' : v.status === 'warn' ? 'var(--amber)' : 'var(--red)'}">
+          ${v.variancePct > 0 ? '+' : ''}${v.variancePct}% variance
+        </strong>
+        ${Math.abs(v.variancePct) > 15 ? '- Forecast may be inaccurate; consider adjusting daily usage above' : ''}
+      </span>
+    </div>` : '';
   let tp=0,ta=0;
   const rows=invChargeHist.map(c=>{
     const plan=c.plannedKg||Math.round((c.m3||0)*INV_UPTAKE);
@@ -4649,7 +4801,7 @@ function invRenderUsageTable(){
   }).join('');
   const tv=ta-tp,tvp=tp>0?Math.round(tv/tp*100):0;
   const tvc=Math.abs(tvp)<10?'inv-var-ok':Math.abs(tvp)<25?'inv-var-warn':'inv-var-bad';
-  el.innerHTML=`<table class="inv-table"><thead><tr><th>Date</th><th>Product</th><th>m³</th><th>Planned kg</th><th>Actual kg</th><th>Variance</th><th>Var %</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">30-day totals</td><td>${invFmtKg(tp)}</td><td>${invFmtKg(ta)}</td><td class="${tvc}">${tv>0?'+':''}${tv.toLocaleString()} kg</td><td class="${tvc}">${tvp>0?'+':''}${tvp}%</td></tr></tfoot></table>`;
+  el.innerHTML=varHtml+`<table class="inv-table"><thead><tr><th>Date</th><th>Product</th><th>m³</th><th>Planned kg</th><th>Actual kg</th><th>Variance</th><th>Var %</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">30-day totals</td><td>${invFmtKg(tp)}</td><td>${invFmtKg(ta)}</td><td class="${tvc}">${tv>0?'+':''}${tv.toLocaleString()} kg</td><td class="${tvc}">${tvp>0?'+':''}${tvp}%</td></tr></tfoot></table>`;
 }
 
 /* ── Rolling averages ── */
@@ -4662,6 +4814,30 @@ function invUpdateAvgs(){
   if(s('invAvg14'))s('invAvg14').textContent=invFmtKg(a14);
   if(s('invAvg30'))s('invAvg30').textContent=invFmtKg(a30);
   const inp=s('invDailyUse');if(inp&&!inp.dataset.user){inp.value=a14;invDailyUsage=a14;invSaveSettings()}
+}
+
+/**
+ * Calculates days of stock remaining based on current total and daily usage.
+ * Accounts for already-planned deliveries within the horizon.
+ * Returns { days, runoutDate: Date|null }
+ */
+function invDaysOfStock() {
+  let stock = invTotal();
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const delMap = {};
+  invDelPlan.forEach(d => { delMap[d.date] = (delMap[d.date] || 0) + d.kg; });
+
+  for (let i = 0; i < 90; i++) {
+    const d = invAddDays(today, i);
+    const ds = invDateKey(d);
+    const we = invIsWe(d);
+    stock -= we ? 0 : invDailyUsage;
+    stock += delMap[ds] || 0;
+    if (stock <= 0) {
+      return { days: i, runoutDate: d };
+    }
+  }
+  return { days: 90, runoutDate: null };
 }
 
 /* ── Forecast chart ── */
@@ -4736,6 +4912,22 @@ function invAddSuggest(ds){
   if(typeof showPanel==='function')showPanel('delivery-planner');
 }
 
+/**
+ * Returns how many kg can still be received into the two storage tanks
+ * without exceeding their combined safe maximum (98,000 kg each = 196,000 kg total).
+ * Work/process tanks are excluded - they do not accept deliveries.
+ */
+function invStorageCapacityAvailable() {
+  const s1 = Number(invTankData.storageT1?.level) || 0;
+  const s2 = Number(invTankData.storageT2?.level) || 0;
+  const currentStorage = s1 + s2;
+  const todayStr = invDateKey(new Date());
+  const todayDels = invDelPlan
+    .filter(d => d.date === todayStr)
+    .reduce((sum, d) => sum + (d.kg || 0), 0);
+  return Math.max(0, INV_STORAGE_SAFE - currentStorage - todayDels);
+}
+
 function invRunSuggestAll(){
   const today=new Date();today.setHours(0,0,0,0);
   let stock=invTotal();
@@ -4750,7 +4942,11 @@ function invRunSuggestAll(){
       while(invIsWe(target))target=invAddDays(target,-1);
       const tds=invDateKey(target);
       if(!invDelPlan.some(x=>x.date===tds)){
-        invDelPlan.push({date:tds,kg:invDelKg,supplier:invSupplier,window:'AM',notes:'Auto-suggested',ref:invMakeRef(tds),addedAt:new Date().toISOString()});
+        const available = invStorageCapacityAvailable();
+        const notes = available < invDelKg
+          ? `Auto-suggested - Storage near capacity (${invFmtKg(available)} free)`
+          : 'Auto-suggested';
+        invDelPlan.push({date:tds,kg:invDelKg,supplier:invSupplier,window:'AM',notes,ref:invMakeRef(tds),addedAt:new Date().toISOString()});
         stock+=invDelKg;
         added++;
       }
@@ -4858,6 +5054,14 @@ function invModalSave(){
     const idx=invDelPlan.findIndex(d=>d.ref===invModalRef);
     if(idx>=0)Object.assign(invDelPlan[idx],{supplier,kg,notes,window:window_});
   }else{
+    const available = invStorageCapacityAvailable();
+    if (available < kg && invModalMode !== 'edit') {
+      const overBy = invFmtKg(kg - available);
+      const proceed = window.confirm(
+        `This delivery (${invFmtKg(kg)}) exceeds estimated storage capacity by ${overBy}.\n\nAvailable storage space: ${invFmtKg(available)}\n\nProceed anyway?`
+      );
+      if (!proceed) return;
+    }
     invDelPlan.push({date:invModalDate,kg,supplier,window:window_,notes,ref:invMakeRef(invModalDate),addedAt:new Date().toISOString()});
   }
   invCloseDelModal();
@@ -4968,15 +5172,50 @@ function invUpdateEmail(){
   const orderRef=invOrderRef();
   const tot=inRange.reduce((s,d)=>s+d.kg,0);
   const supplier=inRange[0]?.supplier||invSupplier;
-  const sep='-----------------------------------------------------';
+  const sep='-----------------------------------------------------------------------------';
   const lines=inRange.map(del=>{
-    const d=invFmtFull(new Date(del.date+'T12:00:00')).padEnd(25,' ');
+    const d=invFmtFull(new Date(del.date+'T12:00:00')).padEnd(26,' ');
     const w=invWindowLabel(del.window).padEnd(9,' ');
     const q=(del.kg.toLocaleString('en-GB')+' kg').padEnd(12,' ');
-    return d+w+q+(del.notes||'');
+    const ref=(del.ref||'').padEnd(20,' ');
+    const notes=del.notes?`  [${del.notes}]`:'';
+    return `  ${d}${w}${q}${ref}${notes}`;
   }).join('\n');
   const subj=`Creosote order ${orderRef} - ${inRange.length} deliveries - ${tot.toLocaleString('en-GB')} kg`;
-  const body=`ORDER REFERENCE: ${orderRef}\n\nDear ${supplier} Team,\n\nPlease place the following creosote delivery order on our behalf:\n\nDELIVERY ADDRESS:\n${invSiteAddrVal||'[Site address]'}\n\nSCHEDULED DELIVERIES:\nDate                     Window   Quantity    Notes\n${sep}\n${lines}\n${sep}\nTOTAL: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} | ${tot.toLocaleString('en-GB')} kg\n\nPlease confirm receipt of this order and advise of any scheduling conflicts.\nDeliveries accepted Monday to Friday, 07:00-16:00.\n\nKind regards,\n${invSenderNameVal||'[Sender name]'}\n${invSiteAddrVal||'[Site name]'}`;
+  const body=`ORDER REFERENCE: ${orderRef}
+SUPPLIER: ${supplier}
+DATE RAISED: ${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}
+RAISED BY: ${invSenderNameVal||'[Sender name]'}
+
+Dear ${supplier} Team,
+
+Please find below our creosote delivery schedule for the period ${inRange[0]?invFmtFull(new Date(inRange[0].date+'T12:00:00')):''} to ${inRange[inRange.length-1]?invFmtFull(new Date(inRange[inRange.length-1].date+'T12:00:00')):''}.
+
+DELIVERY ADDRESS:
+${invSiteAddrVal||'[Site address]'}
+
+SCHEDULED DELIVERIES:
+  Date                       Window   Quantity     Reference           Notes
+  ${sep}
+${lines}
+  ${sep}
+  TOTAL: ${inRange.length} ${inRange.length===1?'delivery':'deliveries'} | ${tot.toLocaleString('en-GB')} kg
+
+DELIVERY REQUIREMENTS:
+- Deliveries accepted Monday to Friday, 07:00-16:00
+- Please confirm ETA on day of delivery
+- Call site on arrival: site access requires prior notification
+- Tank delivery hose connection point: [specify if required]
+
+Please confirm receipt of this order and advise of any scheduling conflicts at the earliest opportunity.
+
+Kind regards,
+${invSenderNameVal||'[Sender name]'}
+${invSiteAddrVal||'[Site name]'}
+
+---
+This order was generated by the Creosote Treatment Planner.
+Order reference: ${orderRef}`;
   ta.value=body;ta.dataset.subject=subj;
 }
 function invCopyEmail(){
@@ -5005,6 +5244,17 @@ async function invRefreshAll(){
   if(hist?.charges)invChargeHist=hist.charges;
   invDataLoading=false;
   invUpdateAvgs();
+  const demandInp = document.getElementById('invDailyUse');
+  if (demandInp && !demandInp.dataset.user) {
+    const demand = invCalcDemandFromPlan();
+    invDailyUsage = demand.kgPerDay;
+    demandInp.value = demand.kgPerDay;
+    const sourceEl = document.getElementById('invDemandSource');
+    if (sourceEl) {
+      const labels = { plan: 'From pole forecast plan', history: 'From 14-day avg', manual: 'Manual entry' };
+      sourceEl.textContent = labels[demand.source] || demand.source;
+    }
+  }
   invRenderDashboard();
   invRenderUsageTable();
   invRenderForecast();
