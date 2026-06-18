@@ -595,6 +595,9 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .inv-st-bdg.low{background:rgba(201,120,46,.12);color:var(--amber);animation:invPulse 2s infinite}
 .inv-st-bdg.critical{background:rgba(186,61,53,.12);color:var(--red);animation:invPulse .8s infinite}
 .inv-manifold{height:8px;background:#707070;border-radius:3px;margin:2px 4px 8px}
+.inv-tank-input::-webkit-inner-spin-button,
+.inv-tank-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.inv-tank-input{-moz-appearance:textfield}
 @keyframes invWave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* Chart cards */
@@ -1049,9 +1052,63 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
       <span id="invTankTs">—</span>
     </div>
     <div class="inv-tank-grid" id="invTankGrid">
-      <!-- Populated by invRenderTanks() -->
+      <!-- Populated by invRenderDashboard() -->
     </div>
     <div class="inv-manifold"></div>
+
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div style="font-size:9px;font-weight:600;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
+        Enter tank readings (kg)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:9px;font-weight:600;color:var(--green);font-family:var(--mono);text-transform:uppercase;margin-bottom:5px;">Storage Tanks</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div>
+              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 1</label>
+              <input class="inv-tank-input" type="number" id="invInpStorageT1" min="0" max="100000" step="100" placeholder="0"
+                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                     oninput="invUpdateTankPreview('storageT1',this.value)">
+            </div>
+            <div>
+              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 2</label>
+              <input class="inv-tank-input" type="number" id="invInpStorageT2" min="0" max="100000" step="100" placeholder="0"
+                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                     oninput="invUpdateTankPreview('storageT2',this.value)">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:600;color:var(--blue);font-family:var(--mono);text-transform:uppercase;margin-bottom:5px;">Work / Process Tanks</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div>
+              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 1</label>
+              <input class="inv-tank-input" type="number" id="invInpWorkT1" min="0" max="100000" step="100" placeholder="0"
+                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                     oninput="invUpdateTankPreview('workT1',this.value)">
+            </div>
+            <div>
+              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 2</label>
+              <input class="inv-tank-input" type="number" id="invInpWorkT2" min="0" max="100000" step="100" placeholder="0"
+                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                     oninput="invUpdateTankPreview('workT2',this.value)">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:9px;font-family:var(--mono);color:var(--text3);">
+        <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:3px;background:var(--red);display:inline-block;border-radius:1px;"></span>Work min: 93,000 kg</span>
+        <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:3px;background:var(--red);display:inline-block;border-radius:1px;"></span>Storage floor: 10,000 kg</span>
+        <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:3px;background:var(--amber);display:inline-block;border-radius:1px;"></span>Reorder point</span>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button onclick="invSaveTankReadings()" id="invSaveTankBtn"
+                style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;padding:7px 16px;cursor:pointer;transition:all .15s;">
+          <i class="ti ti-device-floppy"></i> Save Readings
+        </button>
+      </div>
+      <div id="invTankSaveStatus" style="font-size:9px;font-family:var(--mono);color:var(--text3);text-align:right;margin-top:4px;min-height:14px;"></div>
+    </div>
   </div>
 
   <!-- Weekly usage chart -->
@@ -4365,14 +4422,17 @@ function buildLegend(noise){
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Constants ── */
-const INV_MAX      = 100000;
-const INV_SAFE     =  98000;
-const INV_UPTAKE   =    115;
-const INV_TOTAL_SAFE = 392000;          // 4 x 98,000 kg absolute safe max
-const INV_STORAGE_SAFE = 196000;        // 2 x 98,000 kg - storage tanks only (accept deliveries)
-const INV_PROCESS_SAFE = 196000;        // 2 x 98,000 kg - work/process tanks
-const INV_LOW_KG   =  80000;
-const INV_CRIT_KG  =  50000;
+const INV_MAX           = 100000;   // Physical tank capacity (kg)
+const INV_SAFE          =  98000;   // Safe operating maximum per tank (kg)
+const INV_UPTAKE        =    115;   // Creosote uptake rate (kg/m3)
+const INV_TOTAL_SAFE    = 392000;   // 4 x 98,000 kg - combined safe max
+const INV_STORAGE_SAFE  = 196000;   // 2 x 98,000 kg - storage tanks only
+const INV_PROCESS_SAFE  = 196000;   // 2 x 98,000 kg - work/process tanks
+
+const INV_WORK_MIN_KG    =  93000;  // Work tank minimum for treatment
+const INV_STORAGE_MIN_KG =  10000;  // Storage tank absolute reserve floor
+const INV_LOW_KG         =  80000;  // Generic reorder trigger (total stock)
+const INV_CRIT_KG        =  50000;  // Generic critical level (total stock)
 
 /* ── Mutable state ── */
 const INV_SETTINGS_KEY = 'creosoteInvSettings';
@@ -4502,7 +4562,16 @@ function invLoadSettings(){
   }catch(e){}
 }
 function invLoadStorage(){
-  try{const r=localStorage.getItem('bulkTankReadings');if(r)invTankData=JSON.parse(r)}catch(e){}
+  try{
+    const r=localStorage.getItem('bulkTankReadings');
+    if(r)invTankData=JSON.parse(r);
+    const inputMap={storageT1:'invInpStorageT1',storageT2:'invInpStorageT2',workT1:'invInpWorkT1',workT2:'invInpWorkT2'};
+    Object.entries(inputMap).forEach(([key,elId])=>{
+      const inp=document.getElementById(elId);
+      const level=invTankData[key]?.level;
+      if(inp&&level>0)inp.value=level;
+    });
+  }catch(e){}
   try{
     const r=localStorage.getItem(INV_DEL_PLAN_KEY)||localStorage.getItem('invDeliveryPlan');
     if(r){
@@ -4539,8 +4608,15 @@ function invTankGeom(kg){
   return{fillY:IT+(IH-fh),fillH:fh,gaugeY:16+(IH-fh),gaugeH:fh,pct};
 }
 function invWavePath(fy){const y=fy-1;return`M-20,${y} Q12,${y-5} 45,${y} Q78,${y+5} 111,${y} Q144,${y-5} 180,${y} L180,${y+10} L-20,${y+10}Z`}
-function invStCls(kg){
+function invStCls(kg,type){
   if(kg>INV_MAX)return{t:'Over',c:'critical'};
+  if(type==='process'){
+    if(kg<INV_WORK_MIN_KG)return{t:'Low - treatment risk',c:'critical'};
+  }
+  if(type==='storage'){
+    if(kg<=INV_STORAGE_MIN_KG)return{t:'Reserve floor',c:'critical'};
+    if(kg<INV_LOW_KG)return{t:'Low',c:'low'};
+  }
   if(kg/INV_SAFE>=0.9)return{t:'High',c:'high'};
   if(kg/INV_MAX<0.1)return{t:'Critical',c:'critical'};
   if(kg/INV_MAX<0.2)return{t:'Low',c:'low'};
@@ -4548,24 +4624,40 @@ function invStCls(kg){
 }
 function invTankSVG(key,label,type,kg){
   const g=invTankGeom(kg);
-  const st=invStCls(kg);
+  const st=invStCls(kg,type);
   const pct=Math.round(g.pct*100);
   const pCol=pct>=90?'var(--amber)':pct<20?'var(--red)':'var(--green)';
   const gid='ivg_'+key;
+  const IT=17,IH=178;
   const reorderFrac=Math.min(Math.max(invReorderKg/(INV_SAFE||INV_MAX),0),1);
-  const reorderY=17+(178-(reorderFrac*178));
-  const statusPill=kg<INV_CRIT_KG?'CRITICAL':kg<invReorderKg?'LOW':'OK';
+  const reorderY=IT+(IH-reorderFrac*IH);
+  const workMinFrac=Math.min(Math.max(INV_WORK_MIN_KG/INV_MAX,0),1);
+  const workMinY=IT+(IH-workMinFrac*IH);
+  const storMinFrac=Math.min(Math.max(INV_STORAGE_MIN_KG/INV_MAX,0),1);
+  const storMinY=IT+(IH-storMinFrac*IH);
+  const statusPill=st.t;
+  let threshLines='';
+  if(type==='process'){
+    threshLines=`<line x1="13" x2="75" y1="${workMinY.toFixed(1)}" y2="${workMinY.toFixed(1)}" stroke="var(--red)" stroke-width="1.4" stroke-dasharray="4,3"/>`;
+  }else{
+    threshLines=`<line x1="13" x2="75" y1="${reorderY.toFixed(1)}" y2="${reorderY.toFixed(1)}" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4,3"/>`;
+    threshLines+=`<line x1="13" x2="75" y1="${storMinY.toFixed(1)}" y2="${storMinY.toFixed(1)}" stroke="var(--red)" stroke-width="1.4" stroke-dasharray="4,3"/>`;
+  }
+  let threshLabels='';
+  if(type==='process'){
+    threshLabels=`<text x="78" y="${Math.max(28,workMinY-2).toFixed(1)}" font-size="7" fill="var(--red)" font-family="'DM Mono',monospace">Min 93t</text>`;
+  }else{
+    threshLabels=`<text x="78" y="24" font-size="6.5" fill="var(--amber)" font-family="'DM Mono',monospace">SAFE MAX</text><text x="78" y="${Math.max(32,reorderY-2).toFixed(1)}" font-size="7" fill="var(--amber)" font-family="'DM Mono',monospace">Reorder</text><text x="78" y="${Math.min(212,storMinY+9).toFixed(1)}" font-size="7" fill="var(--red)" font-family="'DM Mono',monospace">Floor</text>`;
+  }
   return`<div class="inv-tank-col">
   <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:3px">
     <span class="inv-type-bdg ${type}">${type==='storage'?'Storage':'Process'}</span>
     <span class="inv-st-bdg ${st.c}">${st.t}</span>
   </div>
-  <svg width="88" height="222" viewBox="0 0 88 222" overflow="visible" role="img" aria-label="${label} ${pct}%">
+  <svg width="112" height="222" viewBox="0 0 112 222" overflow="visible" role="img" aria-label="${label} ${pct}%">
     <defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#4A4A4A"/><stop offset="15%" stop-color="#8A8A8A"/>
-        <stop offset="50%" stop-color="#D0D0D0"/><stop offset="85%" stop-color="#8A8A8A"/>
-        <stop offset="100%" stop-color="#4A4A4A"/>
+        <stop offset="0%" stop-color="#4A4A4A"/><stop offset="15%" stop-color="#8A8A8A"/><stop offset="50%" stop-color="#D0D0D0"/><stop offset="85%" stop-color="#8A8A8A"/><stop offset="100%" stop-color="#4A4A4A"/>
       </linearGradient>
       <clipPath id="ivcp_${key}"><rect x="12" y="16" width="64" height="180" rx="2"/></clipPath>
     </defs>
@@ -4579,11 +4671,10 @@ function invTankSVG(key,label,type,kg){
       <path d="${invWavePath(g.fillY)}" fill="#CC0000" opacity=".28" style="animation:invWave 3s linear infinite"/>
       <rect x="13" y="${g.fillY-1}" width="62" height="2.5" fill="#FF3333" opacity=".65"/>
       <line x1="13" x2="75" y1="20.6" y2="20.6" stroke="#c9782e" stroke-width="1" stroke-dasharray="3,3"/>
-      <line x1="13" x2="75" y1="${reorderY.toFixed(1)}" y2="${reorderY.toFixed(1)}" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4,3"/>
+      ${threshLines}
     </g>
     <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5" opacity=".34"/>
-    <text x="77" y="24" font-size="6.5" fill="#c9782e" font-family="'DM Mono',monospace">SAFE MAX</text>
-    <text x="77" y="${Math.max(30,reorderY-2).toFixed(1)}" font-size="8" fill="var(--amber)" font-family="'DM Mono',monospace">Reorder</text>
+    ${threshLabels}
     <ellipse cx="44" cy="196" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
     <rect x="40" y="203" width="8" height="13" fill="#707070"/>
     <polygon points="36,209 44,215 36,215" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
@@ -4596,6 +4687,57 @@ function invTankSVG(key,label,type,kg){
 </div>`;
 }
 
+function invUpdateTankPreview(key,rawValue){
+  const level=Math.max(0,parseInt(rawValue,10)||0);
+  if(!invTankData[key])invTankData[key]={};
+  invTankData[key].level=level;
+  invRenderDashboard();
+}
+
+async function invSaveTankReadings(){
+  const btn=document.getElementById('invSaveTankBtn');
+  const status=document.getElementById('invTankSaveStatus');
+  const savedAt=new Date().toISOString();
+  const keys=['storageT1','storageT2','workT1','workT2'];
+  const inputIds={storageT1:'invInpStorageT1',storageT2:'invInpStorageT2',workT1:'invInpWorkT1',workT2:'invInpWorkT2'};
+  let valid=true;
+  keys.forEach(key=>{
+    const inp=document.getElementById(inputIds[key]);
+    const level=inp?(parseInt(inp.value,10)||0):(invTankData[key]?.level||0);
+    if(level<0||level>INV_MAX)valid=false;
+    if(!invTankData[key])invTankData[key]={};
+    invTankData[key].level=level;
+    invTankData[key].savedAt=savedAt;
+  });
+  if(!valid){
+    if(status)status.textContent='Check readings - value out of range.';
+    return;
+  }
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader-2"></i> Saving...'}
+  try{localStorage.setItem('bulkTankReadings',JSON.stringify(invTankData))}catch(e){}
+  const bridgeUrl=typeof liveBridgeUrl==='function'?liveBridgeUrl():'';
+  if(bridgeUrl){
+    try{
+      await fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveTankLevels',data:{...invTankData,savedAt}})});
+    }catch(e){}
+  }
+  invRenderDashboard();
+  if(btn){
+    setTimeout(()=>{
+      btn.innerHTML='<i class="ti ti-check"></i> Saved';
+      btn.style.color='var(--green)';
+      btn.style.borderColor='var(--green)';
+      if(status)status.textContent='Saved at '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      setTimeout(()=>{
+        btn.disabled=false;
+        btn.innerHTML='<i class="ti ti-device-floppy"></i> Save Readings';
+        btn.style.color='';
+        btn.style.borderColor='';
+      },2200);
+    },400);
+  }
+}
+
 /* ── Dashboard render ── */
 function invRenderDashboard(){
   const total=invTotal();
@@ -4605,6 +4747,12 @@ function invRenderDashboard(){
   const w2 = invTankData.workT2?.level || 0;
   const storageTotal = s1 + s2;
   const processTotal = w1 + w2;
+  const workTankAlerts = [];
+  if(w1 < INV_WORK_MIN_KG) workTankAlerts.push(`Work Tank 1 below minimum (${invFmtKg(w1)} - need ${invFmtKg(INV_WORK_MIN_KG)})`);
+  if(w2 < INV_WORK_MIN_KG) workTankAlerts.push(`Work Tank 2 below minimum (${invFmtKg(w2)} - need ${invFmtKg(INV_WORK_MIN_KG)})`);
+  const storageFloorAlerts = [];
+  if(s1 <= INV_STORAGE_MIN_KG) storageFloorAlerts.push(`Storage Tank 1 at reserve floor (${invFmtKg(s1)})`);
+  if(s2 <= INV_STORAGE_MIN_KG) storageFloorAlerts.push(`Storage Tank 2 at reserve floor (${invFmtKg(s2)})`);
   const avail = Math.max(0, INV_STORAGE_SAFE - storageTotal);
   const pct=Math.round(total/INV_TOTAL_SAFE*100);
 
@@ -4629,7 +4777,11 @@ function invRenderDashboard(){
       ? ` Next delivery: ${invFmtDate(new Date(nextDel.date + 'T12:00:00'))} (${invFmtKg(nextDel.kg)})`
       : ' No deliveries scheduled.';
 
-    if (dos.days <= 3) {
+    if(workTankAlerts.length || storageFloorAlerts.length){
+      const allAlerts=[...workTankAlerts,...storageFloorAlerts];
+      banner.className='inv-banner danger';
+      bannerTxt.textContent='Warning: '+allAlerts.join(' - ');
+    } else if (dos.days <= 3) {
       banner.className = 'inv-banner danger';
       bannerTxt.textContent = `Critical: ${dos.days} day${dos.days === 1 ? '' : 's'} of stock remaining.${nextDelStr}`;
     } else if (dos.days <= 7) {
