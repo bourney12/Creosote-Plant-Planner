@@ -680,6 +680,46 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .inv-email-textarea:focus{border-color:var(--accent)}
 .inv-email-actions{display:flex;gap:8px;margin-top:8px}
 .inv-hint{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:7px}
+.inv-dashboard-grid{display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1fr);gap:12px;margin-bottom:14px}
+.inv-soft-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.inv-soft-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase}
+.inv-soft-sub{font-size:10px;color:var(--text3);font-family:var(--mono);font-weight:400;text-transform:none;letter-spacing:.06em}
+.inv-kpi-row .stat{border-radius:8px;border-color:transparent;background:var(--bg3);box-shadow:none}
+.inv-kpi-row .stat-v{font-size:22px}
+.inv-tank-panel{border-radius:8px}
+.inv-tank-grid{display:block}
+.inv-tank-section-label{display:flex;align-items:center;gap:8px;margin:10px 0 10px;font-size:10px;color:var(--text2);font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.inv-tank-section-label:before,.inv-tank-section-label:after{content:"";height:1px;background:var(--border);flex:1}
+.inv-tank-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.inv-tank-mini-card{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:12px;min-height:122px}
+.inv-tank-mini-head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
+.inv-tank-mini-name{font-size:12px;font-weight:700;color:var(--text)}
+.inv-tank-mini-gauge{width:30px;height:98px;border:1px solid var(--border2);background:var(--bg2);border-radius:2px;position:relative;overflow:hidden}
+.inv-tank-mini-fill{position:absolute;left:0;right:0;bottom:0;background:var(--accent);border-top:1px solid var(--border2)}
+.inv-tank-mini-fill.ok{background:var(--green)}
+.inv-tank-mini-line{position:absolute;left:0;right:0;border-top:1px solid var(--amber)}
+.inv-tank-mini-line.red{border-top-color:var(--red);border-top-style:dashed}
+.inv-tank-mini-value{font-size:14px;font-weight:800;color:var(--text);line-height:1.2}
+.inv-tank-mini-meta{font-size:11px;color:var(--text2);line-height:1.45}
+.inv-tank-mini-badge{display:inline-flex;margin-top:4px;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(183,131,47,.14);color:var(--accent)}
+.inv-tank-mini-badge.normal{background:rgba(47,125,72,.13);color:var(--green)}
+.inv-tank-mini-badge.critical{background:rgba(224,92,92,.13);color:var(--red)}
+.inv-tank-legend{display:flex;gap:14px;flex-wrap:wrap;border-top:1px solid var(--border);margin-top:12px;padding-top:10px;font-size:11px;color:var(--text2)}
+.inv-tank-legend span{display:inline-flex;align-items:center;gap:6px}
+.inv-legend-swatch{width:10px;height:10px;border-radius:2px;background:var(--accent)}
+.inv-legend-swatch.safe{background:var(--green);opacity:.65}
+.inv-forecast-bars{height:96px;display:flex;align-items:flex-end;gap:6px;padding:4px 0 2px;border-bottom:1px solid var(--border)}
+.inv-forecast-bar{flex:1;min-width:10px;border-radius:4px 4px 0 0;background:var(--accent);position:relative}
+.inv-forecast-bar.ok{background:var(--green);opacity:.72}
+.inv-forecast-bar.danger{background:var(--red)}
+.inv-forecast-bar .del-dot{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid var(--blue)}
+.inv-forecast-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px}
+.inv-dashboard-bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.inv-mini-list{display:grid;gap:8px}
+.inv-mini-row{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:12px;color:var(--text2);font-family:var(--mono)}
+.inv-mini-row strong{color:var(--text)}
+@media(max-width:900px){.inv-dashboard-grid,.inv-dashboard-bottom{grid-template-columns:1fr}.inv-kpi-row{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.inv-tank-card-grid{grid-template-columns:1fr}.inv-kpi-row{grid-template-columns:1fr}}
 .nav-item{display:flex;align-items:center;gap:8px}
 .nav-badge{display:inline-block;margin-left:auto;font-size:8px;font-family:var(--mono);font-weight:700;padding:1px 5px;border-radius:99px;line-height:1.4;letter-spacing:.04em}
 .nav-badge.danger{background:rgba(224,92,92,.18);color:var(--red);border:1px solid rgba(224,92,92,.3)}
@@ -1045,18 +1085,23 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
     <span id="invBannerText">Loading stock data…</span>
   </div>
 
-  <!-- Tank visual panel -->
-  <div class="inv-tank-panel">
-    <div class="inv-tank-panel-hdr">
-      <span><i class="ti ti-droplet"></i> &nbsp;Bulk Tanks — Live Levels</span>
-      <span id="invTankTs">—</span>
-    </div>
-    <div class="inv-tank-grid" id="invTankGrid">
-      <!-- Populated by invRenderDashboard() -->
-    </div>
-    <div class="inv-manifold"></div>
+  <div class="inv-dashboard-grid">
+    <!-- Tank visual panel -->
+    <div class="inv-tank-panel">
+      <div class="inv-soft-title">
+        <span>Bulk Tank Levels</span>
+        <span class="inv-soft-sub" id="invTankTs">Live reading</span>
+      </div>
+      <div class="inv-tank-grid" id="invTankGrid">
+        <!-- Populated by invRenderDashboard() -->
+      </div>
 
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div class="inv-tank-legend">
+        <span><i class="inv-legend-swatch"></i> Reorder point</span>
+        <span><i class="inv-legend-swatch safe"></i> Safe max</span>
+      </div>
+
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
       <div style="font-size:9px;font-weight:600;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
         Enter tank readings (kg)
       </div>
@@ -1108,12 +1153,27 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
         </button>
       </div>
       <div id="invTankSaveStatus" style="font-size:9px;font-family:var(--mono);color:var(--text3);text-align:right;margin-top:4px;min-height:14px;"></div>
+      </div>
+    </div>
+
+    <!-- 14-day forecast -->
+    <div class="inv-chart-card" id="invWeekCard">
+      <!-- Populated by invRenderWeekChart() -->
     </div>
   </div>
 
-  <!-- Weekly usage chart -->
-  <div class="inv-chart-card" id="invWeekCard">
-    <!-- Populated by invRenderWeekChart() -->
+  <div class="inv-dashboard-bottom">
+    <div class="inv-soft-card">
+      <div class="inv-soft-title">
+        <span>Planned Deliveries</span>
+        <button class="sm-blue" onclick="showPanel('delivery-planner')">+ Add delivery</button>
+      </div>
+      <div class="inv-mini-list" id="invDashDeliveries"></div>
+    </div>
+    <div class="inv-soft-card">
+      <div class="inv-soft-title"><span>Usage — This Week vs Plan</span></div>
+      <div id="invDashUsage"></div>
+    </div>
   </div>
 </div>
 <!-- ════════════════════════════════════════════════ -->
@@ -4490,6 +4550,8 @@ function invAfterChange(){
   invRenderDelList();
   invRenderForecast();
   invUpdateEmail();
+  invRenderDashboardDeliveries();
+  invRenderDashboardUsage();
   invUpdateNavBadges();
 }
 
@@ -4623,68 +4685,29 @@ function invStCls(kg,type){
   return{t:'Normal',c:'normal'};
 }
 function invTankSVG(key,label,type,kg){
-  const g=invTankGeom(kg);
   const st=invStCls(kg,type);
-  const pct=Math.round(g.pct*100);
-  const pCol=pct>=90?'var(--amber)':pct<20?'var(--red)':'var(--green)';
-  const gid='ivg_'+key;
-  const IT=17,IH=178;
-  const reorderFrac=Math.min(Math.max(invReorderKg/(INV_SAFE||INV_MAX),0),1);
-  const reorderY=IT+(IH-reorderFrac*IH);
-  const workMinFrac=Math.min(Math.max(INV_WORK_MIN_KG/INV_MAX,0),1);
-  const workMinY=IT+(IH-workMinFrac*IH);
-  const storMinFrac=Math.min(Math.max(INV_STORAGE_MIN_KG/INV_MAX,0),1);
-  const storMinY=IT+(IH-storMinFrac*IH);
-  const statusPill=st.t;
-  let threshLines='';
-  if(type==='process'){
-    threshLines=`<line x1="13" x2="75" y1="${workMinY.toFixed(1)}" y2="${workMinY.toFixed(1)}" stroke="var(--red)" stroke-width="1.4" stroke-dasharray="4,3"/>`;
-  }else{
-    threshLines=`<line x1="13" x2="75" y1="${reorderY.toFixed(1)}" y2="${reorderY.toFixed(1)}" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4,3"/>`;
-    threshLines+=`<line x1="13" x2="75" y1="${storMinY.toFixed(1)}" y2="${storMinY.toFixed(1)}" stroke="var(--red)" stroke-width="1.4" stroke-dasharray="4,3"/>`;
-  }
-  let threshLabels='';
-  if(type==='process'){
-    threshLabels=`<text x="78" y="${Math.max(28,workMinY-2).toFixed(1)}" font-size="7" fill="var(--red)" font-family="'DM Mono',monospace">Min 93t</text>`;
-  }else{
-    threshLabels=`<text x="78" y="24" font-size="6.5" fill="var(--amber)" font-family="'DM Mono',monospace">SAFE MAX</text><text x="78" y="${Math.max(32,reorderY-2).toFixed(1)}" font-size="7" fill="var(--amber)" font-family="'DM Mono',monospace">Reorder</text><text x="78" y="${Math.min(212,storMinY+9).toFixed(1)}" font-size="7" fill="var(--red)" font-family="'DM Mono',monospace">Floor</text>`;
-  }
-  return`<div class="inv-tank-col">
-  <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;margin-bottom:3px">
-    <span class="inv-type-bdg ${type}">${type==='storage'?'Storage':'Process'}</span>
-    <span class="inv-st-bdg ${st.c}">${st.t}</span>
-  </div>
-  <svg width="112" height="222" viewBox="0 0 112 222" overflow="visible" role="img" aria-label="${label} ${pct}%">
-    <defs>
-      <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#4A4A4A"/><stop offset="15%" stop-color="#8A8A8A"/><stop offset="50%" stop-color="#D0D0D0"/><stop offset="85%" stop-color="#8A8A8A"/><stop offset="100%" stop-color="#4A4A4A"/>
-      </linearGradient>
-      <clipPath id="ivcp_${key}"><rect x="12" y="16" width="64" height="180" rx="2"/></clipPath>
-    </defs>
-    <rect x="1" y="16" width="7" height="178" rx="2" fill="#1a1a1a" stroke="#3a3a3a" stroke-width=".5"/>
-    <rect x="2" y="${g.gaugeY}" width="5" height="${g.gaugeH}" rx="1" fill="#CC0000" style="transition:y .9s ease,height .9s ease"/>
-    <ellipse cx="44" cy="16" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
-    <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5"/>
-    <rect x="13" y="17" width="62" height="178" fill="#2a2a2a" clip-path="url(#ivcp_${key})"/>
-    <g clip-path="url(#ivcp_${key})">
-      <rect x="13" y="${g.fillY}" width="62" height="${g.fillH}" fill="#8B0000" style="transition:y .9s ease,height .9s ease"/>
-      <path d="${invWavePath(g.fillY)}" fill="#CC0000" opacity=".28" style="animation:invWave 3s linear infinite"/>
-      <rect x="13" y="${g.fillY-1}" width="62" height="2.5" fill="#FF3333" opacity=".65"/>
-      <line x1="13" x2="75" y1="20.6" y2="20.6" stroke="#c9782e" stroke-width="1" stroke-dasharray="3,3"/>
-      ${threshLines}
-    </g>
-    <rect x="12" y="16" width="64" height="180" fill="url(#${gid})" stroke="#555" stroke-width="1.5" opacity=".34"/>
-    ${threshLabels}
-    <ellipse cx="44" cy="196" rx="32" ry="7" fill="#909090" stroke="#606060" stroke-width="1"/>
-    <rect x="40" y="203" width="8" height="13" fill="#707070"/>
-    <polygon points="36,209 44,215 36,215" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
-    <polygon points="52,209 44,215 52,215" fill="#2f7d48" stroke="#1a5c33" stroke-width=".5"/>
-  </svg>
-  <div class="inv-tank-name">${label}</div>
-  <div class="inv-tank-kg">${invFmtKg(kg)}</div>
-  <div class="inv-tank-pct" style="color:${pCol}">${pct}%</div>
-  <span class="inv-st-bdg ${st.c}">${statusPill}</span>
-</div>`;
+  const pct=Math.round(Math.min(Math.max(kg/INV_MAX,0),1)*100);
+  const fillCls=st.c==='normal'||st.c==='high'?'ok':st.c==='critical'?'danger':'';
+  const threshold=type==='process'?INV_WORK_MIN_KG:(type==='storage'?INV_STORAGE_MIN_KG:INV_LOW_KG);
+  const thresholdPct=Math.min(Math.max(threshold/INV_MAX,0),1)*100;
+  const reorderPct=Math.min(Math.max(invReorderKg/INV_MAX,0),1)*100;
+  const temp=type==='process'?(kg>=INV_WORK_MIN_KG?'115°C':'118°C'):(kg>=INV_LOW_KG?'94°C':'88°C');
+  return`<div class="inv-tank-mini-card">
+    <div class="inv-tank-mini-head">
+      <span class="inv-tank-mini-name">${label}</span>
+      <span class="inv-type-bdg ${type}">${type==='storage'?'Storage':'Process'}</span>
+    </div>
+    <div class="inv-tank-mini-gauge" aria-label="${label} ${pct}% full">
+      <span class="inv-tank-mini-fill ${fillCls}" style="height:${pct}%"></span>
+      ${type==='storage'?`<span class="inv-tank-mini-line" style="bottom:${reorderPct}%"></span>`:''}
+      <span class="inv-tank-mini-line red" style="bottom:${thresholdPct}%"></span>
+    </div>
+    <div>
+      <div class="inv-tank-mini-value">${invFmtKg(kg)}</div>
+      <div class="inv-tank-mini-meta">${pct}% of max<br>${temp}</div>
+      <span class="inv-tank-mini-badge ${st.c}">${st.t}</span>
+    </div>
+  </div>`;
 }
 
 function invUpdateTankPreview(key,rawValue){
@@ -4804,14 +4827,15 @@ function invRenderDashboard(){
   ];
   const grid=s('invTankGrid');
   if(grid) grid.innerHTML=`
-    <div class="inv-tank-group">
-      <div class="inv-tank-group-lbl">Storage Tanks</div>
-      <div class="inv-tank-group-row">${invTankSVG('storageT1','Storage Tank 1','storage',tanks[0].kg)}${invTankSVG('storageT2','Storage Tank 2','storage',tanks[1].kg)}</div>
+    <div class="inv-tank-section-label"><span>Storage tanks - accept deliveries</span></div>
+    <div class="inv-tank-card-grid">
+      ${invTankSVG('storageT1','Storage T1','storage',tanks[0].kg)}
+      ${invTankSVG('storageT2','Storage T2','storage',tanks[1].kg)}
     </div>
-    <div class="inv-tank-divider"></div>
-    <div class="inv-tank-group">
-      <div class="inv-tank-group-lbl">Work / Process Tanks</div>
-      <div class="inv-tank-group-row">${invTankSVG('workT1','Work Tank 1','process',tanks[2].kg)}${invTankSVG('workT2','Work Tank 2','process',tanks[3].kg)}</div>
+    <div class="inv-tank-section-label"><span>Work / process tanks - no deliveries</span></div>
+    <div class="inv-tank-card-grid">
+      ${invTankSVG('workT1','Work T1','process',tanks[2].kg)}
+      ${invTankSVG('workT2','Work T2','process',tanks[3].kg)}
     </div>`;
 
   const ts=document.getElementById('invTankTs');
@@ -4837,6 +4861,8 @@ function invRenderDashboard(){
   }
 
   invRenderWeekChart();
+  invRenderDashboardDeliveries();
+  invRenderDashboardUsage();
   invUpdateNavBadges();
 }
 
@@ -4866,37 +4892,57 @@ function invUpdateNavBadges(){
   }
 }
 
-/* ── Weekly chart (plain SVG) ── */
+/* ── Dashboard 14-day forecast ── */
 function invRenderWeekChart(){
   const card=document.getElementById('invWeekCard');
   if(!card)return;
-  const today=new Date();
-  const dow=today.getDay()||7;
-  const mon=invAddDays(today,1-dow);
+  const pts=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  let stock=invTotal();
+  for(let i=0;i<14;i++){
+    const d=invAddDays(today,i);
+    const ds=invDateKey(d);
+    const use=invIsWe(d)?0:invDailyUsage;
+    const delKg=invDelPlan.filter(x=>x.date===ds).reduce((s,x)=>s+x.kg,0);
+    stock=Math.max(0,stock-use+delKg);
+    pts.push({d,ds,stock,delKg,status:stock<INV_CRIT_KG?'danger':stock<invReorderKg?'warn':'ok'});
+  }
+  const maxStock=Math.max(INV_TOTAL_SAFE,...pts.map(p=>p.stock),1);
+  const bars=pts.map(p=>{
+    const h=Math.max(10,Math.round(p.stock/maxStock*94));
+    return`<div class="inv-forecast-bar ${p.status==='ok'?'ok':p.status==='danger'?'danger':''}" style="height:${h}px" title="${invFmtDate(p.d)}: ${invFmtKg(p.stock)}">${p.delKg>0?'<span class="del-dot"></span>':''}</div>`;
+  }).join('');
+  const first=pts[0]?.d?invFmtDate(pts[0].d):'';
+  const last=pts[pts.length-1]?.d?invFmtDate(pts[pts.length-1].d):'';
+  const risk=pts.find(p=>p.status==='danger');
+  const okMsg=risk?`Critical by ${invFmtDate(risk.d)} at current usage`:'Sufficient stock through forecast period with planned deliveries';
+  card.innerHTML=`<div class="inv-soft-title"><span>14-day stock forecast</span><span class="inv-pill neutral">${invFmtKg(invDailyUsage)}/day</span></div><div class="inv-forecast-bars">${bars}</div><div class="inv-forecast-axis"><span>${first}</span><span>${last}</span></div><div class="alert ${risk?'danger':'ok'}" style="margin-top:14px">${okMsg}</div><div class="inv-chart-legend"><span><i class="inv-legend-swatch safe"></i> Healthy</span><span><i class="inv-legend-swatch"></i> Below reorder</span><span><i class="inv-legend-swatch" style="background:var(--red)"></i> Critical</span><span><i style="width:12px;border-top:1px solid var(--blue)"></i> Delivery</span></div>`;
+}
+
+function invRenderDashboardDeliveries(){
+  const el=document.getElementById('invDashDeliveries');if(!el)return;
+  const today=invDateKey(new Date());
+  const rows=invDelPlan.filter(d=>d.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+  if(!rows.length){el.innerHTML='<div class="inv-del-empty">No planned deliveries.</div>';return}
+  el.innerHTML=rows.map(del=>{
+    const d=new Date(del.date+'T12:00:00');
+    return`<div class="inv-mini-row"><span><strong>${d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'})}</strong><br>${del.supplier||invSupplier}</span><strong>${invFmtKg(del.kg)}</strong></div>`;
+  }).join('');
+}
+
+function invRenderDashboardUsage(){
+  const el=document.getElementById('invDashUsage');if(!el)return;
+  const today=new Date();const dow=today.getDay()||7;const mon=invAddDays(today,1-dow);
   const days=Array.from({length:5},(_,i)=>invAddDays(mon,i));
-  const names=['Mon','Tue','Wed','Thu','Fri'];
-  const planned=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.plannedKg||0),0)||(!invIsWe(d)?invDailyUsage*0.9:0));
+  const planned=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.plannedKg||0),0)||invDailyUsage);
   const actual=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.actualKg||0),0));
   const maxV=Math.max(...planned,...actual,1);
-  const W=520,H=130,pl={l:46,r:10,t:10,b:28};
-  const pw=W-pl.l-pl.r,ph=H-pl.t-pl.b;
-  const bw=Math.floor(pw/5)-10;
-  let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="'DM Mono',monospace" font-size="9">`;
-  for(let i=0;i<=4;i++){const y=pl.t+ph*(1-i/4);svg+=`<line x1="${pl.l}" x2="${W-pl.r}" y1="${y}" y2="${y}" stroke="rgba(46,62,46,.08)" stroke-width="1"/><text x="${pl.l-4}" y="${y+3}" text-anchor="end" fill="#879080">${Math.round(i/4*maxV/1000)}k</text>`}
-  days.forEach((d,i)=>{
-    const x=pl.l+(i/5)*pw+2;
-    const pH=planned[i]/maxV*ph,aH=actual[i]/maxV*ph;
-    const pY=pl.t+ph-pH,aY=pl.t+ph-aH;
-    const isToday=invSameDay(d,today);
-    if(isToday)svg+=`<rect x="${x-1}" y="${pl.t}" width="${bw+6}" height="${ph}" fill="rgba(183,131,47,.06)" rx="3"/>`;
-    if(planned[i]>0)svg+=`<rect x="${x+2}" y="${pY}" width="${bw-4}" height="${pH}" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="2"/>`;
-    if(actual[i]>0){const v=planned[i]>0?Math.abs(actual[i]-planned[i])/planned[i]:0;const c=v<.15?'#2f7d48':v<.3?'#c9782e':'#ba3d35';svg+=`<rect x="${x+4}" y="${aY}" width="${bw-8}" height="${aH}" fill="${c}" rx="2" opacity=".85"/>`}
-    svg+=`<text x="${x+bw/2}" y="${H-6}" text-anchor="middle" fill="${isToday?'var(--accent)':'#879080'}" font-weight="${isToday?700:400}">${names[i]}</text>`;
-  });
-  svg+='</svg>';
-  const wPlan=planned.reduce((s,v)=>s+v,0),wAct=actual.reduce((s,v)=>s+v,0);
-  const wVar=wPlan>0?Math.round((wAct-wPlan)/wPlan*100):0;
-  card.innerHTML=`<div class="inv-chart-hdr"><span class="card-title" style="margin:0"><i class="ti ti-chart-bar"></i> This week — planned vs actual</span><div class="inv-chart-pills"><span class="inv-pill plan">Plan ${invFmtKg(wPlan)}</span><span class="inv-pill actual">Actual ${invFmtKg(wAct)}</span><span class="inv-pill neutral">${wVar>0?'+':''}${wVar}%</span></div></div>${svg}<div class="inv-chart-legend"><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="none" stroke="var(--accent)" stroke-width="1.5" rx="1"/></svg> Planned</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#2f7d48" rx="1" opacity=".85"/></svg> Actual ±15%</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#c9782e" rx="1" opacity=".85"/></svg> 15–30% var</span><span><svg width="10" height="7"><rect x="0" y="1" width="10" height="5" fill="#ba3d35" rx="1" opacity=".85"/></svg> >30% var</span></div>`;
+  const bars=days.map((d,i)=>{
+    const ph=Math.max(8,Math.round(planned[i]/maxV*70));
+    const ah=actual[i]?Math.max(8,Math.round(actual[i]/maxV*70)):0;
+    return`<div style="flex:1;display:flex;align-items:flex-end;gap:3px;height:76px"><span style="height:${ph}px;flex:1;border:1px solid var(--blue);border-radius:2px 2px 0 0"></span><span style="height:${ah}px;flex:1;background:var(--green);border-radius:2px 2px 0 0"></span></div>`;
+  }).join('');
+  el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:8px;border-bottom:1px solid var(--border);padding-top:4px">${bars}</div><div class="inv-chart-legend"><span>Plan</span><span>Actual</span></div>`;
 }
 
 /**
