@@ -283,10 +283,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-chart-bars{height:118px;display:flex;align-items:end;gap:5px;padding:0 8px;border-bottom:1px solid var(--border2);}
 .pole-chart-bar{width:100%;min-width:14px;border-radius:5px 5px 0 0;position:relative;display:flex;flex-direction:column-reverse;overflow:hidden;background:rgba(53,80,49,.08);}
 .pole-chart-bar.poles{background:linear-gradient(180deg,var(--green),#9ab88e);}
-.pole-chart-seg{display:flex;align-items:center;justify-content:center;min-height:14px;border-top:1px solid rgba(255,253,247,.45);}
-.pole-chart-seg.full{background:linear-gradient(180deg,var(--amber),#e3b13f);}
-.pole-chart-seg.partial{background:linear-gradient(180deg,#f8d56b,#f5eee0);}
-.pole-chart-shortfall{font-family:var(--mono);font-size:8px;font-weight:800;line-height:1.05;text-align:center;color:#5f3d0f;background:rgba(255,253,247,.82);border:1px solid rgba(95,61,15,.12);border-radius:4px;padding:2px 3px;max-width:calc(100% - 4px);}
+.pole-chart-slot{position:relative;flex:1;min-height:18px;background:#f7efe0;border-top:1px solid rgba(95,61,15,.18);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.pole-chart-slot:first-child{border-top:none;}
+.pole-chart-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--amber),#dfaa31);}
+.pole-chart-slot.partial .pole-chart-fill{background:linear-gradient(180deg,#f8d56b,#c9782e);}
+.pole-chart-percent{position:relative;z-index:1;font-family:var(--mono);font-size:8px;font-weight:900;line-height:1;text-align:center;color:#543409;text-shadow:0 1px 0 rgba(255,253,247,.75);}
+.pole-chart-shortfall{display:block;font-size:7px;font-weight:800;margin-top:1px;}
 .pole-chart-number{font-family:var(--mono);font-size:9px;color:var(--text2);text-align:center;white-space:nowrap;}
 .pole-chart-label{font-size:10px;font-weight:700;color:var(--text);text-align:center;}
 .pole-chart-date{font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;}
@@ -2465,11 +2467,14 @@ function poleForecastSingleChart(dayDashboardRows,type,avgCharge){
     const label=isCharges?`${item.rounded} charge${item.rounded===1?'':'s'}`:`${Number(item.qty).toFixed(0)} poles`;
     const chargeM3=Number(avgCharge)||38;
     const m3=Number(item.m3)||0;
-    const fullCharges=isCharges?Math.floor(m3/chargeM3):0;
-    const hasPartial=isCharges&&value>fullCharges&&m3>0;
-    const shortfall=hasPartial?Math.max(0,(value*chargeM3)-m3):0;
-    const chargeBarHtml=isCharges
-      ? `${fullCharges?`<span class="pole-chart-seg full" style="flex:${fullCharges}"></span>`:''}${hasPartial?`<span class="pole-chart-seg partial" style="flex:1"><span class="pole-chart-shortfall" title="${shortfall.toFixed(1)}m3 needed to fill the part charge">${shortfall.toFixed(1)}m3<br>short</span></span>`:''}`
+    const chargeBarHtml=isCharges&&value>0
+      ? Array.from({length:value},(_,slotIdx)=>{
+          const slotM3=Math.max(0,Math.min(chargeM3,m3-(slotIdx*chargeM3)));
+          const pct=Math.max(0,Math.min(100,Math.round(slotM3/chargeM3*100)));
+          const shortfall=Math.max(0,chargeM3-slotM3);
+          const isPartial=pct>0&&pct<100;
+          return `<span class="pole-chart-slot ${isPartial?'partial':'full'}" title="${pct}% full${isPartial?` - ${shortfall.toFixed(1)}m3 short`:''}"><span class="pole-chart-fill" style="height:${pct}%"></span><span class="pole-chart-percent">${pct}%${isPartial?`<span class="pole-chart-shortfall">${shortfall.toFixed(1)}m3 short</span>`:''}</span></span>`;
+        }).join('')
       : '';
     return `<div class="pole-chart-day">
       <div class="pole-chart-bars">
