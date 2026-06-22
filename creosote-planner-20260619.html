@@ -281,10 +281,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-chart{display:grid;grid-template-columns:repeat(7,minmax(50px,1fr));gap:8px;align-items:end;min-height:178px;padding-top:8px;}
 .pole-chart-day{display:flex;flex-direction:column;gap:6px;min-width:0;}
 .pole-chart-bars{height:118px;display:flex;align-items:end;gap:5px;padding:0 8px;border-bottom:1px solid var(--border2);}
-.pole-chart-bar{width:100%;min-width:14px;border-radius:5px 5px 0 0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.pole-chart-bar{width:100%;min-width:14px;border-radius:5px 5px 0 0;position:relative;display:flex;flex-direction:column-reverse;overflow:hidden;background:rgba(53,80,49,.08);}
 .pole-chart-bar.poles{background:linear-gradient(180deg,var(--green),#9ab88e);}
-.pole-chart-bar.charges{background:linear-gradient(180deg,var(--amber),#e9d789);}
-.pole-chart-shortfall{font-family:var(--mono);font-size:8px;font-weight:800;line-height:1.05;text-align:center;color:#5f3d0f;background:rgba(255,253,247,.76);border:1px solid rgba(95,61,15,.12);border-radius:4px;padding:2px 3px;max-width:calc(100% - 4px);}
+.pole-chart-seg{display:flex;align-items:center;justify-content:center;min-height:14px;border-top:1px solid rgba(255,253,247,.45);}
+.pole-chart-seg.full{background:linear-gradient(180deg,var(--amber),#e3b13f);}
+.pole-chart-seg.partial{background:linear-gradient(180deg,#f8d56b,#f5eee0);}
+.pole-chart-shortfall{font-family:var(--mono);font-size:8px;font-weight:800;line-height:1.05;text-align:center;color:#5f3d0f;background:rgba(255,253,247,.82);border:1px solid rgba(95,61,15,.12);border-radius:4px;padding:2px 3px;max-width:calc(100% - 4px);}
 .pole-chart-number{font-family:var(--mono);font-size:9px;color:var(--text2);text-align:center;white-space:nowrap;}
 .pole-chart-label{font-size:10px;font-weight:700;color:var(--text);text-align:center;}
 .pole-chart-date{font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;}
@@ -301,6 +303,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-charge-plant-name{font-size:11px;font-weight:700;color:var(--text);}
 .pole-charge-plant-count{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--text);}
 .pole-charge-meta{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:7px;line-height:1.35;}
+.pole-fill-table-wrap{overflow-x:auto;margin-top:12px;}
+.pole-fill-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.45;margin-top:8px;}
 .shed-bar{height:7px;border-radius:999px;background:rgba(53,80,49,.09);overflow:hidden;margin-top:5px;}
 .shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
 .pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
@@ -2459,11 +2463,17 @@ function poleForecastSingleChart(dayDashboardRows,type,avgCharge){
     const value=isCharges?item.rounded:item.qty;
     const height=Math.max(3,(value/maxValue)*100);
     const label=isCharges?`${item.rounded} charge${item.rounded===1?'':'s'}`:`${Number(item.qty).toFixed(0)} poles`;
-    const shortfall=isCharges&&value>0?Math.max(0,(value*(Number(avgCharge)||38))-(Number(item.m3)||0)):0;
-    const shortfallHtml=shortfall>0.05?`<span class="pole-chart-shortfall" title="${shortfall.toFixed(1)}m3 needed to fill ${value} charge${value===1?'':'s'}">${shortfall.toFixed(1)}m3<br>short</span>`:'';
+    const chargeM3=Number(avgCharge)||38;
+    const m3=Number(item.m3)||0;
+    const fullCharges=isCharges?Math.floor(m3/chargeM3):0;
+    const hasPartial=isCharges&&value>fullCharges&&m3>0;
+    const shortfall=hasPartial?Math.max(0,(value*chargeM3)-m3):0;
+    const chargeBarHtml=isCharges
+      ? `${fullCharges?`<span class="pole-chart-seg full" style="flex:${fullCharges}"></span>`:''}${hasPartial?`<span class="pole-chart-seg partial" style="flex:1"><span class="pole-chart-shortfall" title="${shortfall.toFixed(1)}m3 needed to fill the part charge">${shortfall.toFixed(1)}m3<br>short</span></span>`:''}`
+      : '';
     return `<div class="pole-chart-day">
       <div class="pole-chart-bars">
-        <div class="pole-chart-bar ${isCharges?'charges':'poles'}" style="height:${height}%">${shortfallHtml}</div>
+        <div class="pole-chart-bar ${isCharges?'charges':'poles'}" style="height:${height}%">${chargeBarHtml}</div>
       </div>
       <div class="pole-chart-number">${label}</div>
       <div class="pole-chart-label">${escHtml(item.name.slice(0,3))}</div>
@@ -2477,7 +2487,48 @@ function poleForecastSingleChart(dayDashboardRows,type,avgCharge){
 function poleForecastDailyCharts(dayDashboardRows,avgCharge){
   return `<div class="pole-chart-pair">${poleForecastSingleChart(dayDashboardRows,'poles',avgCharge)}${poleForecastSingleChart(dayDashboardRows,'charges',avgCharge)}</div>`;
 }
-function poleForecastChargeGrid(dayDashboardRows){
+function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
+  const productMap=new Map();
+  dayDashboardRows.forEach(day=>{
+    (day.rows||[]).forEach(row=>{
+      const qty=Number(row.quantity)||0;
+      const m3=Number(row.totalM3)||0;
+      if(qty<=0||m3<=0||row.cubeMissing)return;
+      const key=[row.productCode||'',row.productDescription||''].join('|');
+      const current=productMap.get(key)||{code:row.productCode||'',description:row.productDescription||'Pole product',qty:0,m3:0};
+      current.qty+=qty;
+      current.m3+=m3;
+      productMap.set(key,current);
+    });
+  });
+  const products=[...productMap.values()]
+    .map(p=>({...p,m3PerPole:p.qty>0?p.m3/p.qty:0}))
+    .filter(p=>p.m3PerPole>0)
+    .sort((a,b)=>b.m3PerPole-a.m3PerPole);
+  const rows=[];
+  dayDashboardRows.forEach(day=>{
+    const rounded=Math.max(0,Number(day.rounded)||0);
+    const m3=Number(day.m3)||0;
+    const shortfall=rounded>0?Math.max(0,(rounded*(Number(avgCharge)||38))-m3):0;
+    if(shortfall<=0.05)return;
+    products.slice(0,4).forEach(product=>{
+      const poles=Math.max(1,Math.ceil(shortfall/product.m3PerPole));
+      rows.push({day,shortfall,product,poles,addedM3:poles*product.m3PerPole});
+    });
+  });
+  if(!rows.length)return '';
+  const body=rows.map(r=>`<tr>
+    <td>${escHtml(r.day.name)}</td>
+    <td>${fmtM3(r.shortfall)}</td>
+    <td>${escHtml(r.product.code||'-')}</td>
+    <td>${escHtml(r.product.description||'Pole product')}</td>
+    <td>${r.poles.toLocaleString('en-GB')}</td>
+    <td>${fmtM3(r.addedM3)}</td>
+  </tr>`).join('');
+  return `<div class="pole-fill-table-wrap"><table class="report-table-mini"><thead><tr><th>Day</th><th>Shortfall</th><th>Code</th><th>Suggested pole size</th><th>Approx. poles</th><th>Approx. m3</th></tr></thead><tbody>${body}</tbody></table></div>
+    <div class="pole-fill-note">Suggestions use the week's planned pole products and their average m3 per pole. Check product availability before adding poles to production.</div>`;
+}
+function poleForecastChargeGrid(dayDashboardRows,avgCharge){
   const html=dayDashboardRows.map(item=>{
     const total=Math.max(0,Number(item.rounded)||0);
     const p2=Math.min(2,total);
@@ -2492,8 +2543,10 @@ function poleForecastChargeGrid(dayDashboardRows){
       <div class="pole-charge-meta">${Number(item.qty).toFixed(0)} poles - ${fmtM3(item.m3)} - ${item.charges.toFixed(2)} charge equivalent</div>
     </div>`;
   }).join('');
+  const recommendations=poleForecastFillRecommendations(dayDashboardRows,avgCharge);
   return `<div class="report-card"><div class="report-title"><i class="ti ti-layout-grid"></i>Daily charge allocation</div>
     <div class="pole-charge-grid">${html}</div>
+    ${recommendations?`<div class="report-title" style="margin-top:14px;"><i class="ti ti-list-check"></i>Shortfall fill recommendations</div>${recommendations}`:''}
     <div class="report-email-note">Protocol model: first two pole charges per day are allocated to Plant 2, then any extra pole charges are allocated to Plant 1.</div>
   </div>`;
 }
@@ -2584,7 +2637,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Peak cube day</div><div class="pole-forecast-value">${escHtml((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).name||'-')}</div><div class="pole-forecast-sub">${fmtM3((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).m3||0)}</div></div>
   </div>
   ${poleForecastDailyCharts(dayDashboardRows,avgCharge)}
-  ${poleForecastChargeGrid(dayDashboardRows)}
+  ${poleForecastChargeGrid(dayDashboardRows,avgCharge)}
   <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily cube and charge forecast</div>
     <table class="report-table-mini"><thead><tr><th>Day</th><th>Date</th><th>Poles</th><th>M3</th><th>Charge equiv.</th><th>Charges</th><th>Sheds</th><th>Lines</th></tr></thead><tbody>${dailyDashboardTable}</tbody></table>
   </div>
