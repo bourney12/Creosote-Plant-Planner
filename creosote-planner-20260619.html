@@ -281,9 +281,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-chart{display:grid;grid-template-columns:repeat(7,minmax(50px,1fr));gap:8px;align-items:end;min-height:178px;padding-top:8px;}
 .pole-chart-day{display:flex;flex-direction:column;gap:6px;min-width:0;}
 .pole-chart-bars{height:118px;display:flex;align-items:end;gap:5px;padding:0 8px;border-bottom:1px solid var(--border2);}
-.pole-chart-bar{width:100%;min-width:14px;border-radius:5px 5px 0 0;position:relative;}
+.pole-chart-bar{width:100%;min-width:14px;border-radius:5px 5px 0 0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .pole-chart-bar.poles{background:linear-gradient(180deg,var(--green),#9ab88e);}
 .pole-chart-bar.charges{background:linear-gradient(180deg,var(--amber),#e9d789);}
+.pole-chart-shortfall{font-family:var(--mono);font-size:8px;font-weight:800;line-height:1.05;text-align:center;color:#5f3d0f;background:rgba(255,253,247,.76);border:1px solid rgba(95,61,15,.12);border-radius:4px;padding:2px 3px;max-width:calc(100% - 4px);}
 .pole-chart-number{font-family:var(--mono);font-size:9px;color:var(--text2);text-align:center;white-space:nowrap;}
 .pole-chart-label{font-size:10px;font-weight:700;color:var(--text);text-align:center;}
 .pole-chart-date{font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;}
@@ -2451,16 +2452,18 @@ function buildPoleForecastChargePlan(dayDashboardRows){
   });
   return {bars,chargeHours,turnHours};
 }
-function poleForecastSingleChart(dayDashboardRows,type){
+function poleForecastSingleChart(dayDashboardRows,type,avgCharge){
   const isCharges=type==='charges';
   const maxValue=Math.max(1,...dayDashboardRows.map(d=>isCharges?d.rounded:d.qty));
   const html=dayDashboardRows.map(item=>{
     const value=isCharges?item.rounded:item.qty;
     const height=Math.max(3,(value/maxValue)*100);
     const label=isCharges?`${item.rounded} charge${item.rounded===1?'':'s'}`:`${Number(item.qty).toFixed(0)} poles`;
+    const shortfall=isCharges&&value>0?Math.max(0,(value*(Number(avgCharge)||38))-(Number(item.m3)||0)):0;
+    const shortfallHtml=shortfall>0.05?`<span class="pole-chart-shortfall" title="${shortfall.toFixed(1)}m3 needed to fill ${value} charge${value===1?'':'s'}">${shortfall.toFixed(1)}m3<br>short</span>`:'';
     return `<div class="pole-chart-day">
       <div class="pole-chart-bars">
-        <div class="pole-chart-bar ${isCharges?'charges':'poles'}" style="height:${height}%"></div>
+        <div class="pole-chart-bar ${isCharges?'charges':'poles'}" style="height:${height}%">${shortfallHtml}</div>
       </div>
       <div class="pole-chart-number">${label}</div>
       <div class="pole-chart-label">${escHtml(item.name.slice(0,3))}</div>
@@ -2471,8 +2474,8 @@ function poleForecastSingleChart(dayDashboardRows,type){
     <div class="pole-chart">${html}</div>
   </div>`;
 }
-function poleForecastDailyCharts(dayDashboardRows){
-  return `<div class="pole-chart-pair">${poleForecastSingleChart(dayDashboardRows,'poles')}${poleForecastSingleChart(dayDashboardRows,'charges')}</div>`;
+function poleForecastDailyCharts(dayDashboardRows,avgCharge){
+  return `<div class="pole-chart-pair">${poleForecastSingleChart(dayDashboardRows,'poles',avgCharge)}${poleForecastSingleChart(dayDashboardRows,'charges',avgCharge)}</div>`;
 }
 function poleForecastChargeGrid(dayDashboardRows){
   const html=dayDashboardRows.map(item=>{
@@ -2580,7 +2583,7 @@ function buildPoleForecast(){
     <div class="pole-forecast-card"><div class="pole-forecast-label">Week charges</div><div class="pole-forecast-value">${weekCharges}</div><div class="pole-forecast-sub">At ${avgCharge} m3 per charge</div></div>
     <div class="pole-forecast-card"><div class="pole-forecast-label">Peak cube day</div><div class="pole-forecast-value">${escHtml((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).name||'-')}</div><div class="pole-forecast-sub">${fmtM3((dayDashboardRows.slice().sort((a,b)=>b.m3-a.m3)[0]||{}).m3||0)}</div></div>
   </div>
-  ${poleForecastDailyCharts(dayDashboardRows)}
+  ${poleForecastDailyCharts(dayDashboardRows,avgCharge)}
   ${poleForecastChargeGrid(dayDashboardRows)}
   <div class="report-card"><div class="report-title"><i class="ti ti-calendar-stats"></i>Daily cube and charge forecast</div>
     <table class="report-table-mini"><thead><tr><th>Day</th><th>Date</th><th>Poles</th><th>M3</th><th>Charge equiv.</th><th>Charges</th><th>Sheds</th><th>Lines</th></tr></thead><tbody>${dailyDashboardTable}</tbody></table>
