@@ -1555,7 +1555,7 @@ const MASTER_SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNW
 const ALLOCATION_TO_STACK_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/gviz/tq?tqx=out:csv&sheet=Allocation%20to%20Stack';
 const MASTER_BRIDGE_STORAGE_KEY='creosote_master_bridge_url';
 const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec';
-const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v10';
+const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v11';
 const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
 const MASTER_CACHE_FRESH_MS=60000;
@@ -1567,6 +1567,7 @@ let masterAllProducts=[];
 let masterPlannedSchedule=[];
 let masterGreenTreatment=[];
 let masterProductMasterRows=[];
+let masterRawPoleProducts=[];
 let masterAllocationToStackRows=[];
 let masterPoleForecast={ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
 let poleForecastDayIdx=(new Date().getDay()+6)%7;
@@ -2242,6 +2243,7 @@ function applyMasterPayload(data,sourceLabel){
     (Array.isArray(data.productMasterProducts)?data.productMasterProducts:
     (Array.isArray(data.productMasterRows)?data.productMasterRows:
     (Array.isArray(data.rawPoleProducts)?data.rawPoleProducts:[])));
+  masterRawPoleProducts=Array.isArray(data.rawPoleProducts)?data.rawPoleProducts:[];
   masterAllocationToStackRows=Array.isArray(data.allocationToStack)?data.allocationToStack:
     (Array.isArray(data.allocationToStackRows)?data.allocationToStackRows:
     (Array.isArray(data.stackAllocationProducts)?data.stackAllocationProducts:
@@ -2262,7 +2264,7 @@ function applyMasterPayload(data,sourceLabel){
     const raw=String(row?._productRange||row?.ProductRange||row?.['Product range']||row?.['Column M']||'').toLowerCase();
     return raw.includes('pole')||raw.includes('fenc');
   }).length;
-  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,greenTreatmentProducts:masterGreenTreatment,productMasterRows:masterProductMasterRows,allocationToStackRows:masterAllocationToStackRows,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,rawPoleProductCount:poleForecastRawPoleProducts().length,lastSync:new Date().toISOString(),source:sourceLabel};
+  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,greenTreatmentProducts:masterGreenTreatment,productMasterRows:masterProductMasterRows,rawPoleProducts:masterRawPoleProducts,allocationToStackRows:masterAllocationToStackRows,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,rawPoleProductCount:poleForecastRawPoleProducts().length,rawPoleProductM3Count:poleForecastRawPoleProducts().filter(p=>Number(p.m3PerPole)>0).length,lastSync:new Date().toISOString(),source:sourceLabel};
   return {count:Object.keys(masterProductsByCharge).length,hasLoadedSlotFeed,volumeRowCount,rangeRowCount};
 }
 async function loadAllocationToStackCsvFallback(){
@@ -2280,7 +2282,11 @@ async function loadAllocationToStackCsvFallback(){
       obj.productDescription=obj['Column F'];
       obj.productCode=obj['Column G'];
       return obj;
-    }).filter(row=>String(row['Column G']||'').trim().toUpperCase().startsWith('PR'));
+    }).filter(row=>{
+      const code=String(row['Column G']||'').trim().toUpperCase();
+      const description=String(row['Column F']||'');
+      return code.startsWith('PR')&&!/plug|softwood|\bSYP\b/i.test(description);
+    });
     if(rows.length){
       masterAllocationToStackRows=rows;
       masterPoleForecast={...masterPoleForecast,products:[...(masterPoleForecast.products||[]),...rows]};
@@ -2304,6 +2310,7 @@ function saveMasterCache(){
       plannedScheduleProducts:masterPlannedSchedule,
       greenTreatmentProducts:masterGreenTreatment,
       productMasterFile:masterProductMasterRows,
+      rawPoleProducts:masterRawPoleProducts,
       allocationToStack:masterAllocationToStackRows,
       poleForecast:masterPoleForecast,
       inventoryMovements:masterInventoryMovements,
@@ -2354,7 +2361,7 @@ function masterCacheFresh(){
   if(masterCacheAgeMs()>=MASTER_CACHE_FRESH_MS)return false;
   try{
     const rec=readMasterCacheRecord();
-    return !!(rec&&payloadHasProductDescriptions(rec.data)&&payloadRawPrCodeCount(rec.data)>1);
+    return !!(rec&&payloadHasProductDescriptions(rec.data)&&payloadRawPrCodeCount(rec.data)>1&&payloadRawPrM3Count(rec.data)>1);
   }catch(e){return false;}
 }
 function payloadRawPrCodeCount(data){
@@ -2369,6 +2376,7 @@ function payloadRawPrCodeCount(data){
     ...(data.productMasterFile||[]),
     ...(data.productMasterProducts||[]),
     ...(data.productMasterRows||[]),
+    ...(data.rawPoleProducts||[]),
     ...(data.allocationToStack||[]),
     ...(data.allocationToStackRows||[])
   ];
@@ -2384,15 +2392,45 @@ function payloadRawPrCodeCount(data){
   });
   return codes.size;
 }
+function payloadRawPrM3Count(data){
+  if(!data)return 0;
+  const grouped=Object.values(data.productsByCharge||{}).flat();
+  const rows=[
+    ...grouped,
+    ...(data.unassignedProducts||[]),
+    ...(data.allProducts||[]),
+    ...(data.plannedScheduleProducts||[]),
+    ...(data.greenTreatmentProducts||[]),
+    ...(data.productMasterFile||[]),
+    ...(data.productMasterProducts||[]),
+    ...(data.productMasterRows||[]),
+    ...(data.rawPoleProducts||[]),
+    ...(data.allocationToStack||[]),
+    ...(data.allocationToStackRows||[])
+  ];
+  const pick=(row,names)=>names.map(n=>row&&row[n]).find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
+  const codes=new Set();
+  rows.forEach(row=>{
+    const code=String(pick(row,['productCode','_productCode','code','Product Code','Product code','Raw Product Code','Raw code','Column G','Column 7','Column L','Column 12','Column C'])||'').trim().toUpperCase();
+    if(!code.startsWith('PR'))return;
+    const description=String(pick(row,['productDescription','_productDescription','description','Product Description','Product description','Raw Product Description','Column F','Column 6','Column D'])||'');
+    if(/plug|softwood|\bSYP\b/i.test(description))return;
+    const qty=parseReportNumber(pick(row,['_quantity','quantity','Quantity','qty','Qty','pieces','Pieces','Column AI','Column 35']));
+    const totalM3=parseReportNumber(pick(row,['_volumeM3','VolumeM3','Volume m3','totalM3','volumeM3','Column AK','Column 37']));
+    const directM3=parseReportNumber(pick(row,['m3PerPole','cubeEachM3','cube','cubicMetresPerPole','Product m3','Product M3','Cube','Cubic metres','Cubic Metres','Column E']));
+    if(directM3>0||(qty>0&&totalM3>0))codes.add(code);
+  });
+  return codes.size;
+}
 function payloadHasProductDescriptions(data){
   if(!data)return false;
   const grouped=Object.values(data.productsByCharge||{}).flat();
-  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[]),...(data.greenTreatmentProducts||[]),...(data.productMasterFile||[]),...(data.productMasterProducts||[]),...(data.productMasterRows||[]),...(data.allocationToStack||[]),...(data.allocationToStackRows||[])];
+  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[]),...(data.greenTreatmentProducts||[]),...(data.productMasterFile||[]),...(data.productMasterProducts||[]),...(data.productMasterRows||[]),...(data.rawPoleProducts||[]),...(data.allocationToStack||[]),...(data.allocationToStackRows||[])];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function masterHasProductDescriptions(){
   const grouped=Object.values(masterProductsByCharge||{}).flat();
-  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule,...masterGreenTreatment,...masterProductMasterRows,...masterAllocationToStackRows];
+  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule,...masterGreenTreatment,...masterProductMasterRows,...masterRawPoleProducts,...masterAllocationToStackRows];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function refreshMasterViews(){
@@ -2578,6 +2616,7 @@ function poleForecastRawPoleProducts(){
   });
   const products=[
     ...(Array.isArray(pf.products)?pf.products:[]),
+    ...(Array.isArray(masterRawPoleProducts)?masterRawPoleProducts:[]),
     ...(Array.isArray(masterProductMasterRows)?masterProductMasterRows:[]),
     ...(Array.isArray(masterAllocationToStackRows)?masterAllocationToStackRows:[]),
     ...(Array.isArray(masterAllProducts)?masterAllProducts:[]),
@@ -2590,7 +2629,7 @@ function poleForecastRawPoleProducts(){
     const code=String(pick(row,['productCode','_productCode','code','pmfCode','product_code','Product Code','Product code','PMF Code','Stock Code','Stock code','Item Code','Item code','Raw Product Code','Raw product code','Raw code','Raw Code','Column G','Column 7','Column L','Column 12','Column C'])||'').trim().toUpperCase();
     if(!code.startsWith('PR'))return null;
     const description=String(pick(row,['productDescription','_productDescription','description','name','product','Product Description','Product description','Stock Description','Stock description','Item Description','Item description','Raw Product Description','Raw product description','Raw description','Raw Description','Column F','Column 6','Column J','Column 10','Column D'])||'Raw pole size').trim();
-    if(/plug|softwood/i.test(description))return null;
+    if(/plug|softwood|\bSYP\b/i.test(description))return null;
     const qty=parseReportNumber(pick(row,['_quantity','quantity','Quantity','qty','Qty','pieces','Pieces','Column AI','Column 35']));
     const totalM3=parseReportNumber(pick(row,['_volumeM3','VolumeM3','Volume m3','totalM3','volumeM3','Column AK','Column 37']));
     const derivedM3=qty>0&&totalM3>0?totalM3/qty:0;
@@ -2640,6 +2679,7 @@ function poleForecastRawPoleSourceSummary(){
   const pf=masterPoleForecast||{};
   return {
     total:poleForecastRawPoleProducts().length,
+    rawBridge:scan(masterRawPoleProducts),
     allocation:scan(masterAllocationToStackRows),
     allProducts:scan(masterAllProducts),
     forecast:scan(pf.rows),
@@ -2675,9 +2715,9 @@ function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
     <td>${r.addedM3?fmtM3(r.addedM3):'Needs m3/pole'}</td>
   </tr>`).join(''):`<tr><td colspan="5">Shortfall exists, but no raw pole products with product codes beginning PR are loaded from Allocation to Stack, the Product Master File, or the current forecast rows.</td></tr>`):`<tr><td colspan="5">${escHtml(selectedDay?selectedDay.name:'Selected day')} has no charge shortfall.</td></tr>`;
   return `<div class="report-control" style="max-width:260px;margin-top:10px;"><label>Recommendation day</label><select onchange="setPoleForecastFillDay(Number(this.value))">${dayOptions}</select></div>
-    <div class="pole-fill-note">Raw PR sizes loaded: ${sourceSummary.total} total - Allocation to Stack: ${sourceSummary.allocation}, Treatment Master all products: ${sourceSummary.allProducts}, Pole Forecast: ${sourceSummary.forecast}, Product Master: ${sourceSummary.productMaster}.</div>
+    <div class="pole-fill-note">Raw PR sizes loaded: ${sourceSummary.total} total - Bridge raw poles: ${sourceSummary.rawBridge}, Allocation to Stack: ${sourceSummary.allocation}, Treatment Master all products: ${sourceSummary.allProducts}, Pole Forecast: ${sourceSummary.forecast}, Product Master: ${sourceSummary.productMaster}.</div>
     <div class="pole-fill-table-wrap"><table class="report-table-mini"><thead><tr><th>Shortfall</th><th>Raw code</th><th>Raw pole size</th><th>Approx. poles</th><th>Approx. m3</th></tr></thead><tbody>${body}</tbody></table></div>
-    <div class="pole-fill-note">Suggestions use raw products from Allocation to Stack column G where codes begin PR, excluding plug and softwood descriptions. Volumes use PMF cube data where available, or Treatment Master total m3 divided by quantity. Rows are sorted smallest to largest.</div>`;
+    <div class="pole-fill-note">Suggestions use raw products from Allocation to Stack column G where codes begin PR, excluding plug, softwood and SYP descriptions. Volumes use PMF cube data where available, or Treatment Master total m3 divided by quantity. Rows are sorted smallest to largest.</div>`;
 }
 function poleForecastChargeGrid(dayDashboardRows,avgCharge){
   const html=dayDashboardRows.map(item=>{
