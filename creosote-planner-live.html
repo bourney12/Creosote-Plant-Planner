@@ -1565,6 +1565,7 @@ let masterUnassignedProducts=[];
 let masterAllProducts=[];
 let masterPlannedSchedule=[];
 let masterGreenTreatment=[];
+let masterProductMasterRows=[];
 let masterPoleForecast={ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
 let poleForecastDayIdx=(new Date().getDay()+6)%7;
 let poleForecastAvgM3=Number(localStorage.getItem('creosote_pole_forecast_avg_m3')||38);
@@ -2234,7 +2235,14 @@ function applyMasterPayload(data,sourceLabel){
   masterAllProducts=Array.isArray(data.allProducts)&&data.allProducts.length?data.allProducts:[...groupedRows,...masterUnassignedProducts];
   masterPlannedSchedule=Array.isArray(data.plannedScheduleProducts)?data.plannedScheduleProducts:[];
   masterGreenTreatment=Array.isArray(data.greenTreatmentProducts)?data.greenTreatmentProducts:[];
+  masterProductMasterRows=Array.isArray(data.productMasterFile)?data.productMasterFile:
+    (Array.isArray(data.productMasterProducts)?data.productMasterProducts:
+    (Array.isArray(data.productMasterRows)?data.productMasterRows:
+    (Array.isArray(data.rawPoleProducts)?data.rawPoleProducts:[])));
   masterPoleForecast=data.poleForecast||{ok:false,days:[],products:[],rows:[],diagnostics:{},averageChargeM3:38};
+  if(!Array.isArray(masterPoleForecast.products)||!masterPoleForecast.products.length){
+    masterPoleForecast={...masterPoleForecast,products:masterProductMasterRows};
+  }
   if(Array.isArray(data.inventoryMovements)){
     masterInventoryMovements=data.inventoryMovements;
     inventoryMovementsLoaded=!!data.inventoryMovements.length||!(data.inventoryColumnMap&&data.inventoryColumnMap.skipped);
@@ -2247,7 +2255,7 @@ function applyMasterPayload(data,sourceLabel){
     const raw=String(row?._productRange||row?.ProductRange||row?.['Product range']||row?.['Column M']||'').toLowerCase();
     return raw.includes('pole')||raw.includes('fenc');
   }).length;
-  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,greenTreatmentProducts:masterGreenTreatment,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,lastSync:new Date().toISOString(),source:sourceLabel};
+  window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,greenTreatmentProducts:masterGreenTreatment,productMasterRows:masterProductMasterRows,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,rawPoleProductCount:poleForecastRawPoleProducts().length,lastSync:new Date().toISOString(),source:sourceLabel};
   return {count:Object.keys(masterProductsByCharge).length,hasLoadedSlotFeed,volumeRowCount,rangeRowCount};
 }
 function saveMasterCache(){
@@ -2258,6 +2266,7 @@ function saveMasterCache(){
       allProducts:masterAllProducts,
       plannedScheduleProducts:masterPlannedSchedule,
       greenTreatmentProducts:masterGreenTreatment,
+      productMasterFile:masterProductMasterRows,
       poleForecast:masterPoleForecast,
       inventoryMovements:masterInventoryMovements,
       columnMap:masterColumnMap,
@@ -2313,12 +2322,12 @@ function masterCacheFresh(){
 function payloadHasProductDescriptions(data){
   if(!data)return false;
   const grouped=Object.values(data.productsByCharge||{}).flat();
-  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[]),...(data.greenTreatmentProducts||[])];
+  const rows=[...grouped,...(data.unassignedProducts||[]),...(data.allProducts||[]),...(data.plannedScheduleProducts||[]),...(data.greenTreatmentProducts||[]),...(data.productMasterFile||[]),...(data.productMasterProducts||[]),...(data.productMasterRows||[])];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function masterHasProductDescriptions(){
   const grouped=Object.values(masterProductsByCharge||{}).flat();
-  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule,...masterGreenTreatment];
+  const rows=[...grouped,...masterUnassignedProducts,...masterAllProducts,...masterPlannedSchedule,...masterGreenTreatment,...masterProductMasterRows];
   return rows.some(r=>r&&(r._productDescription||r.ProductDescription||r['Product description']));
 }
 function refreshMasterViews(){
@@ -2494,13 +2503,16 @@ function poleForecastDailyCharts(dayDashboardRows,avgCharge){
 }
 function poleForecastRawPoleProducts(){
   const pf=masterPoleForecast||{};
-  const products=Array.isArray(pf.products)?pf.products:[];
+  const products=[
+    ...(Array.isArray(pf.products)?pf.products:[]),
+    ...(Array.isArray(masterProductMasterRows)?masterProductMasterRows:[])
+  ];
   const pick=(row,names)=>names.map(n=>row&&row[n]).find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
   const raw=products.map(row=>{
-    const code=String(pick(row,['productCode','code','pmfCode','product_code','Product Code','Column C'])||'').trim().toUpperCase();
+    const code=String(pick(row,['productCode','code','pmfCode','product_code','Product Code','Product code','PMF Code','Stock Code','Stock code','Item Code','Item code','Column C'])||'').trim().toUpperCase();
     if(!code.startsWith('PR'))return null;
-    const description=String(pick(row,['productDescription','description','name','product','Product Description','Column D'])||'Raw pole size').trim();
-    const m3=Number(pick(row,['m3PerPole','m3','cube','cubicMetres','cubicMetresPerPole','totalM3','volumeM3','Product m3','Column E']))||0;
+    const description=String(pick(row,['productDescription','description','name','product','Product Description','Product description','Stock Description','Stock description','Item Description','Item description','Column D'])||'Raw pole size').trim();
+    const m3=parseReportNumber(pick(row,['m3PerPole','m3','cube','cubicMetres','cubicMetresPerPole','totalM3','volumeM3','Product m3','Product M3','Cube','Cubic metres','Cubic Metres','Column E','Column AK']));
     if(m3<=0)return null;
     return {code,description,m3PerPole:m3};
   }).filter(Boolean);
@@ -2789,7 +2801,7 @@ async function refreshProductMaster(){
       }
       masterSync={state:'warn',msg:'Master bridge loading latest Treatment Master and planned schedule...',last:Date.now()};
       updateMasterStatus();
-      const data=await loadJsonp(bridgeUrl);
+      const data=await loadJsonp(bridgeUrl,{includeProductMaster:'1'});
       if(!data||data.ok===false)throw new Error(data&&data.error?data.error:'Bridge returned no data');
       if(masterPayloadRowCount(data)===0)throw new Error('Bridge returned zero Treatment Master rows, so existing charge data was kept');
       const applied=applyMasterPayload(data,'bridge');
