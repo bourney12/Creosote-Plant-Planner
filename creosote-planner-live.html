@@ -1552,6 +1552,7 @@ const SHIFT_DEFS={
 };
 
 const MASTER_SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/export?format=csv&gid=115405406';
+const ALLOCATION_TO_STACK_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/gviz/tq?tqx=out:csv&sheet=Allocation%20to%20Stack';
 const MASTER_BRIDGE_STORAGE_KEY='creosote_master_bridge_url';
 const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec';
 const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v9';
@@ -2264,6 +2265,36 @@ function applyMasterPayload(data,sourceLabel){
   window.creosoteMasterDebug={productsByCharge:masterProductsByCharge,unassignedProducts:masterUnassignedProducts,allProducts:masterAllProducts,plannedScheduleProducts:masterPlannedSchedule,greenTreatmentProducts:masterGreenTreatment,productMasterRows:masterProductMasterRows,allocationToStackRows:masterAllocationToStackRows,poleForecast:masterPoleForecast,inventoryMovements:masterInventoryMovements,columnMap:masterColumnMap,scheduleColumnMap:data.scheduleColumnMap||null,inventoryColumnMap,volumeRowCount,rangeRowCount,rawPoleProductCount:poleForecastRawPoleProducts().length,lastSync:new Date().toISOString(),source:sourceLabel};
   return {count:Object.keys(masterProductsByCharge).length,hasLoadedSlotFeed,volumeRowCount,rangeRowCount};
 }
+async function loadAllocationToStackCsvFallback(){
+  if((masterAllocationToStackRows||[]).length>1)return false;
+  try{
+    const res=await fetch(ALLOCATION_TO_STACK_CSV_URL+'&_='+Date.now(),{cache:'no-store',credentials:'include'});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const csvRows=parseCsv(await res.text());
+    const headers=(csvRows.shift()||[]).map(h=>String(h||'').trim());
+    const rows=csvRows.map(vals=>{
+      const obj={};
+      vals.forEach((v,i)=>{obj[headers[i]||`Column ${i+1}`]=String(v||'').trim();});
+      obj['Column F']=String(vals[5]||'').trim();
+      obj['Column G']=String(vals[6]||'').trim();
+      obj.productDescription=obj['Column F'];
+      obj.productCode=obj['Column G'];
+      return obj;
+    }).filter(row=>String(row['Column G']||'').trim().toUpperCase().startsWith('PR'));
+    if(rows.length){
+      masterAllocationToStackRows=rows;
+      masterPoleForecast={...masterPoleForecast,products:[...(masterPoleForecast.products||[]),...rows]};
+      if(window.creosoteMasterDebug){
+        window.creosoteMasterDebug.allocationToStackRows=masterAllocationToStackRows;
+        window.creosoteMasterDebug.rawPoleProductCount=poleForecastRawPoleProducts().length;
+      }
+      return true;
+    }
+  }catch(err){
+    console.warn('Allocation to Stack fallback unavailable',err&&err.message?err.message:err);
+  }
+  return false;
+}
 function saveMasterCache(){
   try{
     localStorage.setItem(MASTER_CACHE_STORAGE_KEY,JSON.stringify({
@@ -2838,6 +2869,7 @@ async function refreshProductMaster(){
       if(!data||data.ok===false)throw new Error(data&&data.error?data.error:'Bridge returned no data');
       if(masterPayloadRowCount(data)===0)throw new Error('Bridge returned zero Treatment Master rows, so existing charge data was kept');
       const applied=applyMasterPayload(data,'bridge');
+      await loadAllocationToStackCsvFallback();
       saveMasterCache();
       const count=applied.count;
       const hasLoadedSlotFeed=applied.hasLoadedSlotFeed;
