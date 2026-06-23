@@ -260,7 +260,8 @@ function buildResponse_(includeInventory, includeAllocationToStack, includeProdu
     var scheduleSheet = getSheetByFlexibleName_(ss, SCHEDULE_SHEET_NAME, ['treatment', 'schedule', 'master']);
     var routingSheet = getSheetByFlexibleName_(ss, ROUTINGS_SHEET_NAME, ['routings', 'master']);
     var allocationSheet = includeAllocationToStack ? getSheetByFlexibleName_(ss, ALLOCATION_TO_STACK_SHEET_NAME, ['allocation', 'stack']) : null;
-    var allocationToStackRows = allocationSheet ? buildAllocationToStackRows_(allocationSheet) : [];
+    var allocationCubeLookup = includeAllocationToStack ? getPmfCubeLookupSafe_() : {};
+    var allocationToStackRows = allocationSheet ? buildAllocationToStackRows_(allocationSheet, allocationCubeLookup) : [];
 
     if (!sheet) {
       throw new Error('Treatment Master tab not found. Available tabs: ' + getSheetList_(ss));
@@ -491,7 +492,17 @@ function buildPlannedScheduleProducts_(sheet) {
   return out;
 }
 
-function buildAllocationToStackRows_(sheet) {
+function getPmfCubeLookupSafe_() {
+  try {
+    var pmfSs = SpreadsheetApp.openById(PMF_SPREADSHEET_ID);
+    var pmfSheet = getSheetByFlexibleName_(pmfSs, PMF_SHEET_NAME, ['pmf', 'associated', 'data']);
+    return pmfSheet ? buildPmfCubeLookup_(pmfSheet).lookup : {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function buildAllocationToStackRows_(sheet, cubeLookup) {
   var lastRow = sheet.getLastRow();
   var lastCol = Math.max(7, Math.min(sheet.getLastColumn(), 60));
   if (lastRow < 2) return [];
@@ -508,6 +519,8 @@ function buildAllocationToStackRows_(sheet) {
     var description = String(vals[5] || '').trim(); // Column F
     var code = String(vals[6] || '').trim().toUpperCase(); // Column G
     if (code.indexOf('PR') !== 0) continue;
+    if (/plug|softwood/i.test(description)) continue;
+    var cube = cubeForRoutingCode_(cubeLookup || {}, code);
 
     var row = {};
     for (var c = 0; c < vals.length; c++) {
@@ -526,6 +539,10 @@ function buildAllocationToStackRows_(sheet) {
     row['Raw Product Description'] = description;
     row['Column F'] = description;
     row['Column 6'] = description;
+    row.m3PerPole = cube > 0 ? cube : '';
+    row.cubeEachM3 = cube > 0 ? cube : '';
+    row['Product m3'] = cube > 0 ? cube : '';
+    row['Column E'] = cube > 0 ? cube : '';
     row._sourceSheet = sheet.getName();
     row._rowNumber = startDataRow + r;
 
