@@ -519,7 +519,7 @@ function buildAllocationToStackRows_(sheet, cubeLookup) {
     var description = String(vals[5] || '').trim(); // Column F
     var code = String(vals[6] || '').trim().toUpperCase(); // Column G
     if (code.indexOf('PR') !== 0) continue;
-    if (/plug|softwood|\bSYP\b/i.test(description)) continue;
+    if (/plug|softwood|\bSYP\b|\bPP\b|\bKILN\s+DRIED\b/i.test(description)) continue;
     var cube = cubeForRoutingCode_(cubeLookup || {}, code);
 
     var row = {};
