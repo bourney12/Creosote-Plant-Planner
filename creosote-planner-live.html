@@ -2604,14 +2604,34 @@ function poleForecastRawPoleProducts(){
   }).filter(Boolean);
   const byKey=new Map();
   [...raw,...forecastRaw].forEach(item=>{
-    const key=item.code+'|'+item.description;
+    const key=item.code;
     const existing=byKey.get(key);
-    if(!existing||((Number(existing.m3PerPole)||0)<=0&&(Number(item.m3PerPole)||0)>0))byKey.set(key,item);
+    const existingM3=Number(existing&&existing.m3PerPole)||0;
+    const itemM3=Number(item.m3PerPole)||0;
+    const existingGeneric=!existing||!existing.description||existing.description==='Raw pole size';
+    const itemBetterText=item.description&&item.description!=='Raw pole size'&&existingGeneric;
+    if(!existing||(existingM3<=0&&itemM3>0)||itemBetterText)byKey.set(key,item);
   });
   return [...byKey.values()].sort((a,b)=>(Number(b.m3PerPole)||0)-(Number(a.m3PerPole)||0)||a.code.localeCompare(b.code));
 }
+function poleForecastRawPoleSourceSummary(){
+  const scan=rows=>new Set((Array.isArray(rows)?rows:[]).flatMap(row=>[
+    row&&row.productCode,row&&row._productCode,row&&row.code,row&&row['Product Code'],row&&row['Product code'],
+    row&&row['Raw Product Code'],row&&row['Raw code'],row&&row['Column G'],row&&row['Column 7'],
+    row&&row['Column L'],row&&row['Column 12'],row&&row['Column C']
+  ].map(v=>String(v||'').trim().toUpperCase()).filter(v=>v.startsWith('PR')))).size;
+  const pf=masterPoleForecast||{};
+  return {
+    total:poleForecastRawPoleProducts().length,
+    allocation:scan(masterAllocationToStackRows),
+    allProducts:scan(masterAllProducts),
+    forecast:scan(pf.rows),
+    productMaster:scan(masterProductMasterRows)
+  };
+}
 function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
   const products=poleForecastRawPoleProducts();
+  const sourceSummary=poleForecastRawPoleSourceSummary();
   const shortfallDays=dayDashboardRows.map(day=>{
     const rounded=Math.max(0,Number(day.rounded)||0);
     const m3=Number(day.m3)||0;
@@ -2638,6 +2658,7 @@ function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
     <td>${r.addedM3?fmtM3(r.addedM3):'Needs m3/pole'}</td>
   </tr>`).join(''):`<tr><td colspan="5">Shortfall exists, but no raw pole products with product codes beginning PR are loaded from Allocation to Stack, the Product Master File, or the current forecast rows.</td></tr>`):`<tr><td colspan="5">${escHtml(selectedDay?selectedDay.name:'Selected day')} has no charge shortfall.</td></tr>`;
   return `<div class="report-control" style="max-width:260px;margin-top:10px;"><label>Recommendation day</label><select onchange="setPoleForecastFillDay(Number(this.value))">${dayOptions}</select></div>
+    <div class="pole-fill-note">Raw PR sizes loaded: ${sourceSummary.total} total - Allocation to Stack: ${sourceSummary.allocation}, Treatment Master all products: ${sourceSummary.allProducts}, Pole Forecast: ${sourceSummary.forecast}, Product Master: ${sourceSummary.productMaster}.</div>
     <div class="pole-fill-table-wrap"><table class="report-table-mini"><thead><tr><th>Shortfall</th><th>Raw code</th><th>Raw pole size</th><th>Approx. poles</th><th>Approx. m3</th></tr></thead><tbody>${body}</tbody></table></div>
     <div class="pole-fill-note">Suggestions use raw products from Allocation to Stack column G where codes begin PR, with descriptions from column F. When m3 per pole is not available from PMF or forecast rows, the product is still listed but the pole count cannot be calculated.</div>`;
 }
