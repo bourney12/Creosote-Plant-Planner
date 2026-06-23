@@ -1555,7 +1555,7 @@ const MASTER_SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNW
 const ALLOCATION_TO_STACK_CSV_URL='https://docs.google.com/spreadsheets/d/11v8cSAItQBNWiLg4QCgFb3dVKlZwNQUt2Y6ojmjyHOg/gviz/tq?tqx=out:csv&sheet=Allocation%20to%20Stack';
 const MASTER_BRIDGE_STORAGE_KEY='creosote_master_bridge_url';
 const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec';
-const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v9';
+const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v10';
 const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
 const MASTER_CACHE_FRESH_MS=60000;
@@ -2354,8 +2354,35 @@ function masterCacheFresh(){
   if(masterCacheAgeMs()>=MASTER_CACHE_FRESH_MS)return false;
   try{
     const rec=readMasterCacheRecord();
-    return !!(rec&&payloadHasProductDescriptions(rec.data));
+    return !!(rec&&payloadHasProductDescriptions(rec.data)&&payloadRawPrCodeCount(rec.data)>1);
   }catch(e){return false;}
+}
+function payloadRawPrCodeCount(data){
+  if(!data)return 0;
+  const grouped=Object.values(data.productsByCharge||{}).flat();
+  const rows=[
+    ...grouped,
+    ...(data.unassignedProducts||[]),
+    ...(data.allProducts||[]),
+    ...(data.plannedScheduleProducts||[]),
+    ...(data.greenTreatmentProducts||[]),
+    ...(data.productMasterFile||[]),
+    ...(data.productMasterProducts||[]),
+    ...(data.productMasterRows||[]),
+    ...(data.allocationToStack||[]),
+    ...(data.allocationToStackRows||[])
+  ];
+  const codes=new Set();
+  rows.forEach(row=>{
+    const vals=['productCode','_productCode','code','Product Code','Product code','Raw Product Code','Raw code','Column G','Column 7','Column L','Column 12','Column C']
+      .map(k=>row&&row[k])
+      .filter(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
+    vals.forEach(v=>{
+      const code=String(v).trim().toUpperCase();
+      if(code.startsWith('PR'))codes.add(code);
+    });
+  });
+  return codes.size;
 }
 function payloadHasProductDescriptions(data){
   if(!data)return false;
@@ -2552,13 +2579,17 @@ function poleForecastRawPoleProducts(){
   const products=[
     ...(Array.isArray(pf.products)?pf.products:[]),
     ...(Array.isArray(masterProductMasterRows)?masterProductMasterRows:[]),
-    ...(Array.isArray(masterAllocationToStackRows)?masterAllocationToStackRows:[])
+    ...(Array.isArray(masterAllocationToStackRows)?masterAllocationToStackRows:[]),
+    ...(Array.isArray(masterAllProducts)?masterAllProducts:[]),
+    ...(Array.isArray(masterUnassignedProducts)?masterUnassignedProducts:[]),
+    ...(Array.isArray(masterPlannedSchedule)?masterPlannedSchedule:[]),
+    ...(Array.isArray(masterGreenTreatment)?masterGreenTreatment:[])
   ];
   const pick=(row,names)=>names.map(n=>row&&row[n]).find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
   const raw=products.map(row=>{
-    const code=String(pick(row,['productCode','code','pmfCode','product_code','Product Code','Product code','PMF Code','Stock Code','Stock code','Item Code','Item code','Raw Product Code','Raw product code','Raw code','Raw Code','Column G','Column 7','Column C'])||'').trim().toUpperCase();
+    const code=String(pick(row,['productCode','_productCode','code','pmfCode','product_code','Product Code','Product code','PMF Code','Stock Code','Stock code','Item Code','Item code','Raw Product Code','Raw product code','Raw code','Raw Code','Column G','Column 7','Column L','Column 12','Column C'])||'').trim().toUpperCase();
     if(!code.startsWith('PR'))return null;
-    const description=String(pick(row,['productDescription','description','name','product','Product Description','Product description','Stock Description','Stock description','Item Description','Item description','Raw Product Description','Raw product description','Raw description','Raw Description','Column F','Column 6','Column D'])||'Raw pole size').trim();
+    const description=String(pick(row,['productDescription','_productDescription','description','name','product','Product Description','Product description','Stock Description','Stock description','Item Description','Item description','Raw Product Description','Raw product description','Raw description','Raw Description','Column F','Column 6','Column J','Column 10','Column D'])||'Raw pole size').trim();
     const m3=parseReportNumber(pick(row,['m3PerPole','m3','cube','cubicMetres','cubicMetresPerPole','totalM3','volumeM3','Product m3','Product M3','Cube','Cubic metres','Cubic Metres','Column E','Column AK']))||m3ByCode.get(code)||0;
     return {code,description,m3PerPole:m3};
   }).filter(Boolean);
