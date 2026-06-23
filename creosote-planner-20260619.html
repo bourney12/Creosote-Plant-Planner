@@ -306,10 +306,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-charge-plant-count{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--text);}
 .pole-charge-meta{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:7px;line-height:1.35;}
 .pole-fill-table-wrap{overflow-x:auto;margin-top:12px;}
+.pole-fill-table-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
 .pole-fill-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.45;margin-top:8px;}
 .shed-bar{height:7px;border-radius:999px;background:rgba(53,80,49,.09);overflow:hidden;margin-top:5px;}
 .shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
 .pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
+@media(max-width:980px){.pole-fill-table-grid{grid-template-columns:1fr;}}
 @media(max-width:900px){.pole-chart-pair{grid-template-columns:1fr;}.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-charge-grid{grid-template-columns:repeat(2,minmax(140px,1fr));}}
 .green-day-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0;}
 .green-day-tab{border:1px solid var(--border);background:var(--bg2);border-radius:var(--radius);padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3);cursor:pointer;}
@@ -2709,16 +2711,19 @@ function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
       rows.push({day,shortfall:day.shortfall,product,poles,addedM3:poles?poles*m3PerPole:null});
     });
   }
-  const body=selectedShortfall?(rows.length?rows.map(r=>`<tr>
+  const rowHtml=rows.map(r=>`<tr>
     <td>${fmtM3(r.shortfall)}</td>
     <td>${escHtml(r.product.code||'-')}</td>
     <td>${escHtml(r.product.description||'Pole product')}</td>
     <td>${r.poles?r.poles.toLocaleString('en-GB'):'Needs m3/pole'}</td>
     <td>${r.addedM3?fmtM3(r.addedM3):'Needs m3/pole'}</td>
-  </tr>`).join(''):`<tr><td colspan="5">Shortfall exists, but no raw pole products with usable m3 per pole are loaded from Allocation to Stack, the Product Master File, or the current forecast rows.</td></tr>`):`<tr><td colspan="5">${escHtml(selectedDay?selectedDay.name:'Selected day')} has no charge shortfall.</td></tr>`;
+  </tr>`);
+  const tableHead='<thead><tr><th>Shortfall</th><th>Raw code</th><th>Raw pole size</th><th>Approx. poles</th><th>Approx. m3</th></tr></thead>';
+  const renderTable=bodyRows=>`<table class="report-table-mini">${tableHead}<tbody>${bodyRows.join('')}</tbody></table>`;
+  const tableHtml=selectedShortfall?(rowHtml.length?`<div class="pole-fill-table-grid">${renderTable(rowHtml.slice(0,Math.ceil(rowHtml.length/2)))}${renderTable(rowHtml.slice(Math.ceil(rowHtml.length/2)))}</div>`:renderTable([`<tr><td colspan="5">Shortfall exists, but no raw pole products with usable m3 per pole are loaded from Allocation to Stack, the Product Master File, or the current forecast rows.</td></tr>`])):renderTable([`<tr><td colspan="5">${escHtml(selectedDay?selectedDay.name:'Selected day')} has no charge shortfall.</td></tr>`]);
   return `<div class="report-control" style="max-width:260px;margin-top:10px;"><label>Recommendation day</label><select onchange="setPoleForecastFillDay(Number(this.value))">${dayOptions}</select></div>
     <div class="pole-fill-note">Raw PR sizes loaded: ${sourceSummary.total} total, ${sourceSummary.withM3} with m3 - Bridge raw poles: ${sourceSummary.rawBridge}, Allocation to Stack: ${sourceSummary.allocation}, Treatment Master all products: ${sourceSummary.allProducts}, Pole Forecast: ${sourceSummary.forecast}, Product Master: ${sourceSummary.productMaster}.</div>
-    <div class="pole-fill-table-wrap"><table class="report-table-mini"><thead><tr><th>Shortfall</th><th>Raw code</th><th>Raw pole size</th><th>Approx. poles</th><th>Approx. m3</th></tr></thead><tbody>${body}</tbody></table></div>
+    <div class="pole-fill-table-wrap">${tableHtml}</div>
     <div class="pole-fill-note">Suggestions use raw products from Allocation to Stack column G where codes begin PR, excluding plug, softwood, PP, SYP and kiln dried descriptions. Volumes use PMF cube data where available, or Treatment Master total m3 divided by quantity. Rows are sorted smallest to largest.</div>`;
 }
 function poleForecastChargeGrid(dayDashboardRows,avgCharge){
