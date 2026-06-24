@@ -1133,6 +1133,20 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
       <div style="font-size:9px;font-weight:600;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
         Enter tank readings (kg)
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <div>
+          <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Reading date</label>
+          <input type="date" id="invReadingDate"
+                 style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;"
+                 onchange="invLoadReadingForSelectedDateTime()">
+        </div>
+        <div>
+          <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Reading time</label>
+          <input type="time" id="invReadingTime"
+                 style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;"
+                 onchange="invLoadReadingForSelectedDateTime()">
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
         <div>
           <div style="font-size:9px;font-weight:600;color:var(--green);font-family:var(--mono);text-transform:uppercase;margin-bottom:5px;">Storage Tanks</div>
@@ -1181,6 +1195,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
         </button>
       </div>
       <div id="invTankSaveStatus" style="font-size:9px;font-family:var(--mono);color:var(--text3);text-align:right;margin-top:4px;min-height:14px;"></div>
+      <div id="invTankHistoryList" style="font-size:9px;font-family:var(--mono);color:var(--text3);margin-top:6px;line-height:1.45;"></div>
       </div>
     </div>
 
@@ -4845,6 +4860,8 @@ const INV_CRIT_KG        =  50000;  // Generic critical level (total stock)
 /* ── Mutable state ── */
 const INV_SETTINGS_KEY = 'creosoteInvSettings';
 const INV_DEL_PLAN_KEY = 'creosoteInvDeliveryPlan';
+const INV_TANK_READINGS_KEY = 'bulkTankReadings';
+const INV_TANK_HISTORY_KEY = 'bulkTankReadingHistory';
 let invFcastHorizon = 14;
 let invDailyUsage   = 21400;
 let invDelKg        = 26000;
@@ -4854,6 +4871,7 @@ let invSupplierEmailVal = '';
 let invSenderNameVal    = '';
 let invSiteAddrVal      = '';
 let invTankData     = {storageT1:{level:0},storageT2:{level:0},workT1:{level:0},workT2:{level:0}};
+let invTankReadingHistory = [];
 let invChargeHist   = [];
 let invDelPlan      = [];   // [{date:'YYYY-MM-DD', kg:number, supplier:string, window:string, notes:string, ref:string, addedAt:string}]
 let invCalYear      = new Date().getFullYear();
@@ -4874,7 +4892,8 @@ function invFmtKg(n){return Math.round(n).toLocaleString('en-GB')+' kg'}
 function invFmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
 function invFmtFull(d){return d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}
 function invTotal(){return(invTankData.storageT1?.level||0)+(invTankData.storageT2?.level||0)+(invTankData.workT1?.level||0)+(invTankData.workT2?.level||0)}
-function invDateKey(d){return d.toISOString().split('T')[0]}
+function invDateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function invTimeKey(d){return d.toTimeString().slice(0,5)}
 function invWindowLabel(w){return w==='full'?'Full day':(w||'AM')}
 function invMakeRef(date){
   const prefix='DEL-'+date.replace(/-/g,'')+'-';
@@ -4971,16 +4990,84 @@ function invLoadSettings(){
     if(s.siteAddr){invSiteAddrVal=s.siteAddr;const el=document.getElementById('invSiteAddr');if(el)el.value=s.siteAddr}
   }catch(e){}
 }
+function invTankInputMap(){return {storageT1:'invInpStorageT1',storageT2:'invInpStorageT2',workT1:'invInpWorkT1',workT2:'invInpWorkT2'}}
+function invReadTankInputLevels(){
+  const inputMap=invTankInputMap();
+  const levels={};
+  Object.entries(inputMap).forEach(([key,elId])=>{
+    const inp=document.getElementById(elId);
+    levels[key]=inp?(parseInt(inp.value,10)||0):(invTankData[key]?.level||0);
+  });
+  return levels;
+}
+function invApplyTankLevels(levels={},savedAt=null){
+  const inputMap=invTankInputMap();
+  Object.entries(inputMap).forEach(([key,elId])=>{
+    const level=Math.max(0,parseInt(levels[key],10)||0);
+    if(!invTankData[key])invTankData[key]={};
+    invTankData[key].level=level;
+    if(savedAt)invTankData[key].savedAt=savedAt;
+    const inp=document.getElementById(elId);
+    if(inp)inp.value=level||'';
+  });
+}
+function invSelectedReadingDateTime(){
+  const dateEl=document.getElementById('invReadingDate');
+  const timeEl=document.getElementById('invReadingTime');
+  const now=new Date();
+  const date=dateEl&&dateEl.value?dateEl.value:invDateKey(now);
+  const time=timeEl&&timeEl.value?timeEl.value:invTimeKey(now);
+  return {date,time,iso:new Date(date+'T'+time+':00').toISOString()};
+}
+function invSetReadingDateTime(iso){
+  const d=iso?new Date(iso):new Date();
+  const dateEl=document.getElementById('invReadingDate');
+  const timeEl=document.getElementById('invReadingTime');
+  if(dateEl)dateEl.value=invDateKey(d);
+  if(timeEl)timeEl.value=invTimeKey(d);
+}
+function invNormaliseTankRecord(rec){
+  const levels=rec&&rec.levels?rec.levels:{
+    storageT1:rec?.storageT1?.level??rec?.storageT1??0,
+    storageT2:rec?.storageT2?.level??rec?.storageT2??0,
+    workT1:rec?.workT1?.level??rec?.workT1??0,
+    workT2:rec?.workT2?.level??rec?.workT2??0
+  };
+  const readingAt=rec?.readingAt||rec?.savedAt||new Date().toISOString();
+  return {readingAt,savedAt:rec?.savedAt||readingAt,levels:{
+    storageT1:Math.max(0,parseInt(levels.storageT1,10)||0),
+    storageT2:Math.max(0,parseInt(levels.storageT2,10)||0),
+    workT1:Math.max(0,parseInt(levels.workT1,10)||0),
+    workT2:Math.max(0,parseInt(levels.workT2,10)||0)
+  }};
+}
+function invSaveTankHistory(){
+  try{localStorage.setItem(INV_TANK_HISTORY_KEY,JSON.stringify(invTankReadingHistory))}catch(e){}
+}
+function invLatestTankRecord(){
+  return [...invTankReadingHistory].sort((a,b)=>String(b.readingAt).localeCompare(String(a.readingAt)))[0]||null;
+}
 function invLoadStorage(){
   try{
-    const r=localStorage.getItem('bulkTankReadings');
-    if(r)invTankData=JSON.parse(r);
-    const inputMap={storageT1:'invInpStorageT1',storageT2:'invInpStorageT2',workT1:'invInpWorkT1',workT2:'invInpWorkT2'};
-    Object.entries(inputMap).forEach(([key,elId])=>{
-      const inp=document.getElementById(elId);
-      const level=invTankData[key]?.level;
-      if(inp&&level>0)inp.value=level;
-    });
+    const hist=localStorage.getItem(INV_TANK_HISTORY_KEY);
+    invTankReadingHistory=hist?JSON.parse(hist).map(invNormaliseTankRecord):[];
+    const latestRaw=localStorage.getItem(INV_TANK_READINGS_KEY);
+    if(latestRaw){
+      const legacy=invNormaliseTankRecord(JSON.parse(latestRaw));
+      if(!invTankReadingHistory.some(r=>r.readingAt===legacy.readingAt))invTankReadingHistory.push(legacy);
+    }
+    invTankReadingHistory.sort((a,b)=>String(a.readingAt).localeCompare(String(b.readingAt)));
+    invSaveTankHistory();
+    const latest=invLatestTankRecord();
+    const active=document.activeElement;
+    const editingTank=!!(active&&(active.classList?.contains('inv-tank-input')||['invReadingDate','invReadingTime'].includes(active.id)));
+    if(latest&&!editingTank){
+      invApplyTankLevels(latest.levels,latest.savedAt);
+      invSetReadingDateTime(latest.readingAt);
+    }else if(!latest&&!editingTank){
+      invSetReadingDateTime();
+    }
+    invRenderTankHistoryList();
   }catch(e){}
   try{
     const r=localStorage.getItem(INV_DEL_PLAN_KEY)||localStorage.getItem('invDeliveryPlan');
@@ -4989,6 +5076,27 @@ function invLoadStorage(){
       localStorage.setItem(INV_DEL_PLAN_KEY,JSON.stringify(invDelPlan));
     }
   }catch(e){invDelPlan=[]}
+}
+function invLoadReadingForSelectedDateTime(){
+  const selected=invSelectedReadingDateTime();
+  const found=invTankReadingHistory.find(r=>r.readingAt===selected.iso);
+  const status=document.getElementById('invTankSaveStatus');
+  if(found){
+    invApplyTankLevels(found.levels,found.savedAt);
+    if(status)status.textContent='Loaded saved reading for selected date/time.';
+    invRenderDashboard();
+  }else if(status){
+    status.textContent='No saved reading for selected date/time yet.';
+  }
+}
+function invRenderTankHistoryList(){
+  const el=document.getElementById('invTankHistoryList');
+  if(!el)return;
+  const rows=[...invTankReadingHistory].sort((a,b)=>String(b.readingAt).localeCompare(String(a.readingAt))).slice(0,5);
+  el.innerHTML=rows.length?'Recent readings: '+rows.map(r=>{
+    const d=new Date(r.readingAt);
+    return `${d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} ${d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})} (${invFmtKg(Object.values(r.levels).reduce((s,v)=>s+(Number(v)||0),0))})`;
+  }).join(' | '):'No saved tank reading history yet.';
 }
 function invSaveDelPlan(){
   localStorage.setItem(INV_DEL_PLAN_KEY,JSON.stringify(invDelPlan));
@@ -5069,12 +5177,10 @@ async function invSaveTankReadings(){
   const btn=document.getElementById('invSaveTankBtn');
   const status=document.getElementById('invTankSaveStatus');
   const savedAt=new Date().toISOString();
-  const keys=['storageT1','storageT2','workT1','workT2'];
-  const inputIds={storageT1:'invInpStorageT1',storageT2:'invInpStorageT2',workT1:'invInpWorkT1',workT2:'invInpWorkT2'};
+  const selected=invSelectedReadingDateTime();
+  const levels=invReadTankInputLevels();
   let valid=true;
-  keys.forEach(key=>{
-    const inp=document.getElementById(inputIds[key]);
-    const level=inp?(parseInt(inp.value,10)||0):(invTankData[key]?.level||0);
+  Object.entries(levels).forEach(([key,level])=>{
     if(level<0||level>INV_MAX)valid=false;
     if(!invTankData[key])invTankData[key]={};
     invTankData[key].level=level;
@@ -5085,20 +5191,27 @@ async function invSaveTankReadings(){
     return;
   }
   if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader-2"></i> Saving...'}
-  try{localStorage.setItem('bulkTankReadings',JSON.stringify(invTankData))}catch(e){}
+  const record={readingAt:selected.iso,savedAt,levels};
+  const existingIdx=invTankReadingHistory.findIndex(r=>r.readingAt===record.readingAt);
+  if(existingIdx>=0)invTankReadingHistory[existingIdx]=record;
+  else invTankReadingHistory.push(record);
+  invTankReadingHistory.sort((a,b)=>String(a.readingAt).localeCompare(String(b.readingAt)));
+  invSaveTankHistory();
+  try{localStorage.setItem(INV_TANK_READINGS_KEY,JSON.stringify({...invTankData,readingAt:selected.iso,savedAt}))}catch(e){}
   const bridgeUrl=typeof liveBridgeUrl==='function'?liveBridgeUrl():'';
   if(bridgeUrl){
     try{
-      await fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveTankLevels',data:{...invTankData,savedAt}})});
+      await fetch(bridgeUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveTankLevels',data:{...invTankData,readingAt:selected.iso,savedAt,history:invTankReadingHistory}})});
     }catch(e){}
   }
   invRenderDashboard();
+  invRenderTankHistoryList();
   if(btn){
     setTimeout(()=>{
       btn.innerHTML='<i class="ti ti-check"></i> Saved';
       btn.style.color='var(--green)';
       btn.style.borderColor='var(--green)';
-      if(status)status.textContent='Saved at '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      if(status)status.textContent='Saved reading for '+selected.date+' '+selected.time;
       setTimeout(()=>{
         btn.disabled=false;
         btn.innerHTML='<i class="ti ti-device-floppy"></i> Save Readings';
@@ -5201,9 +5314,8 @@ function invRenderDashboard(){
   const ts=document.getElementById('invTankTs');
   if(ts){
     try{
-      const saved=JSON.parse(localStorage.getItem('bulkTankReadings')||'{}');
-      const latest=[saved.storageT1,saved.storageT2,saved.workT1,saved.workT2].map(t=>t?.savedAt).filter(Boolean).sort().pop();
-      if(latest){const d=new Date(latest);ts.textContent='Reading: '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}
+      const latest=invLatestTankRecord();
+      if(latest){const d=new Date(latest.readingAt);ts.textContent='Reading: '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}
     }catch(e){}
   }
 
