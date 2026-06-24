@@ -430,6 +430,19 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-status-grid
 body.board-view-timeline:not(.access-board) #panel-live-board #board-running{display:none;}
 body.board-view-timeline:not(.access-board) #panel-live-board .gantt-board{display:block;}
 body.board-view-timeline:not(.access-board) #panel-live-board .board-report{display:none;}
+body.board-view-weekly-products #panel-live-board .board-day-tabs,
+body.board-view-weekly-products #panel-live-board .board-status-grid,
+body.board-view-weekly-products #panel-live-board #board-running,
+body.board-view-weekly-products #panel-live-board .gantt-board{display:none!important;}
+body.board-view-weekly-products #panel-live-board #board-report{display:grid!important;grid-template-columns:1fr;gap:10px;min-height:0;overflow:auto;}
+.board-product-summary-table{width:100%;border-collapse:collapse;font-size:11px;background:#fffdf7;border:1px solid rgba(53,80,49,.13);border-radius:8px;overflow:hidden;}
+.board-product-summary-table th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);text-align:left;padding:7px 8px;border-bottom:1px solid rgba(53,80,49,.13);background:rgba(53,80,49,.04);}
+.board-product-summary-table td{padding:8px;border-bottom:1px solid rgba(53,80,49,.09);vertical-align:top;}
+.board-product-summary-table tr:last-child td{border-bottom:none;}
+.board-product-name{font-weight:800;color:var(--text);}
+.board-product-code{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:2px;}
+.board-product-number{font-family:var(--mono);font-weight:800;color:var(--text);white-space:nowrap;text-align:right;}
+.board-product-days{font-family:var(--mono);font-size:10px;color:var(--text3);}
 .access-board .live-board-head{align-items:center;margin-bottom:8px;flex-shrink:0;}
 .access-board .sec-title{font-size:20px;margin-bottom:0;}
 .access-board .sec-sub{display:none;}
@@ -477,6 +490,11 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .access-board.board-view-timeline .gantt-content{min-height:100%;}
 .access-board.board-view-products .board-report{display:none!important;}
 .access-board.board-view-timeline .board-report{display:none!important;}
+.access-board.board-view-weekly-products .board-report{display:grid!important;flex:1;min-height:0;overflow:auto;}
+.access-board.board-view-weekly-products .board-day-tabs,
+.access-board.board-view-weekly-products .board-status-grid,
+.access-board.board-view-weekly-products #board-running,
+.access-board.board-view-weekly-products .gantt-board{display:none!important;}
 .access-board.board-view-timeline .board-report-card{padding:8px 10px;border-radius:8px;overflow:hidden;}
 .access-board.board-view-timeline .board-report-title{font-size:8px;margin-bottom:5px;}
 .access-board.board-view-timeline .variance-row{grid-template-columns:42px 1fr 52px 52px;gap:5px;padding:4px 0;font-size:9px;}
@@ -647,6 +665,7 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
   </div>
   <div class="board-view-tabs" id="board-view-tabs">
     <button class="board-view-tab active" type="button" data-board-view="products" onclick="setBoardView('products')">Product detail</button>
+    <button class="board-view-tab" type="button" data-board-view="weekly-products" onclick="setBoardView('weekly-products')">Week totals</button>
     <button class="board-view-tab" type="button" data-board-view="timeline" onclick="setBoardView('timeline')">Live timeline</button>
   </div>
   <div class="board-day-tabs" id="board-day-tabs"></div>
@@ -2307,8 +2326,79 @@ function buildBoardDayTabs(items){
 }
 function setBoardDay(i){boardDayTab=i;buildLiveBoard();}
 function setBoardView(mode){
-  boardViewMode=mode==='timeline'?'timeline':'products';
+  boardViewMode=mode==='timeline'||mode==='weekly-products'?mode:'products';
   buildLiveBoard();
+}
+function boardRowPick(row,names){
+  return names.map(n=>row&&row[n]).find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
+}
+function boardProductCode(row){
+  return String(boardRowPick(row,['_productCode','productCode','Product Code','Product code','Stock Code','Item Code','Column G','Column 7'])||'').trim();
+}
+function boardProductPieces(row){
+  return parseReportNumber(boardRowPick(row,['_quantity','quantity','Quantity','qty','Qty','pieces','Pieces','Column AI','Column 35']));
+}
+function boardProductPacks(row){
+  return parseReportNumber(boardRowPick(row,['_schedulePacks','packs','Packs','pack count','Pack count','Column AJ','Column 36']));
+}
+function boardWeeklyProductRows(){
+  const groups={};
+  const descIndex={};
+  function descKey(desc){return String(desc||'').toLowerCase().replace(/\s+/g,' ').trim()}
+  function groupFor(row){
+    const code=boardProductCode(row);
+    const desc=productDescription(row);
+    const dKey=descKey(desc);
+    const key=(code||'no-code')+'|'+dKey;
+    if(!groups[key])groups[key]={code,desc,m3:0,pieces:0,packs:0,lines:0,days:new Set()};
+    if(dKey&&!descIndex[dKey])descIndex[dKey]=groups[key];
+    return groups[key];
+  }
+  (masterAllProducts||[]).forEach(row=>{
+    const dayIdx=[...Array(weekMode)].map((_,i)=>i).find(i=>plannedChargeSlot(row._plannedCharge, i));
+    if(dayIdx===undefined)return;
+    const g=groupFor(row);
+    g.m3+=rowVolumeM3(row);
+    g.pieces+=boardProductPieces(row);
+    g.packs+=boardProductPacks(row);
+    g.lines++;
+    g.days.add((weekMode===5?DAYS_5:DAYS_7)[dayIdx]||`Day ${dayIdx+1}`);
+  });
+  (masterPlannedSchedule||[]).forEach(row=>{
+    const packs=boardProductPacks(row);
+    if(!(packs>0))return;
+    const dayIdx=[...Array(weekMode)].map((_,i)=>i).find(i=>plannedChargeSlot(row._plannedCharge, i));
+    if(dayIdx===undefined)return;
+    const dKey=descKey(productDescription(row));
+    const g=descIndex[dKey]||groupFor(row);
+    g.packs+=packs;
+    if(!g.pieces)g.pieces+=boardProductPieces(row);
+    if(!g.lines)g.lines++;
+    g.days.add((weekMode===5?DAYS_5:DAYS_7)[dayIdx]||`Day ${dayIdx+1}`);
+  });
+  return Object.values(groups).sort((a,b)=>b.m3-a.m3||b.pieces-a.pieces||a.desc.localeCompare(b.desc));
+}
+function buildBoardWeeklyProducts(){
+  const rows=boardWeeklyProductRows();
+  const totalM3=rows.reduce((s,r)=>s+r.m3,0);
+  const totalPieces=rows.reduce((s,r)=>s+r.pieces,0);
+  const totalPacks=rows.reduce((s,r)=>s+r.packs,0);
+  const body=rows.map(r=>`<tr>
+    <td><div class="board-product-code">${escHtml(r.code||'No code')}</div><div class="board-product-name">${escHtml(r.desc)}</div><div class="board-product-days">${[...r.days].join(', ')} · ${r.lines} line${r.lines===1?'':'s'}</div></td>
+    <td class="board-product-number">${fmtM3(r.m3)}</td>
+    <td class="board-product-number">${Math.round(r.pieces).toLocaleString('en-GB')}</td>
+    <td class="board-product-number">${r.packs?Math.round(r.packs).toLocaleString('en-GB'):'-'}</td>
+  </tr>`).join('');
+  return `<div class="board-report-card">
+    <div class="board-report-title"><i class="ti ti-packages"></i>Weekly product totals</div>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px;">
+      <div class="stat"><div class="stat-l">Products</div><div class="stat-v">${rows.length}</div></div>
+      <div class="stat"><div class="stat-l">Planned m3</div><div class="stat-v">${fmtM3(totalM3)}</div></div>
+      <div class="stat"><div class="stat-l">Pieces</div><div class="stat-v">${Math.round(totalPieces).toLocaleString('en-GB')}</div></div>
+      <div class="stat"><div class="stat-l">Packs</div><div class="stat-v">${totalPacks?Math.round(totalPacks).toLocaleString('en-GB'):'-'}</div></div>
+    </div>
+    <table class="board-product-summary-table"><thead><tr><th>Product</th><th style="text-align:right;">M3</th><th style="text-align:right;">Pieces</th><th style="text-align:right;">Packs</th></tr></thead><tbody>${body||'<tr><td colspan="4">No planned Treatment Master products found for this week.</td></tr>'}</tbody></table>
+  </div>`;
 }
 function buildBoardReport(day,dayItems){
   const planned=[...day.p1,...day.p2].filter(c=>c.fitsIn24);
@@ -2409,7 +2499,8 @@ function buildLiveBoard(){
   const p1Logged=dayItems.filter(i=>i.pid==='p1').length;
   const p2Logged=dayItems.filter(i=>i.pid==='p2').length;
   document.body.classList.toggle('board-view-timeline',boardViewMode==='timeline');
-  document.body.classList.toggle('board-view-products',boardViewMode!=='timeline');
+  document.body.classList.toggle('board-view-weekly-products',boardViewMode==='weekly-products');
+  document.body.classList.toggle('board-view-products',boardViewMode==='products');
   document.querySelectorAll('.board-view-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.boardView===boardViewMode));
   document.getElementById('board-clock').textContent=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const boardDate=boardDateForDayIdx(day.dayIdx);
@@ -2427,7 +2518,7 @@ function buildLiveBoard(){
   boardRunning.querySelectorAll('.plant-live-col').forEach((col,i)=>{col.scrollTop=liveScroll[i]||0;});
   renderLinearGantt(days,noise,{board:true,dayIdx:day.dayIdx,viewMode:'live',labelsId:'board-gantt-labels',scrollId:'board-gantt-scroll'});
   const boardReport=document.getElementById('board-report');
-  if(boardReport)boardReport.innerHTML='';
+  if(boardReport)boardReport.innerHTML=boardViewMode==='weekly-products'?buildBoardWeeklyProducts():'';
 }
 
 function go(){
