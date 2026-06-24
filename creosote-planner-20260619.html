@@ -722,18 +722,20 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
 .inv-tank-grid{display:block}
 .inv-tank-section-label{display:flex;align-items:center;gap:8px;margin:10px 0 10px;font-size:10px;color:var(--text2);font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .inv-tank-section-label:before,.inv-tank-section-label:after{content:"";height:1px;background:var(--border);flex:1}
-.inv-tank-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.inv-tank-mini-card{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:12px;min-height:122px}
+.inv-tank-card-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px}
+.inv-tank-mini-card{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:center;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:10px;min-height:112px;min-width:0}
 .inv-tank-mini-head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
-.inv-tank-mini-name{font-size:12px;font-weight:700;color:var(--text)}
-.inv-tank-mini-gauge{width:30px;height:98px;border:1px solid var(--border2);background:var(--bg2);border-radius:2px;position:relative;overflow:hidden}
+.inv-tank-mini-name{font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-tank-mini-gauge{width:28px;height:86px;border:1px solid var(--border2);background:var(--bg2);border-radius:2px;position:relative;overflow:hidden}
 .inv-tank-mini-fill{position:absolute;left:0;right:0;bottom:0;background:var(--accent);border-top:1px solid var(--border2)}
 .inv-tank-mini-fill.ok{background:var(--green)}
 .inv-tank-mini-line{position:absolute;left:0;right:0;border-top:1px solid var(--amber)}
 .inv-tank-mini-line.red{border-top-color:var(--red);border-top-style:dashed}
-.inv-tank-mini-value{font-size:14px;font-weight:800;color:var(--text);line-height:1.2}
-.inv-tank-mini-meta{font-size:11px;color:var(--text2);line-height:1.45}
-.inv-tank-mini-badge{display:inline-flex;margin-top:4px;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(183,131,47,.14);color:var(--accent)}
+.inv-tank-mini-value{font-size:13px;font-weight:800;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-tank-mini-meta{font-size:10px;color:var(--text2);line-height:1.35}
+.inv-tank-mini-badge{display:inline-flex;margin-top:4px;padding:2px 6px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(183,131,47,.14);color:var(--accent)}
+.inv-reading-groups{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px;margin-bottom:8px}
+.inv-reading-group-title{font-size:9px;font-weight:600;font-family:var(--mono);text-transform:uppercase;margin-bottom:5px}
 .inv-tank-mini-badge.normal{background:rgba(47,125,72,.13);color:var(--green)}
 .inv-tank-mini-badge.critical{background:rgba(224,92,92,.13);color:var(--red)}
 .inv-tank-legend{display:flex;gap:14px;flex-wrap:wrap;border-top:1px solid var(--border);margin-top:12px;padding-top:10px;font-size:11px;color:var(--text2)}
@@ -1146,40 +1148,30 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
                  onchange="invLoadReadingForSelectedDateTime()">
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
+      <div class="inv-reading-groups">
         <div>
-          <div style="font-size:9px;font-weight:600;color:var(--green);font-family:var(--mono);text-transform:uppercase;margin-bottom:5px;">Storage Tanks</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <div>
-              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 1</label>
-              <input class="inv-tank-input" type="number" id="invInpStorageT1" min="0" max="100000" step="100" placeholder="0"
-                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
-                     oninput="invUpdateTankPreview('storageT1',this.value)">
-            </div>
-            <div>
-              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 2</label>
-              <input class="inv-tank-input" type="number" id="invInpStorageT2" min="0" max="100000" step="100" placeholder="0"
-                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
-                     oninput="invUpdateTankPreview('storageT2',this.value)">
-            </div>
-          </div>
+          <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Storage T1</label>
+          <input class="inv-tank-input" type="number" id="invInpStorageT1" min="0" max="100000" step="100" placeholder="0"
+                 style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                 oninput="invUpdateTankPreview('storageT1',this.value)">
         </div>
         <div>
-          <div style="font-size:9px;font-weight:600;color:var(--blue);font-family:var(--mono);text-transform:uppercase;margin-bottom:5px;">Work / Process Tanks</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <div>
-              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 1</label>
-              <input class="inv-tank-input" type="number" id="invInpWorkT1" min="0" max="100000" step="100" placeholder="0"
-                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
-                     oninput="invUpdateTankPreview('workT1',this.value)">
-            </div>
-            <div>
-              <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Tank 2</label>
-              <input class="inv-tank-input" type="number" id="invInpWorkT2" min="0" max="100000" step="100" placeholder="0"
-                     style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
-                     oninput="invUpdateTankPreview('workT2',this.value)">
-            </div>
-          </div>
+          <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Storage T2</label>
+          <input class="inv-tank-input" type="number" id="invInpStorageT2" min="0" max="100000" step="100" placeholder="0"
+                 style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                 oninput="invUpdateTankPreview('storageT2',this.value)">
+        </div>
+        <div>
+          <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Work T1</label>
+          <input class="inv-tank-input" type="number" id="invInpWorkT1" min="0" max="100000" step="100" placeholder="0"
+                 style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                 oninput="invUpdateTankPreview('workT1',this.value)">
+        </div>
+        <div>
+          <label style="display:block;font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;">Work T2</label>
+          <input class="inv-tank-input" type="number" id="invInpWorkT2" min="0" max="100000" step="100" placeholder="0"
+                 style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;padding:5px 7px;outline:none;text-align:center;"
+                 oninput="invUpdateTankPreview('workT2',this.value)">
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:9px;font-family:var(--mono);color:var(--text3);">
@@ -5146,7 +5138,6 @@ function invTankSVG(key,label,type,kg){
   const threshold=type==='process'?INV_WORK_MIN_KG:(type==='storage'?INV_STORAGE_MIN_KG:INV_LOW_KG);
   const thresholdPct=Math.min(Math.max(threshold/INV_MAX,0),1)*100;
   const reorderPct=Math.min(Math.max(invReorderKg/INV_MAX,0),1)*100;
-  const temp=type==='process'?(kg>=INV_WORK_MIN_KG?'115°C':'118°C'):(kg>=INV_LOW_KG?'94°C':'88°C');
   return`<div class="inv-tank-mini-card">
     <div class="inv-tank-mini-head">
       <span class="inv-tank-mini-name">${label}</span>
@@ -5159,7 +5150,7 @@ function invTankSVG(key,label,type,kg){
     </div>
     <div>
       <div class="inv-tank-mini-value">${invFmtKg(kg)}</div>
-      <div class="inv-tank-mini-meta">${pct}% of max<br>${temp}</div>
+      <div class="inv-tank-mini-meta">${pct}% of max</div>
       <span class="inv-tank-mini-badge ${st.c}">${st.t}</span>
     </div>
   </div>`;
@@ -5299,13 +5290,9 @@ function invRenderDashboard(){
   ];
   const grid=s('invTankGrid');
   if(grid) grid.innerHTML=`
-    <div class="inv-tank-section-label"><span>Storage tanks - accept deliveries</span></div>
     <div class="inv-tank-card-grid">
       ${invTankSVG('storageT1','Storage T1','storage',tanks[0].kg)}
       ${invTankSVG('storageT2','Storage T2','storage',tanks[1].kg)}
-    </div>
-    <div class="inv-tank-section-label"><span>Work / process tanks - no deliveries</span></div>
-    <div class="inv-tank-card-grid">
       ${invTankSVG('workT1','Work T1','process',tanks[2].kg)}
       ${invTankSVG('workT2','Work T2','process',tanks[3].kg)}
     </div>`;
