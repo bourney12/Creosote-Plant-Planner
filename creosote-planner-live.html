@@ -4894,6 +4894,20 @@ function invMakeRef(date){
   while(used.has(prefix+String(n).padStart(3,'0')))n++;
   return prefix+String(n).padStart(3,'0');
 }
+function invIsDeliveryDay(d){const day=d.getDay();return day>=1&&day<=5}
+function invPreferredDeliveryDate(triggerDate){
+  const latest=invAddDays(triggerDate,-1);
+  const candidates=[];
+  for(let i=0;i<10;i++){
+    const d=invAddDays(latest,-i);
+    if(invIsDeliveryDay(d))candidates.push(d);
+  }
+  return candidates.find(d=>d.getDay()>=3&&d.getDay()<=5)||candidates[0]||latest;
+}
+function invDeliveryDateOk(date){
+  const d=new Date(date+'T12:00:00');
+  return invIsDeliveryDay(d);
+}
 function invSupplierOptions(selected){
   const s=selected||invSupplier;
   const custom=s&&!['Koppers','Rutgers'].includes(s);
@@ -5612,9 +5626,9 @@ function invRenderForecast(){
   const suggests=[];
   pts.forEach((pt,i)=>{
     if(pt.alert!=='ok'&&i>0&&pts[i-1].alert==='ok'){
-      let sd=invAddDays(pt.d,-1);while(invIsWe(sd))sd=invAddDays(sd,-1);
-      const ds=sd.toISOString().split('T')[0];
-      if(!invDelPlan.some(x=>x.date===ds))suggests.push({trig:pt.d,sd,ds,alert:pt.alert});
+      const sd=invPreferredDeliveryDate(pt.d);
+      const ds=invDateKey(sd);
+      suggests.push({trig:pt.d,sd,ds,alert:pt.alert});
     }
   });
   const sugHtml=suggests.slice(0,3).map(s=>`<div class="inv-suggest ${s.alert}"><i class="ti ti-alert-${s.alert==='danger'?'triangle':'circle'}" style="color:${s.alert==='danger'?'var(--red)':'var(--amber)'}"></i><span style="flex:1">Stock hits <strong>${s.alert}</strong> on <strong>${invFmtDate(s.trig)}</strong> — suggest delivery <strong>${invFmtDate(s.sd)}</strong></span><button class="sm-green" onclick="invAddSuggest('${s.ds}')">+ Add</button></div>`).join('');
@@ -5633,6 +5647,7 @@ function invRenderForecast(){
 }
 
 function invAddSuggest(ds){
+  if(!invDeliveryDateOk(ds))return;
   invDelPlan.push({date:ds,kg:invDelKg,supplier:invSupplier,window:'AM',notes:'Auto-suggested',ref:invMakeRef(ds),addedAt:new Date().toISOString()});
   invAfterChange();
   if(typeof showPanel==='function')showPanel('delivery-planner');
@@ -5664,18 +5679,15 @@ function invRunSuggestAll(){
     stock-=invIsWe(day)?0:invDailyUsage;
     stock+=invDelPlan.filter(x=>x.date===ds).reduce((s,x)=>s+x.kg,0);
     if(stock<invReorderKg){
-      let target=invAddDays(day,-1);
-      while(invIsWe(target))target=invAddDays(target,-1);
+      const target=invPreferredDeliveryDate(day);
       const tds=invDateKey(target);
-      if(!invDelPlan.some(x=>x.date===tds)){
-        const available = invStorageCapacityAvailable();
-        const notes = available < invDelKg
-          ? `Auto-suggested - Storage near capacity (${invFmtKg(available)} free)`
-          : 'Auto-suggested';
-        invDelPlan.push({date:tds,kg:invDelKg,supplier:invSupplier,window:'AM',notes,ref:invMakeRef(tds),addedAt:new Date().toISOString()});
-        stock+=invDelKg;
-        added++;
-      }
+      const available = invStorageCapacityAvailable();
+      const notes = available < invDelKg
+        ? `Auto-suggested - Storage near capacity (${invFmtKg(available)} free)`
+        : 'Auto-suggested';
+      invDelPlan.push({date:tds,kg:invDelKg,supplier:invSupplier,window:'AM',notes,ref:invMakeRef(tds),addedAt:new Date().toISOString()});
+      stock+=invDelKg;
+      added++;
     }
   }
   invAfterChange();
@@ -5774,6 +5786,7 @@ function invModalSave(){
   const supplier=selSup==='Other'?(document.getElementById('invMSupplierCustom').value.trim()||'Other'):selSup;
   const kg=parseInt(document.getElementById('invMQty').value,10);
   if(!kg||kg<1000){document.getElementById('invMQty').focus();return}
+  if(!invDeliveryDateOk(invModalDate)){alert('Deliveries can only be planned Monday to Friday.');return}
   const notes=document.getElementById('invMNotes').value.trim().slice(0,100);
   const window_=invModalWindow;
   if(invModalMode==='edit'&&invModalRef){
@@ -5840,6 +5853,7 @@ function invSaveInlineEdit(ref){
   const supplier=document.getElementById('ed_sup_'+ref).value;
   const window_=document.getElementById('ed_win_'+ref).value;
   if(!date||!kg||kg<1000)return;
+  if(!invDeliveryDateOk(date)){alert('Deliveries can only be planned Monday to Friday.');return}
   Object.assign(d,{date,kg,supplier,window:window_});
   invEditingRef=null;
   invAfterChange();
