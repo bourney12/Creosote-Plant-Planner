@@ -308,9 +308,15 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .pole-fill-table-wrap{overflow-x:auto;margin-top:12px;}
 .pole-fill-table-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
 .pole-fill-note{font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.45;margin-top:8px;}
-.pole-m3-calc{display:grid;grid-template-columns:minmax(220px,1fr) 120px 180px;gap:10px;align-items:end;margin-top:12px;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);}
+.pole-m3-calc{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:10px;align-items:start;margin-top:12px;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);}
 .pole-m3-calc.over{border-color:rgba(186,61,53,.45);background:rgba(186,61,53,.06);}
 .pole-m3-calc .report-control{min-width:0;}
+.pole-m3-lines{display:flex;flex-direction:column;gap:7px;min-width:0;}
+.pole-m3-line{display:grid;grid-template-columns:minmax(180px,1fr) 88px 72px 30px;gap:7px;align-items:end;}
+.pole-m3-line-m3{height:28px;display:flex;align-items:center;font-family:var(--mono);font-size:10px;font-weight:800;color:var(--text2);white-space:nowrap;}
+.pole-m3-add,.pole-m3-remove{height:28px;width:30px;display:inline-flex;align-items:center;justify-content:center;padding:0;font-size:15px;font-weight:800;}
+.pole-m3-add{margin-top:2px;color:var(--green);border-color:rgba(47,125,72,.3);background:rgba(47,125,72,.08);}
+.pole-m3-remove{color:var(--red);border-color:rgba(186,61,53,.25);background:rgba(186,61,53,.07);}
 .pole-m3-result{min-height:52px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);padding:8px 10px;}
 .pole-m3-result strong{display:block;font-size:18px;line-height:1;color:var(--green);}
 .pole-m3-calc.over .pole-m3-result strong{color:var(--red);}
@@ -320,7 +326,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .shed-bar span{display:block;height:100%;background:linear-gradient(90deg,#2f5f39,#e8c547);}
 .pole-warning{border:1px solid rgba(224,92,92,.22);background:rgba(224,92,92,.06);color:#8a3131;border-radius:var(--radius);padding:9px 10px;font-size:11px;margin-top:10px;}
 @media(max-width:980px){.pole-fill-table-grid{grid-template-columns:1fr;}}
-@media(max-width:760px){.pole-m3-calc{grid-template-columns:1fr;}}
+@media(max-width:760px){.pole-m3-calc{grid-template-columns:1fr;}.pole-m3-line{grid-template-columns:minmax(0,1fr) 72px 62px 30px;gap:5px;}}
 @media(max-width:900px){.pole-chart-pair{grid-template-columns:1fr;}.pole-chart{grid-template-columns:repeat(2,minmax(120px,1fr));}.pole-charge-grid{grid-template-columns:repeat(2,minmax(140px,1fr));}}
 .green-day-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0;}
 .green-day-tab{border:1px solid var(--border);background:var(--bg2);border-radius:var(--radius);padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3);cursor:pointer;}
@@ -1585,8 +1591,7 @@ let poleForecastDayIdx=(new Date().getDay()+6)%7;
 let poleForecastFillDayIdx=(new Date().getDay()+6)%7;
 let poleForecastAvgM3=Number(localStorage.getItem('creosote_pole_forecast_avg_m3')||38);
 let poleForecastTab='dashboard';
-let poleForecastCalcProduct='';
-let poleForecastCalcQty=0;
+let poleForecastCalcLines=[{product:'',qty:0}];
 let greenTreatmentDayIdx=(new Date().getDay()+6)%7;
 let masterInventoryMovements=[];
 let masterSlotsCache={};
@@ -2460,27 +2465,44 @@ function isoDateKeyForDayIdx(dayIdx){
 }
 function setPoleForecastDay(idx){poleForecastDayIdx=idx;buildPoleForecast();}
 function setPoleForecastFillDay(idx){poleForecastFillDayIdx=idx;buildPoleForecast();}
-function setPoleForecastCalcProduct(value){poleForecastCalcProduct=String(value||'');buildPoleForecast();}
-function setPoleForecastCalcQty(value){poleForecastCalcQty=Math.max(0,Math.floor(Number(value)||0));buildPoleForecast();}
+function normalisePoleForecastCalcLines(lines){
+  const next=(Array.isArray(lines)?lines:[]).map(line=>({product:String(line&&line.product||''),qty:Math.max(0,Math.floor(Number(line&&line.qty)||0))}));
+  return next.length?next:[{product:'',qty:0}];
+}
+function poleForecastCalcMatchProduct(products,value){
+  const needle=String(value||'').toUpperCase();
+  if(!needle)return null;
+  return products.find(product=>needle.includes(String(product.code||'').toUpperCase()))||
+    products.find(product=>String(product.description||'').toUpperCase()===needle)||
+    products.find(product=>String(product.description||'').toUpperCase().includes(needle));
+}
+function addPoleForecastCalcLine(){poleForecastCalcLines=normalisePoleForecastCalcLines([...poleForecastCalcLines,{product:'',qty:0}]);buildPoleForecast();}
+function removePoleForecastCalcLine(idx){poleForecastCalcLines=normalisePoleForecastCalcLines(poleForecastCalcLines.filter((_,i)=>i!==idx));buildPoleForecast();}
 function setPoleForecastTab(tab){poleForecastTab=tab;buildPoleForecast();}
 function syncPoleForecastM3Calc(){
   const wrap=document.getElementById('poleForecastM3Calc');
-  const productInput=document.getElementById('poleForecastCalcProduct');
-  const qtyInput=document.getElementById('poleForecastCalcQty');
   const valueEl=document.getElementById('poleForecastCalcValue');
   const statusEl=document.getElementById('poleForecastCalcStatus');
-  if(!wrap||!productInput||!qtyInput||!valueEl||!statusEl)return;
-  poleForecastCalcProduct=String(productInput.value||'');
-  poleForecastCalcQty=Math.max(0,Math.floor(Number(qtyInput.value)||0));
+  if(!wrap||!valueEl||!statusEl)return;
   const products=poleForecastRawPoleProducts().filter(p=>Number(p.m3PerPole)>0);
-  const needle=poleForecastCalcProduct.toUpperCase();
-  const product=products.find(p=>needle.includes(String(p.code||'').toUpperCase()))||
-    products.find(p=>needle&&String(p.description||'').toUpperCase()===needle)||
-    products.find(p=>needle&&String(p.description||'').toUpperCase().includes(needle));
+  const lineEls=[...wrap.querySelectorAll('.pole-m3-line')];
+  poleForecastCalcLines=normalisePoleForecastCalcLines(lineEls.map(line=>({
+    product:line.querySelector('.pole-m3-product')?.value||'',
+    qty:line.querySelector('.pole-m3-qty')?.value||0
+  })));
+  let selectedCount=0;
+  const m3=poleForecastCalcLines.reduce((sum,line,idx)=>{
+    const product=poleForecastCalcMatchProduct(products,line.product);
+    const qty=Math.max(0,Math.floor(Number(line.qty)||0));
+    const lineM3=product&&qty>0?(Number(product.m3PerPole)||0)*qty:0;
+    const lineM3El=lineEls[idx]?.querySelector('.pole-m3-line-m3');
+    if(lineM3El)lineM3El.textContent=lineM3>0?fmtM3(lineM3):'-';
+    if(product&&qty>0)selectedCount++;
+    return sum+lineM3;
+  },0);
   const shortfall=Number(wrap.dataset.shortfall)||0;
-  const m3=product&&poleForecastCalcQty>0?(Number(product.m3PerPole)||0)*poleForecastCalcQty:0;
   const over=shortfall>0&&m3>shortfall+0.0001;
-  const status=shortfall<=0?'Selected day has no shortfall.':(!product?'Select a raw pole size.':(!poleForecastCalcQty?'Enter pole quantity.':(over?`${fmtM3(m3-shortfall)} over selected shortfall`:`${fmtM3(Math.max(0,shortfall-m3))} remaining against selected shortfall`)));
+  const status=shortfall<=0?'Selected day has no shortfall.':(!selectedCount?'Select pole sizes and quantities.':(over?`${fmtM3(m3-shortfall)} over selected shortfall`:`${fmtM3(Math.max(0,shortfall-m3))} remaining against selected shortfall`));
   valueEl.textContent=fmtM3(m3);
   statusEl.textContent=status;
   statusEl.classList.toggle('warn',over);
@@ -2741,15 +2763,25 @@ function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
     const label=`${product.description||'Raw pole size'} - ${product.code||'-'} - ${fmtM3(product.m3PerPole)}`;
     return `<option value="${escHtml(label)}"></option>`;
   }).join('');
-  const calcNeedle=String(poleForecastCalcProduct||'').toUpperCase();
-  const selectedProduct=products.find(product=>calcNeedle.includes(String(product.code||'').toUpperCase()))||
-    products.find(product=>calcNeedle&&String(product.description||'').toUpperCase()===calcNeedle)||
-    products.find(product=>calcNeedle&&String(product.description||'').toUpperCase().includes(calcNeedle));
-  const calcQty=Math.max(0,Math.floor(Number(poleForecastCalcQty)||0));
-  const calcM3=selectedProduct&&calcQty>0?(Number(selectedProduct.m3PerPole)||0)*calcQty:0;
+  poleForecastCalcLines=normalisePoleForecastCalcLines(poleForecastCalcLines);
+  let calcSelectedCount=0;
+  const calcLineRows=poleForecastCalcLines.map((line,idx)=>{
+    const product=poleForecastCalcMatchProduct(products,line.product);
+    const qty=Math.max(0,Math.floor(Number(line.qty)||0));
+    const lineM3=product&&qty>0?(Number(product.m3PerPole)||0)*qty:0;
+    if(product&&qty>0)calcSelectedCount++;
+    return {line,idx,lineM3};
+  });
+  const calcM3=calcLineRows.reduce((sum,row)=>sum+row.lineM3,0);
   const calcShortfall=selectedShortfall?Number(selectedShortfall.shortfall)||0:0;
   const calcOver=calcShortfall>0&&calcM3>calcShortfall+0.0001;
-  const calcStatus=!selectedShortfall?'Selected day has no shortfall.':(!selectedProduct?'Select a raw pole size.':(!calcQty?'Enter pole quantity.':(calcOver?`${fmtM3(calcM3-calcShortfall)} over selected shortfall`:`${fmtM3(Math.max(0,calcShortfall-calcM3))} remaining against selected shortfall`)));
+  const calcStatus=!selectedShortfall?'Selected day has no shortfall.':(!calcSelectedCount?'Select pole sizes and quantities.':(calcOver?`${fmtM3(calcM3-calcShortfall)} over selected shortfall`:`${fmtM3(Math.max(0,calcShortfall-calcM3))} remaining against selected shortfall`));
+  const calcLineHtml=calcLineRows.map(({line,idx,lineM3})=>`<div class="pole-m3-line">
+    <div class="report-control"><label>${idx===0?'Pole size':'Pole size '+(idx+1)}</label><input class="pole-m3-product" type="text" list="poleForecastCalcOptions" value="${escHtml(line.product)}" placeholder="Start typing, e.g. 13" oninput="syncPoleForecastM3Calc()"></div>
+    <div class="report-control"><label>Qty</label><input class="pole-m3-qty" type="number" min="0" step="1" value="${line.qty||''}" placeholder="0" oninput="syncPoleForecastM3Calc()"></div>
+    <div class="pole-m3-line-m3">${lineM3>0?fmtM3(lineM3):'-'}</div>
+    <button type="button" class="pole-m3-remove" onclick="removePoleForecastCalcLine(${idx})" title="Remove line" ${poleForecastCalcLines.length<=1?'disabled':''}>-</button>
+  </div>`).join('');
   const rows=[];
   if(selectedShortfall){
     const day=selectedShortfall;
@@ -2773,8 +2805,7 @@ function poleForecastFillRecommendations(dayDashboardRows,avgCharge){
   return `<div class="report-control" style="max-width:260px;margin-top:10px;"><label>Recommendation day</label><select onchange="setPoleForecastFillDay(Number(this.value))">${dayOptions}</select></div>
     <div class="pole-fill-note">Raw PR sizes loaded: ${sourceSummary.total} total, ${sourceSummary.withM3} with m3 - Bridge raw poles: ${sourceSummary.rawBridge}, Allocation to Stack: ${sourceSummary.allocation}, Treatment Master all products: ${sourceSummary.allProducts}, Pole Forecast: ${sourceSummary.forecast}, Product Master: ${sourceSummary.productMaster}.</div>
     <div id="poleForecastM3Calc" class="pole-m3-calc ${calcOver?'over':''}" data-shortfall="${calcShortfall}">
-      <div class="report-control"><label>m3 calculator pole size</label><input id="poleForecastCalcProduct" type="text" list="poleForecastCalcOptions" value="${escHtml(poleForecastCalcProduct)}" placeholder="Start typing, e.g. 13" oninput="syncPoleForecastM3Calc()"><datalist id="poleForecastCalcOptions">${calcOptions}</datalist></div>
-      <div class="report-control"><label>Quantity</label><input id="poleForecastCalcQty" type="number" min="0" step="1" value="${calcQty||''}" placeholder="0" oninput="syncPoleForecastM3Calc()"></div>
+      <div class="pole-m3-lines">${calcLineHtml}<button type="button" class="pole-m3-add" onclick="addPoleForecastCalcLine()" title="Add another pole size">+</button><datalist id="poleForecastCalcOptions">${calcOptions}</datalist></div>
       <div class="pole-m3-result"><strong id="poleForecastCalcValue">${fmtM3(calcM3)}</strong><span id="poleForecastCalcStatus" class="${calcOver?'warn':''}">${escHtml(calcStatus)}</span></div>
     </div>
     <div class="pole-fill-table-wrap">${tableHtml}</div>
