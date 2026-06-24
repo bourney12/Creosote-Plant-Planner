@@ -4915,15 +4915,89 @@ function invAfterChange(){
 }
 
 /* ── Storage ── */
+function invUsageSeries(daysBack=30,daysForward=0){
+  const today=new Date();today.setHours(0,0,0,0);
+  const start=invAddDays(today,-Math.max(0,daysBack-1));
+  const end=invAddDays(today,Math.max(0,daysForward));
+  const rowsByKey={};
+  function inRangeKey(key){return key&&key>=invDateKey(start)&&key<=invDateKey(end)}
+  function ensure(key){
+    if(!inRangeKey(key))return null;
+    if(!rowsByKey[key]){
+      const d=new Date(key+'T12:00:00');
+      rowsByKey[key]={date:key,d,productSet:new Set(),plannedM3:0,actualM3:0,plannedKg:0,actualKg:0,plannedFromMaster:false,actualFromMaster:false,sourceSet:new Set()};
+    }
+    return rowsByKey[key];
+  }
+  (masterAllProducts||[]).forEach(row=>{
+    const m3=rowVolumeM3(row);
+    if(!(m3>0))return;
+    const plannedDate=reportMasterDate(row);
+    if(!plannedDate)return;
+    const key=invDateKey(plannedDate);
+    const item=ensure(key);
+    if(!item)return;
+    const kg=Math.round(m3*INV_UPTAKE);
+    item.plannedM3+=m3;
+    item.plannedKg+=kg;
+    item.plannedFromMaster=true;
+    item.sourceSet.add('Treatment Master');
+    const product=rowProductFamily(row,'')||productSummary(row);
+    if(product)item.productSet.add(product);
+    const charge=normalizeChargeNumber(row._chargeNumber||row['Column AV']||row['Charge number']||row['Charge No']);
+    if(charge&&plannedDate<=today){
+      item.actualM3+=m3;
+      item.actualKg+=kg;
+      item.actualFromMaster=true;
+    }
+  });
+  const pf=(typeof masterPoleForecast!=='undefined'?masterPoleForecast:window.masterPoleForecast)||{};
+  if(pf.ok&&Array.isArray(pf.days)){
+    pf.days.forEach(day=>{
+      const key=day.dayKey;
+      const item=ensure(key);
+      if(!item||item.plannedKg>0)return;
+      const m3=Number(day.totalM3)||0;
+      if(!(m3>0))return;
+      item.plannedM3=m3;
+      item.plannedKg=Math.round(m3*INV_UPTAKE);
+      item.productSet.add('Pole forecast');
+      item.sourceSet.add('Pole forecast');
+    });
+  }
+  (invChargeHist||[]).forEach(c=>{
+    const d=new Date(c.date);
+    if(Number.isNaN(d.getTime()))return;
+    const item=ensure(invDateKey(d));
+    if(!item)return;
+    if(c.m3&&!item.plannedM3)item.plannedM3=Number(c.m3)||0;
+    if(c.plannedKg&&!item.plannedFromMaster)item.plannedKg+=Number(c.plannedKg)||0;
+    if(c.actualKg&&!item.actualFromMaster)item.actualKg+=Number(c.actualKg)||0;
+    if(c.product)item.productSet.add(c.product);
+    item.sourceSet.add('Charge history');
+  });
+  return Object.values(rowsByKey).map(row=>({
+    ...row,
+    plannedM3:Number(row.plannedM3.toFixed(3)),
+    actualM3:Number(row.actualM3.toFixed(3)),
+    product:[...row.productSet].join(', ')||'Treatment Master volume',
+    source:[...row.sourceSet].join(' + ')||'Treatment Master'
+  })).filter(row=>row.plannedKg>0||row.actualKg>0).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
 /**
- * Calculates expected daily creosote demand from the current week's planned charges.
- * Uses the 115 kg/m3 uptake rate applied to planned timber volume from masterPoleForecast,
- * falling back to a rolling average from charge history, then to the user-set daily usage.
+ * Calculates expected daily creosote demand from current planned Treatment Master volume.
+ * Uses the 115 kg/m3 uptake rate, falling back to charge history, then manual usage.
  *
  * Returns: { kgPerDay: number, source: string }
  */
 function invCalcDemandFromPlan() {
-  const pf = window.masterPoleForecast || {};
+  const plannedRows=invUsageSeries(1,6).filter(row=>!invIsWe(row.d)&&row.plannedKg>0);
+  if(plannedRows.length){
+    const avg=Math.round(plannedRows.reduce((sum,row)=>sum+row.plannedKg,0)/plannedRows.length);
+    return {kgPerDay:avg,source:'plan'};
+  }
+  const pf = (typeof masterPoleForecast!=='undefined'?masterPoleForecast:window.masterPoleForecast) || {};
   if (pf.ok && Array.isArray(pf.days) && pf.days.length) {
     const weekKeys = computeWeek().map((d, idx) => isoDateKeyForDayIdx(idx));
     const weekDays = pf.days.filter(d => weekKeys.includes(d.dayKey));
@@ -5392,15 +5466,16 @@ function invRenderDashboardUsage(){
   const el=document.getElementById('invDashUsage');if(!el)return;
   const today=new Date();const dow=today.getDay()||7;const mon=invAddDays(today,1-dow);
   const days=Array.from({length:5},(_,i)=>invAddDays(mon,i));
-  const planned=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.plannedKg||0),0)||invDailyUsage);
-  const actual=days.map(d=>invChargeHist.filter(c=>invSameDay(new Date(c.date),d)).reduce((s,c)=>s+(c.actualKg||0),0));
+  const usageMap=Object.fromEntries(invUsageSeries(14,7).map(row=>[row.date,row]));
+  const planned=days.map(d=>usageMap[invDateKey(d)]?.plannedKg||invDailyUsage);
+  const actual=days.map(d=>usageMap[invDateKey(d)]?.actualKg||0);
   const maxV=Math.max(...planned,...actual,1);
   const bars=days.map((d,i)=>{
     const ph=Math.max(8,Math.round(planned[i]/maxV*70));
     const ah=actual[i]?Math.max(8,Math.round(actual[i]/maxV*70)):0;
     return`<div style="flex:1;display:flex;align-items:flex-end;gap:3px;height:76px"><span style="height:${ph}px;flex:1;border:1px solid var(--blue);border-radius:2px 2px 0 0"></span><span style="height:${ah}px;flex:1;background:var(--green);border-radius:2px 2px 0 0"></span></div>`;
   }).join('');
-  el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:8px;border-bottom:1px solid var(--border);padding-top:4px">${bars}</div><div class="inv-chart-legend"><span>Plan</span><span>Actual</span></div>`;
+  el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:8px;border-bottom:1px solid var(--border);padding-top:4px">${bars}</div><div class="inv-chart-legend"><span>Plan</span><span>Actual</span><span>m3 x ${INV_UPTAKE} kg</span></div>`;
 }
 
 /**
@@ -5409,12 +5484,7 @@ function invRenderDashboardUsage(){
  * status: 'ok' | 'warn' | 'danger'
  */
 function invCalcVariance() {
-  const now = new Date();
-  const cut = new Date(now); cut.setDate(cut.getDate() - 7);
-  const recent = (invChargeHist || []).filter(c => {
-    const d = new Date(c.date);
-    return d >= cut && !invIsWe(d);
-  });
+  const recent = invUsageSeries(7,0).filter(row => !invIsWe(row.d) && row.plannedKg > 0);
   if (!recent.length) return null;
   const avgPlan = recent.reduce((s, c) => s + (c.plannedKg || invDailyUsage), 0) / recent.length;
   const actuals = recent.filter(c => c.actualKg > 0);
@@ -5431,7 +5501,8 @@ function invCalcVariance() {
 function invRenderUsageTable(){
   const el=document.getElementById('invUsageTable');if(!el)return;
   if(invDataLoading){el.innerHTML='<div class="inv-loading" id="invLoadingState"><i class="ti ti-loader-2 spinning"></i> Loading inventory data...</div>';return}
-  if(!invChargeHist.length){el.innerHTML='<div class="inv-empty"><i class="ti ti-database-off"></i><p>No usage data available. Connect the Google Apps Script bridge to see planned vs actual data.</p></div>';return}
+  const usageRows=invUsageSeries(30,0);
+  if(!usageRows.length){el.innerHTML='<div class="inv-empty"><i class="ti ti-database-off"></i><p>No Treatment Master volume data available yet. Planned and actual usage are calculated from m3 at 115 kg/m3 once the bridge has synced.</p></div>';return}
   const v = invCalcVariance();
   const varHtml = v ? `
     <div class="inv-suggest ${v.status === 'ok' ? 'warn' : v.status}" style="margin-bottom:10px;">
@@ -5447,13 +5518,13 @@ function invRenderUsageTable(){
       </span>
     </div>` : '';
   let tp=0,ta=0;
-  const rows=invChargeHist.map(c=>{
-    const plan=c.plannedKg||Math.round((c.m3||0)*INV_UPTAKE);
+  const rows=usageRows.map(c=>{
+    const plan=c.plannedKg||Math.round((c.plannedM3||0)*INV_UPTAKE);
     const act=c.actualKg||0;
     const vkg=act-plan,vpct=plan>0?Math.round(vkg/plan*100):0;
     const vc=Math.abs(vpct)<10?'inv-var-ok':Math.abs(vpct)<25?'inv-var-warn':'inv-var-bad';
     tp+=plan;ta+=act;
-    return`<tr><td>${new Date(c.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td><td>${c.product||'—'}</td><td>${c.m3?c.m3.toLocaleString():'—'}</td><td>${plan>0?invFmtKg(plan):'—'}</td><td>${act>0?invFmtKg(act):'—'}</td><td class="${vc}">${vkg>0?'+':''}${vkg.toLocaleString()} kg</td><td class="${vc}">${vpct>0?'+':''}${vpct}%</td></tr>`;
+    return`<tr><td>${c.d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td><td>${escHtml(c.product||'—')}</td><td>${c.plannedM3?c.plannedM3.toLocaleString('en-GB',{maximumFractionDigits:1}):'—'}</td><td>${plan>0?invFmtKg(plan):'—'}</td><td>${act>0?invFmtKg(act):'—'}</td><td class="${vc}">${vkg>0?'+':''}${vkg.toLocaleString()} kg</td><td class="${vc}">${vpct>0?'+':''}${vpct}%</td></tr>`;
   }).join('');
   const tv=ta-tp,tvp=tp>0?Math.round(tv/tp*100):0;
   const tvc=Math.abs(tvp)<10?'inv-var-ok':Math.abs(tvp)<25?'inv-var-warn':'inv-var-bad';
@@ -5462,8 +5533,7 @@ function invRenderUsageTable(){
 
 /* ── Rolling averages ── */
 function invUpdateAvgs(){
-  const now=new Date();
-  function avg(n){const cut=invAddDays(now,-n);const v=invChargeHist.filter(c=>new Date(c.date)>=cut&&(c.actualKg||0)>0).map(c=>c.actualKg);return v.length?Math.round(v.reduce((s,x)=>s+x,0)/v.length):invDailyUsage}
+  function avg(n){const v=invUsageSeries(n,0).filter(row=>!invIsWe(row.d)).map(row=>row.actualKg||row.plannedKg).filter(Boolean);return v.length?Math.round(v.reduce((s,x)=>s+x,0)/v.length):invDailyUsage}
   const a7=avg(7),a14=avg(14),a30=avg(30);
   const s=id=>document.getElementById(id);
   if(s('invAvg7'))s('invAvg7').textContent=invFmtKg(a7);
