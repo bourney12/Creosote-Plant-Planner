@@ -590,17 +590,16 @@ body.board-view-timeline:not(.access-board) #panel-live-board .board-report{disp
    ═══════════════════════════════════════════════════ */
 
 /* Dashboard summary cards */
-.inv-summary-row{display:grid;grid-template-columns:repeat(4,minmax(135px,1fr));gap:6px;margin-bottom:8px;align-items:stretch}
-.inv-summary-card{background:var(--bg3);border:1px solid rgba(53,80,49,.08);border-radius:6px;padding:6px 8px;min-height:46px;box-shadow:none;min-width:0}
-.inv-summary-label{font-size:8px;color:var(--text2);margin-bottom:2px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.inv-summary-value{font-size:16px;font-weight:800;line-height:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-summary-row{display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:8px;margin-bottom:10px;align-items:stretch;overflow-x:auto}
+.inv-summary-card{background:var(--bg3);border:1px solid rgba(53,80,49,.08);border-radius:7px;padding:8px 10px;min-height:58px;box-shadow:none;min-width:0}
+.inv-summary-label{font-size:9px;color:var(--text2);margin-bottom:4px;letter-spacing:0;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-summary-value{font-size:19px;font-weight:700;line-height:1.05;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .inv-summary-value.ok{color:var(--green)}
 .inv-summary-value.warn{color:var(--amber)}
 .inv-summary-value.danger{color:var(--red)}
-.inv-summary-value.small{font-size:13px;line-height:1.05}
-.inv-summary-sub{font-size:8px;color:var(--text2);margin-top:2px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:820px){.inv-summary-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:460px){.inv-summary-row{grid-template-columns:1fr}.inv-summary-card{min-height:72px}}
+.inv-summary-value.small{font-size:15px;line-height:1.1}
+.inv-summary-sub{font-size:9px;color:var(--text2);margin-top:3px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:460px){.inv-summary-row{grid-template-columns:repeat(4,minmax(145px,1fr))}.inv-summary-card{min-height:58px}}
 
 /* Status banner */
 .inv-banner{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:var(--radius);margin-bottom:14px;font-size:12px;font-weight:600;border:1px solid}
