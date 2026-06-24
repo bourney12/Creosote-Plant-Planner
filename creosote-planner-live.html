@@ -518,6 +518,9 @@ body.board-view-weekly-products #panel-live-board #board-report{display:grid!imp
 .board-product-code{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:2px;}
 .board-product-number{font-family:var(--mono);font-weight:800;color:var(--text);white-space:nowrap;text-align:right;}
 .board-product-days{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.board-product-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.board-product-filter button{border:1px solid rgba(53,80,49,.18);background:#fffdf7;color:var(--text2);border-radius:7px;padding:6px 12px;font-family:var(--mono);font-size:10px;font-weight:800;cursor:pointer;}
+.board-product-filter button.active{background:var(--text);border-color:var(--text);color:#fffdf7;}
 .access-board .live-board-head{align-items:center;margin-bottom:8px;flex-shrink:0;}
 .access-board .sec-title{font-size:20px;margin-bottom:0;}
 .access-board .sec-sub{display:none;}
@@ -1646,6 +1649,7 @@ let gaps={};
 let logDayTab=Math.min((new Date().getDay()+6)%7,4);
 let boardDayTab=Math.min((new Date().getDay()+6)%7,4);
 let boardViewMode='products';
+let boardProductFilter='all';
 let reportMode='daily';
 let reportTab='treatment';
 let reportDayIso='';
@@ -3613,6 +3617,10 @@ function setBoardView(mode){
   boardViewMode=mode==='timeline'||mode==='weekly-products'?mode:'products';
   buildLiveBoard();
 }
+function setBoardProductFilter(filter){
+  boardProductFilter=['pole','fencing'].includes(filter)?filter:'all';
+  buildLiveBoard();
+}
 function boardRowPick(row,names){
   return names.map(n=>row&&row[n]).find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
 }
@@ -3634,7 +3642,7 @@ function boardWeeklyProductRows(){
     const desc=productDescription(row);
     const dKey=descKey(desc);
     const key=(code||'no-code')+'|'+dKey;
-    if(!groups[key])groups[key]={code,desc,m3:0,pieces:0,packs:0,lines:0,days:new Set()};
+    if(!groups[key])groups[key]={code,desc,family:rowProductFamily(row,'fencing'),m3:0,pieces:0,packs:0,lines:0,days:new Set()};
     if(dKey&&!descIndex[dKey])descIndex[dKey]=groups[key];
     return groups[key];
   }
@@ -3660,7 +3668,7 @@ function boardWeeklyProductRows(){
     if(!g.lines)g.lines++;
     g.days.add((weekMode===5?DAYS_5:DAYS_7)[dayIdx]||`Day ${dayIdx+1}`);
   });
-  return Object.values(groups).sort((a,b)=>b.m3-a.m3||b.pieces-a.pieces||a.desc.localeCompare(b.desc));
+  return Object.values(groups).filter(row=>boardProductFilter==='all'||row.family===boardProductFilter).sort((a,b)=>b.m3-a.m3||b.pieces-a.pieces||a.desc.localeCompare(b.desc));
 }
 function buildBoardWeeklyProducts(){
   const rows=boardWeeklyProductRows();
@@ -3673,8 +3681,14 @@ function buildBoardWeeklyProducts(){
     <td class="board-product-number">${Math.round(r.pieces).toLocaleString('en-GB')}</td>
     <td class="board-product-number">${r.packs?Math.round(r.packs).toLocaleString('en-GB'):'-'}</td>
   </tr>`).join('');
+  const filterHtml=`<div class="board-product-filter">
+    <button type="button" class="${boardProductFilter==='all'?'active':''}" onclick="setBoardProductFilter('all')">All</button>
+    <button type="button" class="${boardProductFilter==='pole'?'active':''}" onclick="setBoardProductFilter('pole')">Pole</button>
+    <button type="button" class="${boardProductFilter==='fencing'?'active':''}" onclick="setBoardProductFilter('fencing')">Fencing</button>
+  </div>`;
   return `<div class="board-report-card">
     <div class="board-report-title"><i class="ti ti-packages"></i>Weekly product totals</div>
+    ${filterHtml}
     <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px;">
       <div class="stat"><div class="stat-l">Products</div><div class="stat-v">${rows.length}</div></div>
       <div class="stat"><div class="stat-l">Planned m3</div><div class="stat-v">${fmtM3(totalM3)}</div></div>
