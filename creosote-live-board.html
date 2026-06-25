@@ -953,6 +953,8 @@ const MASTER_CACHE_REFRESH_RETRY_MS=5*60*1000;
 const LIVE_STATE_POLL_MS=5000;
 const BOARD_FULL_REFRESH_MS=15000;
 const chargeHistory2026=window.CREOSOTE_CHARGE_HISTORY_2026||{};
+let chargeHistoryWeekIndex=null;
+let chargeHistoryWeekKey='';
 let masterProductsByCharge={};
 let masterUnassignedProducts=[];
 let masterAllProducts=[];
@@ -1044,6 +1046,24 @@ function historyHourForWeek(iso){
   if(diffDays<0||diffDays>6)return null;
   return diffDays*24+dt.getHours()+dt.getMinutes()/60+dt.getSeconds()/3600;
 }
+function chargeHistoryIndexForWeek(){
+  const monday=boardDateForDayIdx(0);
+  const weekKey=monday.toISOString().slice(0,10);
+  if(chargeHistoryWeekIndex&&chargeHistoryWeekKey===weekKey)return chargeHistoryWeekIndex;
+  const idx={p1:[[],[],[],[],[],[],[]],p2:[[],[],[],[],[],[],[]]};
+  Object.values(chargeHistory2026).forEach(h=>{
+    if(!h||!idx[h.plant])return;
+    const startAbs=historyHourForWeek(h.start);
+    if(startAbs===null)return;
+    const dayIdx=Math.floor(startAbs/24);
+    if(dayIdx<0||dayIdx>6)return;
+    idx[h.plant][dayIdx].push({h,startAbs});
+  });
+  ['p1','p2'].forEach(pid=>idx[pid].forEach(rows=>rows.sort((a,b)=>a.startAbs-b.startAbs)));
+  chargeHistoryWeekIndex=idx;
+  chargeHistoryWeekKey=weekKey;
+  return idx;
+}
 function historyActualForCharge(chargeNum,dayIdx,pid){
   const key=normalizeChargeNumber(chargeNum);
   const h=key?chargeHistory2026[key]:null;
@@ -1065,12 +1085,8 @@ function historyActualForCharge(chargeNum,dayIdx,pid){
   };
 }
 function historyChargesForDay(dayIdx,pid){
-  return Object.values(chargeHistory2026)
-    .filter(h=>h&&h.plant===pid)
-    .map(h=>({h,startAbs:historyHourForWeek(h.start)}))
-    .filter(x=>x.startAbs!==null&&Math.floor(x.startAbs/24)===dayIdx)
-    .sort((a,b)=>a.startAbs-b.startAbs)
-    .map(x=>x.h);
+  const idx=chargeHistoryIndexForWeek();
+  return ((idx[pid]&&idx[pid][dayIdx])||[]).map(x=>x.h);
 }
 function getGap(d,pid,n){
   const gap=gaps[`${d}_${pid}_gap${n}`]||null;
