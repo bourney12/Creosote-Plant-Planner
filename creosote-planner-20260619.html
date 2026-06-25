@@ -1606,6 +1606,7 @@ const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
 const MASTER_CACHE_FRESH_MS=60000;
 const LIVE_STATE_POLL_MS=5000;
+const BOARD_FULL_REFRESH_MS=15000;
 const chargeHistory2026=window.CREOSOTE_CHARGE_HISTORY_2026||{};
 let masterProductsByCharge={};
 let masterUnassignedProducts=[];
@@ -1650,6 +1651,7 @@ let logDayTab=Math.min((new Date().getDay()+6)%7,4);
 let boardDayTab=Math.min((new Date().getDay()+6)%7,4);
 let boardViewMode='products';
 let boardProductFilter='all';
+let boardLastFullRender=0;
 let reportMode='daily';
 let reportTab='treatment';
 let reportDayIso='';
@@ -1810,12 +1812,12 @@ function showPanel(t){
     if(items[map[t]])items[map[t]].classList.add('active');
   }
   if(t==='live-log')buildLogPanel();
-  if(t==='live-board')buildLiveBoard();
+  if(t==='live-board')buildLiveBoard({force:true});
   if(t==='report')buildReport();
   if(t==='pole-forecast')buildPoleForecast();
   if(t==='green-treatment')buildGreenTreatment();
-  if(t==='inv-dashboard')invRefreshAll();
-  if(t==='usage-forecast'){invUpdateAvgs();invRenderUsageTable();invRenderForecast();}
+  if(t==='inv-dashboard')invRefreshAll({renderHidden:true});
+  if(t==='usage-forecast'){invUpdateAvgs();invRenderUsageTable();invRenderForecast();if(!invChargeHist.length)invRefreshAll({renderHidden:true});}
   if(t==='delivery-planner'){invRenderCalendar();invRenderDelList();invUpdateEmail();}
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
@@ -2484,7 +2486,7 @@ function masterHasProductDescriptions(){
 function refreshMasterViews(){
   updateMasterStatus();
   if(activePanel==='live-log'||accessMode==='operator')buildLogPanel();
-  if(activePanel==='live-board'||accessMode==='board')buildLiveBoard();
+  if(activePanel==='live-board'||accessMode==='board')buildLiveBoard({force:true});
   if(activePanel==='pole-forecast')buildPoleForecast();
   if(activePanel==='green-treatment')buildGreenTreatment();
 }
@@ -3017,7 +3019,7 @@ async function pullLiveState(force=false){
       pruneLiveStateToCurrentWeek();
       liveStateSync.updatedAt=data.updatedAt||liveStateSync.updatedAt;
       saveData();
-      refreshLiveSurfaces(false);
+      refreshLiveSurfaces(false,true);
     }
     liveStateSync.lastPull=Date.now();
     updateLiveSyncStatus('ok',`Live sync connected - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
@@ -3612,14 +3614,14 @@ function buildBoardDayTabs(items){
   }
   document.getElementById('board-day-tabs').innerHTML=html;
 }
-function setBoardDay(i){boardDayTab=i;buildLiveBoard();}
+function setBoardDay(i){boardDayTab=i;buildLiveBoard({force:true});}
 function setBoardView(mode){
   boardViewMode=mode==='timeline'||mode==='weekly-products'?mode:'products';
-  buildLiveBoard();
+  buildLiveBoard({force:true});
 }
 function setBoardProductFilter(filter){
   boardProductFilter=['pole','fencing'].includes(filter)?filter:'all';
-  buildLiveBoard();
+  buildLiveBoard({force:true});
 }
 function boardRowPick(row,names){
   return names.map(n=>row&&row[n]).find(v=>v!==undefined&&v!==null&&String(v).trim()!=='');
@@ -3783,10 +3785,11 @@ function buildBoardStageCard(pid,dayItems){
 function runningChargeLabel(item){
   return `P${item.pid==='p1'?1:2} C${item.charge.n}`;
 }
-function buildLiveBoard(){
+function buildLiveBoard(opts={}){
   const days=computeWeek();
   const noise=getNoiseParams();
   const now=new Date();
+  const fullRender=opts.force===true||Date.now()-boardLastFullRender>BOARD_FULL_REFRESH_MS;
   const nowAbs=currentWeekAbs();
   const items=collectLiveItems(days);
   buildBoardDayTabs(items);
@@ -3810,6 +3813,8 @@ function buildLiveBoard(){
     <div class="board-card"><div class="board-label">Total planned plant 1</div><div class="board-value">${p1Planned.length}</div><div class="board-sub">${p1Logged} logged today</div></div>
     <div class="board-card"><div class="board-label">Total planned plant 2</div><div class="board-value">${p2Planned.length}</div><div class="board-sub">${p2Logged} logged today</div></div>
   `;
+  if(!fullRender)return;
+  boardLastFullRender=Date.now();
   const boardRunning=document.getElementById('board-running');
   const liveScroll=[...boardRunning.querySelectorAll('.plant-live-col')].map(col=>col.scrollTop);
   boardRunning.innerHTML=buildPlantLiveColumns(day,dayItems);
@@ -4980,6 +4985,7 @@ let invModalDate    = null;
 let invModalRef     = null;
 let invModalWindow  = 'AM';
 let invLastFocus    = null;
+let invRefreshInFlight = false;
 
 /* ── Helpers ── */
 function invAddDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
@@ -6080,11 +6086,36 @@ function invOpenMail(){
 }
 
 /* ── Full refresh ── */
-async function invRefreshAll(){
+function invPanelActive(){
+  return ['inv-dashboard','usage-forecast','delivery-planner'].includes(activePanel);
+}
+function invRenderActivePanel(){
+  if(activePanel==='inv-dashboard'){
+    invRenderDashboard();
+    invRenderForecast();
+    return;
+  }
+  if(activePanel==='usage-forecast'){
+    invUpdateAvgs();
+    invRenderUsageTable();
+    invRenderForecast();
+    return;
+  }
+  if(activePanel==='delivery-planner'){
+    invRenderCalendar();
+    invRenderDelList();
+    invUpdateEmail();
+  }
+}
+async function invRefreshAll(opts={}){
+  if(invRefreshInFlight)return;
+  invRefreshInFlight=true;
+  const shouldRender=opts.renderHidden===true||invPanelActive();
+  try{
   invLoadStorage();
   invLoadSettings();
   invDataLoading=true;
-  invRenderUsageTable();
+  if(shouldRender)invRenderUsageTable();
   const hist=await invBridge('getChargeHistory',{days:30});
   if(hist?.charges)invChargeHist=hist.charges;
   invDataLoading=false;
@@ -6100,14 +6131,13 @@ async function invRefreshAll(){
       sourceEl.textContent = labels[demand.source] || demand.source;
     }
   }
-  invRenderDashboard();
-  invRenderUsageTable();
-  invRenderForecast();
-  invRenderCalendar();
-  invRenderDelList();
-  invUpdateEmail();
+  if(shouldRender)invRenderActivePanel();
   const ts=document.getElementById('invRefreshTs');
   if(ts)ts.textContent='Refreshed: '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  }finally{
+    invDataLoading=false;
+    invRefreshInFlight=false;
+  }
 }
 
 document.addEventListener('keydown',e=>{
@@ -6129,9 +6159,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   invEnsureEmailRange();
   invRenderCalendar();
   invRenderDelList();
-  invRefreshAll();
+  invRefreshAll({renderHidden:false});
   invUpdateEmail();
-  setInterval(invRefreshAll,30000);
+  setInterval(()=>invRefreshAll({renderHidden:false}),30000);
 });
 /* ═══════════════════════════════════════════════════════════════
    END INVENTORY, USAGE & DELIVERY PLANNER
@@ -6163,9 +6193,9 @@ function applyAccessMode(){
     showPanel('live-board');
   }
 }
-function refreshLiveSurfaces(loadLocal=true){
+function refreshLiveSurfaces(loadLocal=true,force=false){
   if(loadLocal)loadLocalData();
-  if(activePanel==='live-board'||accessMode==='board')buildLiveBoard();
+  if(activePanel==='live-board'||accessMode==='board')buildLiveBoard({force});
 }
 ['t-turn','t-flt','t-crane','t-comp','t-trolleys','t-bogeys'].forEach(id=>SM(id,id.replace('t-','v-')));
 buildCtPanel();
@@ -6182,7 +6212,7 @@ setInterval(refreshLiveSurfaces,1000);
 setInterval(()=>pullLiveState(false),LIVE_STATE_POLL_MS);
 setInterval(refreshProductMaster,300000);
 window.addEventListener('storage',e=>{
-  if(e.key==='creosote_actuals'||e.key==='creosote_gaps')refreshLiveSurfaces();
+  if(e.key==='creosote_actuals'||e.key==='creosote_gaps')refreshLiveSurfaces(true,true);
   if(e.key===MASTER_CACHE_STORAGE_KEY&&loadMasterCache())refreshMasterViews();
 });
 </script>
