@@ -1143,8 +1143,9 @@ function showPanel(t){
   const map={week:3,bottlenecks:4,table:5,'live-log':0,'live-board':1,report:2,days:6,'charge-types':7,equipment:8,operators:9,cranes:10,tippers:11,noise:12};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[t]])items[map[t]].classList.add('active');
-  if(t==='live-log')buildLogPanel();
-  if(t==='live-board')buildLiveBoard({force:true});
+  if(t==='live-log'){buildLogPanel();pullLiveState(true).then(()=>buildLogPanel());}
+  if(t==='live-board'){buildLiveBoard({force:true});pullLiveState(true);}
+  if(['week','bottlenecks','table','days'].includes(t))go();
   if(t==='report')buildReport();
 }
 function SM(s,v){document.getElementById(v).textContent=Math.round(parseFloat(document.getElementById(s).value));}
@@ -2562,17 +2563,22 @@ function go(){
   const fltMin=parseFloat(document.getElementById('t-flt').value);
   const craneMin=parseFloat(document.getElementById('t-crane').value);
   const noise=getNoiseParams();
-  buildLegend(noise);
-  renderStats(days,bogeys,noise);
-  renderLinearGantt(days,noise);
+  const renderWeek=activePanel==='week';
+  if(renderWeek){
+    buildLegend(noise);
+    renderStats(days,bogeys,noise);
+    renderLinearGantt(days,noise);
+  }
   const issues=detectBottlenecks(days,bogeys,trolleys,fltMin,craneMin,noise);
-  renderBottlenecks(issues);
-  renderTable(days);
-  buildDayConfigTabs(days);
+  if(activePanel==='bottlenecks')renderBottlenecks(issues);
+  if(activePanel==='table')renderTable(days);
+  if(activePanel==='days')buildDayConfigTabs(days);
   const compDays=days.filter(d=>d.compConflict);
   const cn=document.getElementById('comp-note');
-  if(compDays.length){cn.style.display='block';cn.innerHTML=`<strong>Compressor conflicts:</strong> `+compDays.map(d=>`${d.dayName} — ${d.compMsg}`).join(' | ');}
-  else cn.style.display='none';
+  if(cn){
+    if(compDays.length){cn.style.display='block';cn.innerHTML=`<strong>Compressor conflicts:</strong> `+compDays.map(d=>`${d.dayName} — ${d.compMsg}`).join(' | ');}
+    else cn.style.display='none';
+  }
   const wC=issues.filter(i=>i.sev!=='ok').length;
   const pill=document.getElementById('bneck-pill');
   pill.textContent=wC?`${wC} issue${wC>1?'s':''}`:' All clear';
@@ -3516,8 +3522,12 @@ function applyAccessMode(){
   }
 }
 function refreshLiveSurfaces(loadLocal=true,force=false){
+  if(activePanel!=='live-board'&&accessMode!=='board')return;
   if(loadLocal)loadLocalData();
-  if(activePanel==='live-board'||accessMode==='board')buildLiveBoard({force});
+  buildLiveBoard({force});
+}
+function shouldPollLiveState(){
+  return activePanel==='live-log'||activePanel==='live-board'||accessMode==='operator'||accessMode==='board';
 }
 ['t-turn','t-flt','t-crane','t-comp','t-trolleys','t-bogeys'].forEach(id=>SM(id,id.replace('t-','v-')));
 buildCtPanel();
@@ -3526,12 +3536,12 @@ buildPersonPanel(cranes,'crane-person-grid','crane-shifts-cfg','232,147,71');
 buildPersonPanel(tippers,'tipper-person-grid','tipper-shifts-cfg','61,214,180');
 buildDayConfigTabs();
 // Load persisted data then render
-loadData().then(()=>{go();buildLogPanel();applyAccessMode();pullLiveState(true).then(()=>{go();buildLogPanel();});});
+loadData().then(()=>{applyAccessMode();if(activePanel==='week')go();if(shouldPollLiveState())pullLiveState(true).then(()=>{if(activePanel==='live-log')buildLogPanel();if(activePanel==='week')go();});});
 loadMasterCache();
 refreshProductMaster();
 updateClock();setInterval(updateClock,1000);
 setInterval(refreshLiveSurfaces,1000);
-setInterval(()=>pullLiveState(false),LIVE_STATE_POLL_MS);
+setInterval(()=>{if(shouldPollLiveState())pullLiveState(false);},LIVE_STATE_POLL_MS);
 setInterval(()=>refreshProductMaster(),MASTER_CACHE_FRESH_MS);
 window.addEventListener('storage',e=>{
   if(e.key==='creosote_actuals'||e.key==='creosote_gaps')refreshLiveSurfaces(true,true);
