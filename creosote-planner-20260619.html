@@ -1604,7 +1604,8 @@ const DEFAULT_MASTER_BRIDGE_URL='https://script.google.com/macros/s/AKfycbx1MO2P
 const MASTER_CACHE_STORAGE_KEY='creosote_master_cache_v12';
 const MASTER_LEGACY_CACHE_KEYS=[];
 const MASTER_BRIDGE_TIMEOUT_MS=180000;
-const MASTER_CACHE_FRESH_MS=60000;
+const MASTER_CACHE_FRESH_MS=30*60*1000;
+const MASTER_CACHE_REFRESH_RETRY_MS=5*60*1000;
 const LIVE_STATE_POLL_MS=5000;
 const BOARD_FULL_REFRESH_MS=15000;
 const chargeHistory2026=window.CREOSOTE_CHARGE_HISTORY_2026||{};
@@ -1630,6 +1631,8 @@ let masterColumnMap=null;
 let inventoryColumnMap=null;
 let inventoryMovementsLoaded=false;
 let inventoryMovementsLoading=false;
+let masterRefreshInFlight=false;
+let masterLastRefreshAttempt=0;
 let liveStateSync={updatedAt:'',loading:false,lastPush:0,lastPull:0,state:'local',msg:'Local only'};
 
 function mkPerson(id,name,shift,sStr,eStr){
@@ -2279,7 +2282,7 @@ function saveMasterBridgeUrl(){
   if(clean)localStorage.setItem(MASTER_BRIDGE_STORAGE_KEY,clean);
   else localStorage.removeItem(MASTER_BRIDGE_STORAGE_KEY);
   closeMasterConnect();
-  refreshProductMaster();
+  refreshProductMaster({force:true});
 }
 function applyMasterPayload(data,sourceLabel){
   masterProductsByCharge=data.productsByCharge||{};
@@ -3085,34 +3088,46 @@ async function loadInventoryMovementsForReports(){
     inventoryMovementsLoading=false;
   }
 }
-async function refreshProductMaster(){
+async function refreshProductMaster(options={}){
+  const force=options.force===true;
+  let hadCache=false;
   try{
     const bridgeUrl=liveBridgeUrl();
     if(bridgeUrl){
-      const hadCache=loadMasterCache({silent:true});
-      if(hadCache)refreshMasterViews();
-      if(masterCacheFresh()){
-        loadMasterCache({silent:true});
+      hadCache=loadMasterCache({silent:true});
+      if(hadCache){
+        const rec=readMasterCacheRecord();
+        const age=Math.max(0,Math.round((Date.now()-((rec&&rec.data.savedAt)||Date.now()))/60000));
+        const descNote=masterHasProductDescriptions()?'':' - product text needs bridge refresh';
+        masterSync={state:masterCacheFresh()?'ok':'warn',msg:`Using local Treatment Master snapshot - ${age} min old${descNote}`,last:(rec&&rec.data.savedAt)||Date.now()};
         refreshMasterViews();
-        return;
+        if(!force&&masterCacheAgeMs()<MASTER_CACHE_FRESH_MS)return;
       }
-      masterSync={state:'warn',msg:'Master bridge loading latest Treatment Master and planned schedule...',last:Date.now()};
+      if(masterRefreshInFlight)return;
+      if(!force&&Date.now()-masterLastRefreshAttempt<MASTER_CACHE_REFRESH_RETRY_MS)return;
+      masterRefreshInFlight=true;
+      masterLastRefreshAttempt=Date.now();
+      masterSync={state:'warn',msg:hadCache?'Using local snapshot - checking for newer Treatment Master data in background...':'Master bridge loading first local Treatment Master snapshot...',last:Date.now()};
       updateMasterStatus();
-      const data=await loadJsonp(bridgeUrl,{includeProductMaster:'1',includeAllocationToStack:'1'});
-      if(!data||data.ok===false)throw new Error(data&&data.error?data.error:'Bridge returned no data');
-      if(masterPayloadRowCount(data)===0)throw new Error('Bridge returned zero Treatment Master rows, so existing charge data was kept');
-      const applied=applyMasterPayload(data,'bridge');
-      await loadAllocationToStackCsvFallback();
-      saveMasterCache();
-      const count=applied.count;
-      const hasLoadedSlotFeed=applied.hasLoadedSlotFeed;
-      const plannedCount=masterPlannedSchedule.length;
-      const forecastDays=masterPoleForecast&&Array.isArray(masterPoleForecast.days)?masterPoleForecast.days.length:0;
-      const volumeMsg=`${applied.volumeRowCount||0} m3 row${applied.volumeRowCount===1?'':'s'}`;
-      const scheduleMsg=plannedCount?` - ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
-      const forecastMsg=forecastDays?` - ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
-      masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master bridge synced ${count} charge${count===1?'':'s'} - ${volumeMsg}${scheduleMsg}${forecastMsg} - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
-      refreshMasterViews();
+      try{
+        const data=await loadJsonp(bridgeUrl,{includeProductMaster:'1',includeAllocationToStack:'1'});
+        if(!data||data.ok===false)throw new Error(data&&data.error?data.error:'Bridge returned no data');
+        if(masterPayloadRowCount(data)===0)throw new Error('Bridge returned zero Treatment Master rows, so existing charge data was kept');
+        const applied=applyMasterPayload(data,'bridge');
+        await loadAllocationToStackCsvFallback();
+        saveMasterCache();
+        const count=applied.count;
+        const hasLoadedSlotFeed=applied.hasLoadedSlotFeed;
+        const plannedCount=masterPlannedSchedule.length;
+        const forecastDays=masterPoleForecast&&Array.isArray(masterPoleForecast.days)?masterPoleForecast.days.length:0;
+        const volumeMsg=`${applied.volumeRowCount||0} m3 row${applied.volumeRowCount===1?'':'s'}`;
+        const scheduleMsg=plannedCount?` - ${plannedCount} planned schedule row${plannedCount===1?'':'s'}`:'';
+        const forecastMsg=forecastDays?` - ${forecastDays} forecast day${forecastDays===1?'':'s'}`:'';
+        masterSync={state:(hasLoadedSlotFeed&&applied.volumeRowCount>0)?'ok':'warn',msg:`Master snapshot updated ${count} charge${count===1?'':'s'} - ${volumeMsg}${scheduleMsg}${forecastMsg} - ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}${hasLoadedSlotFeed?'':' - update bridge for loaded AU slots'}`,last:Date.now()};
+        refreshMasterViews();
+      }finally{
+        masterRefreshInFlight=false;
+      }
       return;
     }
     const res=await fetch(MASTER_SHEET_CSV_URL+'&_='+Date.now(),{cache:'no-store',credentials:'include'});
@@ -3156,7 +3171,7 @@ async function refreshProductMaster(){
     const volRows=all.filter(row=>rowVolumeM3(row)>0).length;
     masterSync={state:volRows>0?'ok':'warn',msg:`Master sheet synced ${volRows} m3 row${volRows===1?'':'s'} ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`,last:Date.now()};
   }catch(e){
-    masterSync={state:'warn',msg:`Master sheet not accessible: ${e.message}`,last:Date.now()};
+    masterSync={state:'warn',msg:hadCache?`Using local Treatment Master snapshot - latest bridge refresh unavailable: ${e.message}`:`Master sheet not accessible: ${e.message}`,last:Date.now()};
   }
   refreshMasterViews();
 }
@@ -6210,7 +6225,7 @@ refreshProductMaster();
 updateClock();setInterval(updateClock,1000);
 setInterval(refreshLiveSurfaces,1000);
 setInterval(()=>pullLiveState(false),LIVE_STATE_POLL_MS);
-setInterval(refreshProductMaster,300000);
+setInterval(()=>refreshProductMaster(),MASTER_CACHE_FRESH_MS);
 window.addEventListener('storage',e=>{
   if(e.key==='creosote_actuals'||e.key==='creosote_gaps')refreshLiveSurfaces(true,true);
   if(e.key===MASTER_CACHE_STORAGE_KEY&&loadMasterCache())refreshMasterViews();
