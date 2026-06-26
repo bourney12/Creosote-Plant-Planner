@@ -1,5 +1,37 @@
 # Creosote Apps Online Deployment
 
+## Recommended: run the server app
+
+The fastest setup is now the Node server in `server/index.js`.
+
+It serves the existing planner HTML files and exposes `/api/bridge`, a compatible bridge endpoint that:
+
+- caches the Treatment Master payload centrally so every browser is not waiting on Google Apps Script;
+- serves stale cached master data while a background refresh checks for updates;
+- stores live board actuals/gaps locally and syncs them back to the existing Apps Script bridge;
+- keeps the old Apps Script bridge as the upstream source of truth during migration.
+
+Local run:
+
+```bash
+npm install
+npm start
+```
+
+Then open:
+
+- Main planner: `http://localhost:3000/creosote-planner-live.html`
+- Operator logging: `http://localhost:3000/creosote-operator-charge-log.html`
+- Live board: `http://localhost:3000/creosote-live-board.html`
+
+Production deployment:
+
+- `render.yaml` is included for Render Blueprint deployment.
+- Set `MASTER_BRIDGE_URL` to the Apps Script `/exec` URL if it changes.
+- The server health check is `/api/health`.
+
+When hosted from the server, the apps automatically use `/api/bridge`. When hosted from GitHub Pages, they continue to fall back to the existing Apps Script bridge.
+
 ## 1. Redeploy the Google bridge
 
 Copy the full contents of `production-master-bridge.gs` into the existing Google Apps Script project.

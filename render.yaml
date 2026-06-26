@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: creosote-plant-planner
+    env: node
+    plan: starter
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: MASTER_BRIDGE_URL
+        value: https://script.google.com/macros/s/AKfycbx1MO2PmRD7jkoFeKhIjAiSC5vOF6tMrVAXaKO-AU8jZF21e7upIG5BEr6V4ABz8atw/exec
+      - key: MASTER_CACHE_TTL_MS
+        value: 300000
+      - key: MASTER_CACHE_STALE_MS
+        value: 86400000
+      - key: LIVE_STATE_SYNC_UPSTREAM
+        value: "1"
